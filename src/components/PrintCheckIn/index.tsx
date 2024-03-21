@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Center, Heading, Text } from '@chakra-ui/react';
+import { Box, Button, Center, Heading, Text } from '@chakra-ui/react';
 import QRCode from 'react-qr-code';
 import axios from 'axios';
 
@@ -53,11 +53,14 @@ export function PrintCheckIn ()  {
             flexDirection="column"
             alignItems="center"
           >
-            <Text marginBottom="1rem">Check-in ID: {checkInId}</Text>
-            <QRCode value={`localhost:3333/check-ins/${checkInId}/validate`} size={200} />
+            <Text marginBottom="1rem" color="black">Check-in ID: {checkInId}</Text>
+            <QRCode value={`${checkInId}`} size={200} />
             <Text color="#888" fontSize="14px" marginTop="1rem">Scan this QR Code to validate check-in</Text>
           </Box>
         )}
+				<Button as="a" href='/validateCheckIn'>
+						Valide Agora (only admin):
+				</Button>
       </Center>
     </Box>
   );

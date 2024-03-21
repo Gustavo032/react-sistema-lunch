@@ -23,7 +23,6 @@ export default function LoginScreen() {
     try {
       const response = await axios.post('http://localhost:3333/sessions', {
         cpf: userCpf,
-        password: userPassword,
       });
 
       if (response.data.refreshToken) {
@@ -58,14 +57,6 @@ export default function LoginScreen() {
               type="text"
               value={userCpf}
               onChange={(e) => setUserCpf(e.target.value)}
-            />
-          </FormControl>
-          <FormControl id="password">
-            <FormLabel>Password</FormLabel>
-            <Input
-              type="password"
-              value={userPassword}
-              onChange={(e) => setUserPassword(e.target.value)}
             />
           </FormControl>
           <Stack spacing={6}>
