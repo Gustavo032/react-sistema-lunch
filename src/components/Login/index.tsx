@@ -16,7 +16,8 @@ import axios from 'axios';
 
 export default function LoginScreen() {
   const [userCpf, setUserCpf] = useState('');
-  const [userPassword, setUserPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
   const navigate = useNavigate();
 
   async function loginUserFunction() {
@@ -47,28 +48,45 @@ export default function LoginScreen() {
   };
 
   return (
-    <Stack minH={'100vh'} direction={{ base: 'column', md: 'row' }}>
+    <Stack minH={'100vh'} bgColor={'white'} direction={{ base: 'column', md: 'row' }}>
       <Flex p={8} flex={1} align={'center'} justify={'center'}>
-        <Stack as="form" onSubmit={handleLogin} spacing={4} w={'full'} maxW={'md'}>
-          <Heading fontSize={'2xl'}>Sign in to your account</Heading>
+        <Stack as="form" color={'gray.900'} onSubmit={handleLogin} spacing={4} w={'full'} maxW={'md'}>
+          <Heading fontSize={'2xl'}>Digite o Seu CPF</Heading>
           <FormControl id="cpf">
             <FormLabel>CPF</FormLabel>
             <Input
-              type="text"
+              type="number"
+							inputMode="numeric"
+							bg={'gray.100'}
+							placeholder='Digite seu CPF'
+							border={0}
+							color={'gray.900'}
+							_placeholder={{
+								color: 'gray.500',
+							}}
               value={userCpf}
               onChange={(e) => setUserCpf(e.target.value)}
             />
           </FormControl>
           <Stack spacing={6}>
-            <Stack
+					<Stack
               direction={{ base: 'column', sm: 'row' }}
               align={'start'}
               justify={'space-between'}>
-              <Checkbox>Remember me</Checkbox>
-              <Text color={'blue.500'}>Forgot password?</Text>
+								{errorMessage ?? (	
+									<Text>
+										{`${errorMessage}`}
+									</Text>
+								)
+								}
             </Stack>
-            <Button type="submit" colorScheme={'blue'} variant={'solid'}>
-              Sign in
+            <Button type="submit" color={'white'} bgColor={"red.500"} _hover={{
+								bgColor: 'red',
+								opacity: 0.5,
+							}} _active={{
+								bgColor: 'red.300',
+							}} variant={'solid'}>
+              Continuar
             </Button>
           </Stack>
         </Stack>
@@ -78,7 +96,7 @@ export default function LoginScreen() {
           alt={'Login Image'}
           objectFit={'cover'}
           src={
-            'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1352&q=80'
+            '/img/loginBg.jpg'
           }
         />
       </Flex>
