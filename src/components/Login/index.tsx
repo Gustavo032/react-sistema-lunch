@@ -33,6 +33,7 @@ export default function LoginScreen() {
         document.cookie = `refreshToken=${response.data.refreshToken};expires=${expirationDate.toUTCString()};path=/`;
         navigate('/dashboard');
       } else {
+				setErrorMessage("Falha ao Conectar " + response.data.errorMessage)
         console.error('Token not found in response');
         // Lidar com o caso em que o token não está presente na resposta
       }
@@ -48,7 +49,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <Stack minH={'100vh'} bgColor={'white'} direction={{ base: 'column', md: 'row' }}>
+    <Stack minH={'100vh'} minW={"100vw"} bgColor={'white'} direction={{ base: 'column', md: 'row' }}>
       <Flex p={8} flex={1} align={'center'} justify={'center'}>
         <Stack as="form" color={'gray.900'} onSubmit={handleLogin} spacing={4} w={'full'} maxW={'md'}>
           <Heading fontSize={'2xl'}>Digite o Seu CPF</Heading>
