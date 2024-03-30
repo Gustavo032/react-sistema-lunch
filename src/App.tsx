@@ -8,6 +8,7 @@ import { 	Route, Routes } from "react-router-dom"
 import NotFound from "./components/notFound"
 import { ReadQRCode } from "./components/ValidateCheckIn"
 import { RequestScreen } from "./components/RequestScreen"
+import MealOptionPage from "./components/CreateRequest"
 // import ReadQRCode from "./components/ValidateCheckIn"
 
 export const App = () => (
@@ -17,6 +18,7 @@ export const App = () => (
         <Route path="/dashboard" element={<RequestScreen />} />
         <Route path="/validateCheckIn" element={<ReadQRCode />} />
         <Route path="/validateCheckIn" element={<ReadQRCode />} />
+        <Route path="/mealOptionPage/:option" element={<MealOptionPage />} />
         <Route path="/*" element={<NotFound/>} />
     </Routes>
   </ChakraProvider>
