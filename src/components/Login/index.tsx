@@ -101,15 +101,15 @@ export default function LoginScreen() {
         position="relative" // Define a posição relativa para que o zIndex funcione corretamente
 				border="#fff solid 0.12rem"
 			>
-        <Heading lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
+        <Heading color="gray.800" lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
           Faça seu pedido
         </Heading>
         <Text
           fontSize={{ base: 'sm', sm: 'md' }}
-          color={useColorModeValue('gray.800', 'gray.400')}
+          color={useColorModeValue('gray.800', 'gray.800')}
         ></Text>
         <FormControl id="email">
-          <FormLabel>CPF</FormLabel>
+          <FormLabel color="gray.800">CPF</FormLabel>
           <Input
             type="text"
             inputMode="numeric"
@@ -147,7 +147,7 @@ export default function LoginScreen() {
               align={'start'}
               justify={'space-between'}
             >
-              <Text>{`${errorMessage}`}</Text>
+              <Text color="gray.800">{`${errorMessage}`}</Text>
             </Stack>
           )}
         </Stack>
