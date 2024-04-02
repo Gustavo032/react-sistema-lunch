@@ -11,7 +11,10 @@ export function MealOptionPage(props: MealOptionPageProps) {
   const { option, ticketData, setTicketData }  = useParams(); // Obtém o parâmetro da URL
 
   return (
-    <Flex direction="column" alignItems="center" h="100vh" backgroundImage="/img/mapleBearBackground.jpg">
+    <Flex direction="column" alignItems="center" h="100vh" 
+			bgSize="cover"
+			bgPosition="center"
+			backgroundImage="/img/mapleBearBackground.jpg">
 			  {/* Overlay escuro */}
 				<Flex
 							position="fixed"

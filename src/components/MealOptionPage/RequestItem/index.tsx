@@ -80,6 +80,7 @@ export function RequestItem(props: RequestItemProps) {
 
 			if (response.status === 201) {
 				const ticketData = {
+					userName: response.data.userName,
 					requestId: response.data.requestId,
 					items: menuItems.map(item => ({
 						title: item.title,
@@ -89,7 +90,7 @@ export function RequestItem(props: RequestItemProps) {
 					total: total,
 					// Outros dados que deseja passar
 				};
-		
+				
 				setTicketData(ticketData);
 
 				navigate('/ticket');

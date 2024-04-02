@@ -11,6 +11,7 @@ import { ReadQRCode } from "./components/ValidateCheckIn"
 import { RequestScreen } from "./components/RequestScreen"
 import MealOptionPage from "./components/MealOptionPage"
 import { TicketScreen } from "./components/TicketScreen"
+import Control from "./components/Control";
 
 export const App = () => {
   const [ticketData, setTicketData] = useState<any>(null);
@@ -23,6 +24,7 @@ export const App = () => {
         <Route path="/validateCheckIn" element={<ReadQRCode />} />
         <Route path="/mealOptionPage/:option" element={<MealOptionPage ticketData={ticketData} setTicketData={setTicketData} />} />
         <Route path="/ticket" element={<TicketScreen ticketData={ticketData} />} />
+        <Route path="/controle" element={<Control />} />
         <Route path="/*" element={<NotFound/>} />
       </Routes>
     </ChakraProvider>

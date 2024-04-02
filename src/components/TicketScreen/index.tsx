@@ -13,9 +13,9 @@ export function TicketScreen(props: TicketScreenProps) {
   };
 
   return (
-    <Center h="100vh">
-			 {/* Overlay escuro */}
-			 <Flex
+    <Center h="100vh" bgSize="cover" bgPosition="center" backgroundImage="./img/mapleBearBackground.jpg">
+      {/* Overlay escuro */}
+      <Flex
         position="fixed"
         top="0"
         left="0"
@@ -25,20 +25,21 @@ export function TicketScreen(props: TicketScreenProps) {
         zIndex="1" // Ajusta a camada de empilhamento
       ></Flex>
       <Box
-				zIndex={2}
+        zIndex={2}
         p={8}
         maxW="400px"
         borderWidth={1}
         borderRadius="md"
         boxShadow="lg"
         textAlign="center"
-				bgColor={useColorModeValue('white', 'gray.700')}
+        bgColor={useColorModeValue("white", "gray.700")}
       >
-        <Text fontSize="xl">Detalhes do Pedido</Text>
-        <Text mt={4}>Horário e data de criação: {new Date().toLocaleString()}</Text>
-        <Text>ID da solicitação: {ticketData.requestId}</Text>
-        <Text mt={4}>Itens comprados:</Text>
-        <UnorderedList>
+        <Text fontSize="xl" textAlign="left">Detalhes do Pedido</Text>
+        <Text fontSize="sm" textAlign="left" color="gray.500">ID da solicitação: {ticketData.requestId}</Text>
+        <Text fontSize="sm" textAlign="left" mt="1rem" fontWeight="500">Usuário: {ticketData.userName}</Text>
+        <Text fontSize="xs" textAlign="left" color="gray.500" mt={1}>Horário e data de criação: {new Date().toLocaleString()}</Text>
+        <Text mt={4} fontWeight="bold" textAlign="left">Itens comprados:</Text>
+        <UnorderedList textAlign="left">
           {ticketData.items.map((item: any, index: number) => (
             item.quantity > 0 && (
               <ListItem key={index}>
@@ -47,8 +48,8 @@ export function TicketScreen(props: TicketScreenProps) {
             )
           ))}
         </UnorderedList>
-        <Text mt={4}>Total: R$ {ticketData.total}</Text>
-        <Button mt={4} colorScheme="blue" onClick={handlePrint}>Confirmar Pedido</Button>
+        <Text mt={4} fontWeight="bold" textAlign="left">Total: R$ {ticketData.total}</Text>
+        <Button mt={6} colorScheme="blue" onClick={handlePrint}>Confirmar Pedido</Button>
       </Box>
     </Center>
   );
