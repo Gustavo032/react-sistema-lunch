@@ -134,14 +134,15 @@ export function RequestItem(props: RequestItemProps) {
     fetchMenuItems();
   }, [itemTitle, token]);
 
-  useEffect(() => {
+	useEffect(() => {
     let calculatedTotal = 0;
     menuItems.forEach((item) => {
       const quantity = quantities[item.id] || 0;
       calculatedTotal += item.price * quantity;
     });
-    setTotal(calculatedTotal);
+    setTotal(calculatedTotal); // Não formate aqui
   }, [quantities, menuItems]);
+
 
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
     const newQuantities = { ...quantities, [itemId]: newQuantity };

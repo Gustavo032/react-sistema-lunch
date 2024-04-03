@@ -3,14 +3,18 @@ import axios from 'axios';
 import { Button, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import * as XLSX from 'xlsx';
+import UserList from '../UserList';
 
 const Control = () => {
   const [requests, setRequests] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [userId, setUserId] = useState(null); // Adiciona estado para armazenar o ID do usuário selecionado
 
   useEffect(() => {
-    fetchRequests();
-  }, [currentPage]);
+    if (userId) { // Verifica se há um usuário selecionado antes de fazer a requisição dos pedidos
+      fetchRequests();
+    }
+  }, [currentPage, userId]); // Adiciona userId como dependência do useEffect
 
   const fetchRequests = async () => {
     try {
@@ -19,11 +23,12 @@ const Control = () => {
         '$1'
       );
 
-      const response = await axios.get(`http://localhost:3333/requests/history?page=${currentPage}`, {
+      const response = await axios.get(`http://localhost:3333/requests/history?page=${currentPage}&userId=${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+
       // Format dates and prices before setting the state
       const formattedRequests = response.data.requests.map((request:any) => ({
         ...request,
@@ -38,6 +43,10 @@ const Control = () => {
     } catch (error) {
       console.error('Erro ao buscar requests:', error);
     }
+  };
+
+	const handleSelectUser = (selectedUserId:any) => {
+    setUserId(selectedUserId); // Atualiza o estado userId com o ID do usuário selecionado
   };
 
   const handleNextPage = () => {
@@ -58,7 +67,7 @@ const Control = () => {
 					/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
 					'$1'
 				);
-				const response = await axios.get(`http://localhost:3333/requests/history?page=${currentPage}`, {
+				const response = await axios.get(`http://localhost:3333/requests/history?page=${currentPage}=userId=fc44f8c3-b695-4ba4-9192-2fb6bdfe2ddb`, {
 					headers: {
 						Authorization: `Bearer ${token}`,
 					},
@@ -111,6 +120,9 @@ const Control = () => {
 
   return (
     <>
+		
+			<UserList onSelectUser={handleSelectUser} /> {/* Renderiza o componente UserList e passa a função handleSelectUser */}
+      {/* Restante do código */}
       <Table variant="simple">
         <Thead>
           <Tr>
