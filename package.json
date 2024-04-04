@@ -23,6 +23,7 @@
     "jsqr": "^1.4.0",
     "qrcode": "^1.5.3",
     "react": "^18.1.0",
+    "react-datepicker": "^6.6.0",
     "react-dom": "^18.1.0",
     "react-icons": "^5.0.1",
     "react-qr-code": "^2.0.12",
@@ -56,6 +57,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-datepicker": "^6.2.0",
     "@types/react-router-dom": "^5.3.3"
   }
 }

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Input, Flex } from '@chakra-ui/react';
+import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Text } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import * as XLSX from 'xlsx';
+import DatePicker from 'react-datepicker'; // Import from react-datepicker
+import 'react-datepicker/dist/react-datepicker.css'; // Import styles
 import UserList from '../UserList';
 
 const Control = () => {
@@ -11,14 +13,14 @@ const Control = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
     if (userId) {
       fetchRequests();
     }
-  }, [currentPage, userId]);
+  }, [currentPage, userId, startDate, endDate]);
 
   const fetchRequests = async () => {
     try {
@@ -28,7 +30,13 @@ const Control = () => {
         '$1'
       );
 
-      const response = await axios.get(`http://localhost:3333/requests/history?page=${currentPage}&userId=${userId}`, {
+      const response = await axios.get(`http://localhost:3333/requests/history`, {
+        params: {
+          page: currentPage,
+          userId: userId,
+          startDate: startDate ? format(startDate, 'MM/dd/yyyy') : null,
+          endDate: endDate ? format(endDate, 'MM/dd/yyyy') : null,
+        },
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -44,7 +52,7 @@ const Control = () => {
         }))
       }));
       setRequests(formattedRequests);
-      setFilteredRequests(formattedRequests); // Atualiza filteredRequests com os dados recebidos
+      setFilteredRequests(formattedRequests);
     } catch (error) {
       console.error('Erro ao buscar requests:', error);
     } finally {
@@ -58,89 +66,90 @@ const Control = () => {
   };
 
   const handleNextPage = () => {
-    setCurrentPage(prevPage => prevPage + 1); // Atualiza a página atual
+    setCurrentPage(currentPage + 1);
   };
 
-  const handlePreviousPage = () => {
-    setCurrentPage(prevPage => prevPage - 1); // Atualiza a página atual
+	const handlePreviousPage = () => {
+    setCurrentPage(currentPage - 1);
+  };
+
+	const formatCurrency = (value:any) => {
+    return parseFloat(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   };
 
 	const exportToExcel = async () => {
-		try {
-			const totalRequests = [];
-			let currentPage = 1;
-			let hasNextPage = true;
-	
-			while (hasNextPage) {
-				const token = document.cookie.replace(
-					/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
-					'$1'
-				);
-				const response = await axios.get(`http://localhost:3333/requests/history?page=${currentPage}&userId=fc44f8c3-b695-4ba4-9192-2fb6bdfe2ddb`, {
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				});
-	
-				const formattedRequests = response.data.requests.map((request:any) => ({
-					...request,
-					created_at: format(new Date(request.created_at), 'dd/MM/yyyy HH:mm:ss'),
-					total_price: parseFloat(request.total_price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-					items: request.items.map((item:any) => ({
-						...item,
-						title: item.title.replace(/"/g, ''), // Remover aspas duplas dos títulos
-						price: parseFloat(item.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-					}))
-				}));
-	
-				totalRequests.push(...formattedRequests);
-	
-				currentPage++;
-				hasNextPage = response.data.requests.length > 0;
-			}
-	
-			const requestsForExport = totalRequests.map((request) => ({
-				"ID": request.id,
-				"Usuário": request.user_name,
-				"Itens": request.items.map((item:any) => `${item.title} - ${item.price}`).join("\n"),
-				"Preço Total": request.total_price,
-				"Data de Criação": request.created_at
-			}));
-	
-			const worksheet = XLSX.utils.json_to_sheet(requestsForExport);
-			const workbook = XLSX.utils.book_new();
-			XLSX.utils.book_append_sheet(workbook, worksheet, `Relatório Pedidos`);
-			XLSX.writeFile(workbook, `pedidos.xlsx`);
-	
-		} catch (error) {
-			console.error('Erro ao exportar para Excel:', error);
-		}
-	};
+    try {
+      const token = document.cookie.replace(
+        /(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
+        '$1'
+      );
 
-	const handleStartDateChange = (event:any) => {
-    const value = event.target.value;
-    setStartDate(value);
-    filterRequests(value, endDate); // Atualiza os dados filtrados
-  };
-
-  const handleEndDateChange = (event:any) => {
-    const value = event.target.value;
-    setEndDate(value);
-    filterRequests(startDate, value); // Atualiza os dados filtrados
-  };
-
-  const filterRequests = (start:string, end:string) => {
-    let filtered = requests;
-    if (start && end) {
-      filtered = requests.filter((request:any) => {
-        const requestDate = new Date(request.created_at);
-        const startDateObj = new Date(start);
-        const endDateObj = new Date(end);
-        return requestDate >= startDateObj && requestDate <= endDateObj;
+      const response = await axios.get(`http://localhost:3333/requests/history`, {
+        params: {
+          page: currentPage,
+          userId: userId,
+          startDate: startDate,
+          endDate: endDate
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
+      const requestsForExport = response.data.requests.map((request:any) => ({
+        "ID": request.id,
+        "Usuário": request.user_name,
+        "Itens": request.items.map((item:any) => `${item.title} - ${formatCurrency(item.price)}`).join("\n"), // Formata o preço de cada item
+        "Preço Total": formatCurrency(request.total_price), // Formata o valor total
+        "Data de Criação": format(new Date(request.created_at), 'dd/MM/yyyy HH:mm:ss')
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(requestsForExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, `Relatório Pedidos`);
+      XLSX.writeFile(workbook, `pedidos.xlsx`);
+
+    } catch (error) {
+      console.error('Erro ao exportar para Excel:', error);
     }
-    setFilteredRequests(filtered);
   };
+
+
+
+  const handleStartDateChange = (date:any) => {
+		setStartDate(date);
+		filterRequests(date, endDate);
+	};
+	
+	const handleEndDateChange = (date:any) => {
+		setEndDate(date);
+		filterRequests(startDate, date);
+	};
+	
+	const filterRequests = (start:any, end:any) => {
+		let filtered = requests;
+		if (start && end) {
+			filtered = requests.filter((request:any) => {
+				const requestDate = new Date(request.created_at);
+				return requestDate >= start && requestDate <= end;
+			});
+		} else if (start && !end) {
+			filtered = requests.filter((request:any) => {
+				const requestDate = new Date(request.created_at);
+				return requestDate >= start;
+			});
+		} else if (!start && end) {
+			filtered = requests.filter((request:any) => {
+				const requestDate = new Date(request.created_at);
+				return requestDate <= end;
+			});
+		}
+		setFilteredRequests(filtered);
+		// Após atualizar o estado filteredRequests, chame fetchRequests
+		// para buscar os dados atualizados do servidor
+	};
+	
+	
 
   return (
     <Box p="4">
@@ -148,16 +157,23 @@ const Control = () => {
         <UserList onSelectUser={handleSelectUser} />
       ) : (
         <>
-          <Flex mb="4">
-            <Button onClick={() => setUserId(null)} mr="2">&#8592; Voltar para seleção de usuários</Button>
-            <Input type="date" value={startDate} onChange={handleStartDateChange} mr="2" />
-            <Input type="date" value={endDate} onChange={handleEndDateChange} />
-          </Flex>
+          <Flex mb="4" alignItems="center">
+						<Button onClick={() => setUserId(null)} mr="2">&#8592;</Button>
+						<Text mr="2">Data Inicial:</Text>
+						<Flex alignItems="center" ml="2" bgColor="gray.500" border="solid 0.12rem black" borderRadius={"0.25rem"}>
+							<DatePicker selected={startDate} onChange={handleStartDateChange} dateFormat="dd/MM/yyyy" />
+						</Flex>
+						<Text ml="4" mr="2">Data Final:</Text>
+						<Flex alignItems="center" ml="2" bgColor="gray.500" border="solid 0.12rem black" borderRadius={"0.25rem"}>
+							<DatePicker selected={endDate} onChange={handleEndDateChange} dateFormat="dd/MM/yyyy" />
+						</Flex>
+					</Flex>
+					
           <Box p="4" bg="gray.100" borderRadius="md">
             <Table variant="simple">
               <Thead>
                 <Tr>
-                  <Th>ID</Th>
+                  <Th>Nº</Th>
                   <Th>Usuário</Th>
                   <Th>Itens</Th>
                   <Th>Preço Total</Th>
@@ -167,7 +183,7 @@ const Control = () => {
               <Tbody>
                 {filteredRequests.map((request:any, index:number) => (
                   <Tr key={index}>
-                    <Td>{request.id}</Td>
+                    <Td>{request.sequence}</Td>
                     <Td>{request.user_name}</Td>
                     <Td>
                       <ul>
@@ -195,4 +211,3 @@ const Control = () => {
 };
 
 export default Control;
-
