@@ -19,7 +19,7 @@ export function RequestScreen(){
 						fontSize="2xl"
 						zIndex="2" // Ajusta a camada de empilhamento para que o texto esteja sobre o overlay
 					>
-						Maplebear Granja Vianna
+						MapleBear Granja Vianna
 					</Text>
 					  {/* Overlay escuro */}
 						<Flex
