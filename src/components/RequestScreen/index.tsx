@@ -11,6 +11,16 @@ export function RequestScreen(){
             position="relative"
             overflow="hidden" // Impede que o conteúdo vaze
         >
+					<Text
+						position="absolute"
+						top="4"
+						left="4"
+						color="white"
+						fontSize="2xl"
+						zIndex="2" // Ajusta a camada de empilhamento para que o texto esteja sobre o overlay
+					>
+						Maplebear Granja Vianna
+					</Text>
 					  {/* Overlay escuro */}
 						<Flex
 							position="fixed"
