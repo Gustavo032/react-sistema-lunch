@@ -23,17 +23,17 @@ export function MealOptionCard(props:any) {
 		const hours = now.getHours();
 		
 		// Verificar se é hora do café da manhã (entre 8:00 e 11:00)
-		if (hours >= 8 && hours < 11) {
+		if (hours >= 8 && hours < 18) {
 			setIsBreakfastTime(true);
 		}
 	
 		// Verificar se é hora do almoço (entre 10:00 e 13:00)
-		if (hours >= 8 && hours < 11) {
+		if (hours >= 8 && hours < 18) {
 			setIsAlunchTime(true);
 		}
 	
 		// Verificar se é hora do café da tarde (entre 13:00 e 17:00)
-		if (hours >= 14.5 && hours < 17) {
+		if (hours >= 8 && hours < 18) {
 			setIsAfternoonTeaTime(true);
 		}
 	
@@ -120,7 +120,7 @@ export function MealOptionCard(props:any) {
 						textShadow="0rem 0rem 2rem black"
 						userSelect="none"
 						textAlign="center"
-						fontSize="xl"
+						fontSize="2rem"
 						fontWeight="bold"
 						color="white"
 						position="absolute"

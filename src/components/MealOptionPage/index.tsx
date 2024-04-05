@@ -23,7 +23,7 @@ export function MealOptionPage(props: MealOptionPageProps) {
 					fontSize="2xl"
 					zIndex="2" // Ajusta a camada de empilhamento para que o texto esteja sobre o overlay
 				>
-					MapleBear Granja Vianna
+					MapleBear Granja Viana
 				</Text>
 			  {/* Overlay escuro */}
 				<Flex

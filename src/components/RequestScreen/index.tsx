@@ -19,7 +19,7 @@ export function RequestScreen(){
 						fontSize="2xl"
 						zIndex="2" // Ajusta a camada de empilhamento para que o texto esteja sobre o overlay
 					>
-						MapleBear Granja Vianna
+						MapleBear Granja Viana
 					</Text>
 					  {/* Overlay escuro */}
 						<Flex
@@ -45,9 +45,9 @@ export function RequestScreen(){
 								zIndex={2}
 								padding="5rem"
 								>
-                <MealOptionCard text="Café da Manhã" backgroundImage={"/img/coffeeImage.png"} option={"option1"}/>
+                <MealOptionCard text="Lanche da Manhã" backgroundImage={"/img/coffeeImage2.png"} option={"option1"}/>
                 <MealOptionCard text="Almoço" backgroundImage={"/img/lunchImage.png"} option={"option2"}/>
-                <MealOptionCard text="Café da Tarde" backgroundImage={"/img/coffeeImage.png"} option={"option3"}/>
+                <MealOptionCard text="Lanche da Tarde" backgroundImage={"/img/coffeeImage.png"} option={"option3"}/>
                 <MealOptionCard text="Cantina/Outros" backgroundImage={"/img/othersImage.png"} option={"option4"}/>
             </Grid>
         </Box>

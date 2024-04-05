@@ -6,6 +6,7 @@ const UserList = ({ onSelectUser }:any) => {
   const [users, setUsers] = useState([]);
   const [filterName, setFilterName] = useState('');
   const [filterId, setFilterId] = useState('');
+  const [userTotalPrices, setUserTotalPrices] = useState<any>({});
 
   useEffect(() => {
     fetchUsers();
@@ -23,7 +24,25 @@ const UserList = ({ onSelectUser }:any) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setUsers(response.data.users.user);
+      const fetchedUsers = response.data.users.user;
+      setUsers(fetchedUsers);
+
+      // Fetch total price sum for each user
+      const userTotalPricePromises = fetchedUsers.map((user:any) => {
+        return axios.get(`http://localhost:3333/total-price-sum/${user.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      });
+
+      const totalPricesResponses = await Promise.all(userTotalPricePromises);
+      const userTotalPricesData = totalPricesResponses.reduce((acc, response, index) => {
+        acc[fetchedUsers[index].id] = response.data.totalPriceSum;
+        return acc;
+      }, {});
+
+      setUserTotalPrices(userTotalPricesData);
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
     }
@@ -43,6 +62,10 @@ const UserList = ({ onSelectUser }:any) => {
     setFilterId(value);
   };
 
+	const formatPrice = (price: number) => {
+    return `R$ ${price.toFixed(2)}`;
+  };
+
   const filteredUsers = users.filter((user:any) => {
     return user.name.toLowerCase().includes(filterName.toLowerCase()) && user.id.includes(filterId);
   });
@@ -58,7 +81,7 @@ const UserList = ({ onSelectUser }:any) => {
           <Tr>
             <Th>ID</Th>
             <Th>Nome</Th>
-            <Th>Email</Th>
+            <Th>Fatura Total</Th>
             <Th></Th>
           </Tr>
         </Thead>
@@ -67,7 +90,7 @@ const UserList = ({ onSelectUser }:any) => {
             <Tr key={index}>
               <Td>{user.id}</Td>
               <Td>{user.name}</Td>
-              <Td>{user.email}</Td>
+              <Td>{formatPrice(userTotalPrices[user.id] || 0)}</Td>
               <Td>
                 <Button onClick={() => handleSelectUser(user.id)}>Selecionar</Button>
               </Td>
