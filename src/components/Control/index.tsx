@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Text } from '@chakra-ui/react';
-import { format } from 'date-fns';
+import { endOfMonth, format, startOfMonth } from 'date-fns';
 import * as XLSX from 'xlsx';
 import DatePicker from 'react-datepicker'; // Import from react-datepicker
 import 'react-datepicker/dist/react-datepicker.css'; // Import styles
@@ -13,14 +13,21 @@ const Control = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+	const [startDate, setStartDate] = useState<Date | null>(startOfMonth(new Date())); // Definindo startDate como o primeiro dia do mês atual
+  const [endDate, setEndDate] = useState<Date | null>(endOfMonth(new Date())); // Definindo endDate como o último dia do mês atual
+
+  const [totalPriceSum, setTotalPriceSum] = useState(0); // Estado para armazenar a soma dos total_price
 
   useEffect(() => {
     if (userId) {
       fetchRequests();
     }
   }, [currentPage, userId, startDate, endDate]);
+
+  useEffect(() => {
+    // Ao atualizar os pedidos, recalcula a soma dos total_price
+    calculateTotalPriceSum();
+  }, [requests]);
 
   const fetchRequests = async () => {
     try {
@@ -60,18 +67,25 @@ const Control = () => {
     }
   };
 
+  const calculateTotalPriceSum = () => {
+    const sum = requests.reduce((accumulator, request:any) => {
+      return accumulator + parseFloat(request.total_price.replace('R$', '').replace('.', '').replace(',', '.'));
+    }, 0);
+    setTotalPriceSum(sum);
+  };
+
   const handleSelectUser = (selectedUserId:any) => {
     setUserId(selectedUserId);
     setCurrentPage(1);
   };
 
-  const handleNextPage = () => {
-    setCurrentPage(currentPage + 1);
-  };
+  // const handleNextPage = () => {
+  //   setCurrentPage(currentPage + 1);
+  // };
 
-	const handlePreviousPage = () => {
-    setCurrentPage(currentPage - 1);
-  };
+	// const handlePreviousPage = () => {
+  //   setCurrentPage(currentPage - 1);
+  // };
 
 	const formatCurrency = (value:any) => {
     return parseFloat(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -114,17 +128,23 @@ const Control = () => {
     }
   };
 
+	const handleStartDateChange = (date:any) => {
+		// Define a hora de início como 00:00:00 do dia selecionado
+		const startOfDay = new Date(date);
+		startOfDay.setHours(0, 0, 0, 0);
+		setStartDate(startOfDay);
+		filterRequests(startOfDay, endDate);
+	};
 
-
-  const handleStartDateChange = (date:any) => {
-		setStartDate(date);
-		filterRequests(date, endDate);
+	const handleEndDateChange = (date:any) => {
+		// Define a hora de término como 23:59:59 do dia selecionado
+		const endOfDay = new Date(date);
+		endOfDay.setHours(23, 59, 59, 999); // Definindo hora para o final do dia
+		setEndDate(endOfDay);
+		filterRequests(startDate, endOfDay);
 	};
 	
-	const handleEndDateChange = (date:any) => {
-		setEndDate(date);
-		filterRequests(startDate, date);
-	};
+
 	
 	const filterRequests = (start:any, end:any) => {
 		let filtered = requests;
@@ -159,13 +179,16 @@ const Control = () => {
         <>
           <Flex mb="4" alignItems="center">
 						<Button onClick={() => setUserId(null)} mr="2">&#8592;</Button>
-						<Text mr="2">Data Inicial:</Text>
+							<Text mr="2">Data Inicial:</Text>
 						<Flex alignItems="center" ml="2" bgColor="gray.500" border="solid 0.12rem black" borderRadius={"0.25rem"}>
 							<DatePicker selected={startDate} onChange={handleStartDateChange} dateFormat="dd/MM/yyyy" />
 						</Flex>
-						<Text ml="4" mr="2">Data Final:</Text>
+							<Text ml="4" mr="2">Data Final:</Text>
 						<Flex alignItems="center" ml="2" bgColor="gray.500" border="solid 0.12rem black" borderRadius={"0.25rem"}>
 							<DatePicker selected={endDate} onChange={handleEndDateChange} dateFormat="dd/MM/yyyy" />
+						</Flex>
+						<Flex justifyContent="flex-end" mb="4">
+							<Text>Total: {totalPriceSum.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
 						</Flex>
 					</Flex>
 					
@@ -200,8 +223,6 @@ const Control = () => {
             </Table>
           </Box>
           <Flex justify="center" mt="4">
-            <Button onClick={handlePreviousPage} disabled={currentPage === 1} mr="2">Página Anterior</Button>
-            <Button onClick={handleNextPage}>Próxima Página</Button>
             <Button onClick={exportToExcel} ml="2">Exportar Planilha</Button>
           </Flex>
         </>
