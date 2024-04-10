@@ -21,7 +21,7 @@ export default function LoginScreen() {
 
   async function loginUserFunction() {
     try {
-      const response = await axios.post('https://maplebear.codematch.com.br:3333/sessions', {
+      const response = await axios.post('https://maplebear.codematch.com.br/sessions', {
         cpf: userCpf.replace(/\D/g, ''), // Remove todos os caracteres não numéricos
       });
 

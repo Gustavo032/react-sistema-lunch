@@ -37,7 +37,7 @@ const Control = () => {
         '$1'
       );
 
-      const response = await axios.get(`http://localhost:3333/requests/history`, {
+      const response = await axios.get(`https://maplebear.codematch.com.br/requests/history`, {
         params: {
           page: currentPage,
           userId: userId,
@@ -98,7 +98,7 @@ const Control = () => {
         '$1'
       );
 
-      const response = await axios.get(`http://localhost:3333/requests/history`, {
+      const response = await axios.get(`https://maplebear.codematch.com.br/requests/history`, {
         params: {
           page: currentPage,
           userId: userId,

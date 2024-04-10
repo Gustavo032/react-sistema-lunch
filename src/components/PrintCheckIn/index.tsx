@@ -18,7 +18,7 @@ export function PrintCheckIn ()  {
         // Se o token JWT estiver presente nos cookies, fazer a requisição para obter o ID de check-in
         if (token) {
           const response = await axios.post(
-            'http://localhost:3333/create/check-ins',
+            'https://maplebear.codematch.com.br/create/check-ins',
             {},
             {
               headers: {
