@@ -10,19 +10,23 @@ import {
   Input,
   Stack,
   useColorModeValue,
+	useToast,
 } from '@chakra-ui/react';
 import axios from 'axios';
 
 export default function LoginScreen() {
-  const [userCpf, setUserCpf] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [userPassword, setUserPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+	const toast = useToast();
 
   const navigate = useNavigate();
 
   async function loginUserFunction() {
     try {
-      const response = await axios.post('https://maplebear.codematch.com.br/sessions', {
-        cpf: userCpf.replace(/\D/g, ''), // Remove todos os caracteres não numéricos
+      const response = await axios.post('http://localhost:3333/sessions', {
+        email: userEmail,
+				password: userPassword,
       });
 
       if (response.data.token) {
@@ -30,38 +34,28 @@ export default function LoginScreen() {
         expirationDate.setDate(expirationDate.getDate() + 7); // Expira em 7 dias
 
         document.cookie = `refreshToken=${response.data.token};expires=${expirationDate.toUTCString()};path=/`;
-        navigate('/dashboard');
-      } else {
-        setErrorMessage("Falha ao Conectar ");
-        console.error('Token not found in response');
       }
+			navigate('/dashboard');
+			
     } catch (error) {
-      console.error('Error:', error);
-      setErrorMessage("Falha ao Conectar " + error);
+			console.error('Error:', error);
+			throw error
     }
   }
 
-  const handleCpfChange = (e:any) => {
-    const inputCpf = e.target.value;
-    let formattedCpf = inputCpf.replace(/\D/g, ''); // Remove caracteres não numéricos
-
-    // Formata o CPF conforme o usuário digita
-    if (formattedCpf.length > 3) {
-      formattedCpf = formattedCpf.replace(/^(\d{3})/, '$1.');
-    }
-    if (formattedCpf.length > 7) {
-      formattedCpf = formattedCpf.replace(/^(\d{3})\.(\d{3})/, '$1.$2.');
-    }
-    if (formattedCpf.length > 11) {
-      formattedCpf = formattedCpf.replace(/^(\d{3})\.(\d{3})\.(\d{3})/, '$1.$2.$3-');
-    }
-
-    setUserCpf(formattedCpf);
-  };
-
   const handleLogin = async (event:any) => {
     event.preventDefault();
-    await loginUserFunction();
+    try {
+      // Exibir o toast de carregamento enquanto a promessa está pendente
+      const result = await toast.promise(loginUserFunction(), {
+        loading: { title: 'Entrando...', description: 'Por favor, aguarde...' },
+        success: { title: 'Usuário logado com sucesso!', description: 'Looks great' },
+        error: { title: 'Erro ao logar usuário', description: 'Something wrong' },
+      });
+      console.log(result); // Pode ser útil para depuração
+    } catch (error:any) {
+      console.error('Error creating user:', error);
+    }
   };
 
   return (
@@ -121,8 +115,7 @@ export default function LoginScreen() {
         <FormControl id="email">
           <FormLabel color="gray.800">CPF</FormLabel>
           <Input
-            type="text"
-            inputMode="numeric"
+            type="email"
             bg={'gray.100'}
             placeholder="Digite seu CPF"
             border={0}
@@ -130,9 +123,23 @@ export default function LoginScreen() {
             _placeholder={{
               color: 'gray.500',
             }}
-            value={userCpf}
-            onChange={handleCpfChange}
-            maxLength={14}
+            value={userEmail}
+            onChange={(e)=>setUserEmail(e.target.value)}
+          />
+        </FormControl>
+				<FormControl id="email">
+          <FormLabel color="gray.800">CPF</FormLabel>
+          <Input
+            type="password"
+            bg={'gray.100'}
+            placeholder="Digite sua Senha"
+            border={0}
+            color={'gray.900'}
+            _placeholder={{
+              color: 'gray.500',
+            }}
+            value={userPassword}
+            onChange={(e)=>setUserPassword(e.target.value)}
           />
         </FormControl>
         <Stack spacing={6}>

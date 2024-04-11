@@ -13,6 +13,7 @@ import MealOptionPage from "./components/MealOptionPage"
 import { TicketScreen } from "./components/TicketScreen"
 import Control from "./components/Control";
 import UserList from "./components/UserList";
+import CreateUserScreen from "./components/CreateUser";
 
 export const App = () => {
   const [ticketData, setTicketData] = useState<any>(null);
@@ -27,8 +28,10 @@ export const App = () => {
         <Route path="/ticket" element={<TicketScreen ticketData={ticketData} />} />
         <Route path="/controle" element={<Control />} />
         <Route path="/userList" element={<UserList />} />
+        <Route path="/createUser" element={<CreateUserScreen />} />
         <Route path="/*" element={<NotFound/>} />
       </Routes>
+			
     </ChakraProvider>
   )
 }
