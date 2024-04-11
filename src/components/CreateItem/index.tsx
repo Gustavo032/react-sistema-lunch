@@ -3,12 +3,10 @@ import { Button, Flex, FormControl, FormLabel, Heading, Input, Select, Stack, Te
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-export default function CreateUserScreen() {
-  const [userData, setUserData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: 'MEMBER'
+export default function CreateItemScreen() {
+  const [itemData, setItemData] = useState({
+    title: '',
+    price: ''
   });
   const [errorMessage, setErrorMessage] = useState('');
 	const toast = useToast();
@@ -26,23 +24,21 @@ export default function CreateUserScreen() {
 		}
 	},[])
 	
-  const createUser = async () => {
+  const createItem = async () => {
     try {
 
-      const response = await axios.post('https://maplebear.codematch.com.br/users',userData, {
+      const response = await axios.post('https://maplebear.codematch.com.br/items/create', itemData, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
 			});
-      console.log('User created successfully:', response.data);
-      setUserData({
-        name: '',
-        email: '',
-        password: '',
-        role: 'MEMBER'
+      console.log('Item created successfully:', response.data);
+      setItemData({
+        title: '',
+        price: ''
       });
     } catch (error) {
-      console.error('Error creating user:', error);
+      console.error('Error creating item:', error);
       throw error; // Re-throw the error to be caught by the promise chain
     } 
   };
@@ -52,14 +48,14 @@ export default function CreateUserScreen() {
     e.preventDefault();
     try {
       // Exibir o toast de carregamento enquanto a promessa está pendente
-      const result = await toast.promise(createUser(), {
-        loading: { title: 'Criando usuário...', description: 'Por favor, aguarde...' },
-        success: { title: 'Usuário criado com sucesso!', description: 'Looks great' },
-        error: { title: 'Erro ao criar usuário', description: 'Something wrong' },
+      const result = await toast.promise(createItem(), {
+        loading: { title: 'Criando item...', description: 'Por favor, aguarde...' },
+        success: { title: 'Item criado com sucesso!', description: 'Looks great' },
+        error: { title: 'Erro ao criar item', description: 'Something wrong' },
       });
       console.log(result); // Pode ser útil para depuração
     } catch (error:any) {
-      console.error('Error creating user:', error);
+      console.error('Error creating item:', error);
       setErrorMessage(error.message);
     }
   };
@@ -112,81 +108,45 @@ export default function CreateUserScreen() {
 			border="#fff solid 0.12rem"
 		>
 			<Heading color="gray.800" lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
-				Criar Usuário
+				Criar Item
 			</Heading>
 			<Text
 				fontSize={{ base: 'sm', sm: 'md' }}
 				color={useColorModeValue('gray.800', 'gray.800')}
 			></Text>
-			<FormControl id="name">
-				<FormLabel color="gray.800">Nome</FormLabel>
+			<FormControl id="title">
+				<FormLabel color="gray.800">Título</FormLabel>
 				<Input
 					type="text"
-					inputMode="numeric"
 					bg={'gray.100'}
-					placeholder="Digite o Nome"
+					placeholder="Digite o Título"
 					border={0}
 					color={'gray.900'}
 					_placeholder={{
 						color: 'gray.500',
 					}}
-					value={userData.name}
-					onChange={(e)=>setUserData({ ...userData, name: e.target.value })}
+					value={itemData.title}
+					onChange={(e)=>setItemData({ ...itemData, title: e.target.value })}
 					maxLength={120}
 				/>
 			</FormControl>
 			
-			<FormControl id="email">
-				<FormLabel color="gray.800">Email</FormLabel>
+			<FormControl id="price">
+				<FormLabel color="gray.800">Preço</FormLabel>
 				<Input
-					type="text"
-					inputMode="numeric"
+					type="number"
 					bg={'gray.100'}
-					placeholder="Digite o Email"
+					placeholder="Digite o Preço"
 					border={0}
 					color={'gray.900'}
 					_placeholder={{
 						color: 'gray.500',
 					}}
-					value={userData.email}
-					onChange={(e)=>setUserData({ ...userData, email: e.target.value })}
-					maxLength={120}
+					value={itemData.price}
+					onChange={(e)=>setItemData({ ...itemData, price: e.target.value })}
 				/>
 			</FormControl>
 
-			<FormControl id="password">
-				<FormLabel color="gray.800">Senha</FormLabel>
-				<Input
-					type="text"
-					bg={'gray.100'}
-					placeholder="Digite a Senha"
-					border={0}
-					color={'gray.900'}
-					_placeholder={{
-						color: 'gray.500',
-					}}
-					value={userData.password}
-					onChange={(e)=>setUserData({ ...userData, password: e.target.value })}
-					maxLength={120}
-				/>
-			</FormControl>
-
-			<FormControl id="role">
-				<FormLabel color="gray.800">Função</FormLabel>
-				<Select placeholder='Select option'
-					bg={'gray.100'}
-					border={0}
-					color={'gray.900'}
-					_placeholder={{
-						color: 'gray.500',
-					}}
-					value={userData.role}
-					onChange={(e)=>setUserData({ ...userData, role: e.target.value })}
-				>
-					<option value='ADMIN'>Administrador</option>
-					<option value='MEMBER'>Usuário</option>
-				</Select>
-			</FormControl>
 			<Stack spacing={6}>
 				<Button
 					type="submit"

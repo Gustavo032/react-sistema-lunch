@@ -14,6 +14,7 @@ import { TicketScreen } from "./components/TicketScreen"
 import Control from "./components/Control";
 import UserList from "./components/UserList";
 import CreateUserScreen from "./components/CreateUser";
+import CreateItemScreen from "./components/CreateItem";
 
 export const App = () => {
   const [ticketData, setTicketData] = useState<any>(null);
@@ -29,6 +30,7 @@ export const App = () => {
         <Route path="/controle" element={<Control />} />
         <Route path="/userList" element={<UserList />} />
         <Route path="/createUser" element={<CreateUserScreen />} />
+        <Route path="/createItem" element={<CreateItemScreen />} />
         <Route path="/*" element={<NotFound/>} />
       </Routes>
 			

@@ -24,7 +24,7 @@ export default function LoginScreen() {
 
   async function loginUserFunction() {
     try {
-      const response = await axios.post('http://localhost:3333/sessions', {
+      const response = await axios.post('https://maplebear.codematch.com.br/sessions', {
         email: userEmail,
 				password: userPassword,
       });
@@ -113,11 +113,11 @@ export default function LoginScreen() {
           color={useColorModeValue('gray.800', 'gray.800')}
         ></Text>
         <FormControl id="email">
-          <FormLabel color="gray.800">CPF</FormLabel>
+          <FormLabel color="gray.800">Email</FormLabel>
           <Input
             type="email"
             bg={'gray.100'}
-            placeholder="Digite seu CPF"
+            placeholder="Digite seu Email"
             border={0}
             color={'gray.900'}
             _placeholder={{
@@ -128,7 +128,7 @@ export default function LoginScreen() {
           />
         </FormControl>
 				<FormControl id="email">
-          <FormLabel color="gray.800">CPF</FormLabel>
+          <FormLabel color="gray.800">Senha</FormLabel>
           <Input
             type="password"
             bg={'gray.100'}
