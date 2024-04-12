@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Text } from '@chakra-ui/react';
+import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Text, Image, FormLabel } from '@chakra-ui/react';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import * as XLSX from 'xlsx';
 import DatePicker from 'react-datepicker'; // Import from react-datepicker
@@ -37,7 +37,7 @@ const Control = () => {
         '$1'
       );
 
-      const response = await axios.get(`https://maplebear.codematch.com.br/requests/history`, {
+      const response = await axios.get(`http://localhost:3333/requests/history`, {
         params: {
           page: currentPage,
           userId: userId,
@@ -98,7 +98,7 @@ const Control = () => {
         '$1'
       );
 
-      const response = await axios.get(`https://maplebear.codematch.com.br/requests/history`, {
+      const response = await axios.get(`http://localhost:3333/requests/history`, {
         params: {
           page: currentPage,
           userId: userId,
@@ -172,34 +172,41 @@ const Control = () => {
 	
 
   return (
-    <Box p="4">
+    <Box p="4" bgColor="gray.900" minH="100vh">
       {!userId ? (
         <UserList onSelectUser={handleSelectUser} />
       ) : (
         <>
-          <Flex mb="4" alignItems="center">
-						<Button onClick={() => setUserId(null)} mr="2">&#8592;</Button>
-							<Text mr="2">Data Inicial:</Text>
-						<Flex alignItems="center" ml="2" bgColor="gray.500" border="solid 0.12rem black" borderRadius={"0.25rem"}>
-							<DatePicker selected={startDate} onChange={handleStartDateChange} dateFormat="dd/MM/yyyy" />
-						</Flex>
-							<Text ml="4" mr="2">Data Final:</Text>
-						<Flex alignItems="center" ml="2" bgColor="gray.500" border="solid 0.12rem black" borderRadius={"0.25rem"}>
-							<DatePicker selected={endDate} onChange={handleEndDateChange} dateFormat="dd/MM/yyyy" />
-						</Flex>
-						<Flex justifyContent="flex-end" mb="4">
+          <Flex mb="4" alignItems="center" justifyContent={"space-between"}>
+						{/* <Flex justifyContent="flex-end" mb="4">
 							<Text>Total: {totalPriceSum.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
+						</Flex> */}
+						<Button border="solid gray 0.16rem" onClick={() => setUserId(null)} mr="2" h="3rem" w="4rem" bgColor="gray.100">&#8592;</Button>
+
+						<Flex justify="center" bgColor="gray.100" w="20%" border="solid gray 0.05rem" p="0.06rem 0" borderRadius="9999999px">
+							<Image src="/Logo_Maple_Bear.png" h="3rem" />
+						</Flex>
+						<Flex w="50%" align="center" >
+							<Flex width="100%" h="100%" alignItems="center" ml="2" border="solid gray 0.16rem" bgColor="gray.200" p="0.2rem" borderRadius={"0.25rem"} justify={"center"}>
+								<Text as={FormLabel} mt="0.5rem" htmlFor="inputDateStart" mr="2">Data Inicial:</Text>
+								<Box as={DatePicker} id="inputDateStart" bgColor="gray.100" width="100%" border="solid 0.12rem black" borderRadius={"0.25rem"} height="2.5rem" textAlign="center" selected={startDate} onChange={handleStartDateChange} dateFormat="dd/MM/yyyy" />
+							</Flex>
+							
+							<Flex width="100%" h="100%" alignItems="center" ml="2" border="solid gray 0.16rem" bgColor="gray.200" p="0.2rem" borderRadius={"0.25rem"} justify={"center"}>
+								<Text as={FormLabel} mt="0.5rem" htmlFor="inputDateEnd" ml="2" mr="2">Data Final:</Text>
+								<Box as={DatePicker} id="inputDateEnd" bgColor="gray.100" width="100%" border="solid 0.12rem black" borderRadius={"0.25rem"} height="2.5rem" textAlign="center" selected={endDate} onChange={handleEndDateChange} dateFormat="dd/MM/yyyy" />
+							</Flex>
 						</Flex>
 					</Flex>
 					
-          <Box p="4" bg="gray.100" borderRadius="md">
+          <Box p="4" bg="gray.100" borderRadius="md" border="solid gray 0.16rem">
             <Table variant="simple">
               <Thead>
                 <Tr>
                   <Th>Nº</Th>
                   <Th>Usuário</Th>
                   <Th>Itens</Th>
-                  <Th>Preço Total</Th>
+                  <Th>Preço Total: 	<Text fontSize="1.20rem" color="blue.500" fontWeight="600">{totalPriceSum.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text></Th>
                   <Th>Data de Criação</Th>
                 </Tr>
               </Thead>
@@ -223,7 +230,7 @@ const Control = () => {
             </Table>
           </Box>
           <Flex justify="center" mt="4">
-            <Button onClick={exportToExcel} ml="2">Exportar Planilha</Button>
+            <Button onClick={exportToExcel} colorScheme='green' ml="2">Exportar Planilha</Button>
           </Flex>
         </>
       )}

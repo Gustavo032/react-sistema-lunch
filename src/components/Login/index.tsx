@@ -24,7 +24,7 @@ export default function LoginScreen() {
 
   async function loginUserFunction() {
     try {
-      const response = await axios.post('https://maplebear.codematch.com.br/sessions', {
+      const response = await axios.post('http://localhost:3333/sessions', {
         email: userEmail,
 				password: userPassword,
       });
