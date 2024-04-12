@@ -15,6 +15,7 @@ import Control from "./components/Control";
 import UserList from "./components/UserList";
 import CreateUserScreen from "./components/CreateUser";
 import CreateItemScreen from "./components/CreateItem";
+import AllRequests from "./components/AllRequests";
 
 export const App = () => {
   const [ticketData, setTicketData] = useState<any>(null);
@@ -28,6 +29,7 @@ export const App = () => {
         <Route path="/mealOptionPage/:option" element={<MealOptionPage ticketData={ticketData} setTicketData={setTicketData} />} />
         <Route path="/ticket" element={<TicketScreen ticketData={ticketData} />} />
         <Route path="/controle" element={<Control />} />
+        <Route path="/allRequests" element={<AllRequests />} />
         <Route path="/userList" element={<UserList />} />
         <Route path="/createUser" element={<CreateUserScreen />} />
         <Route path="/createItem" element={<CreateItemScreen />} />
