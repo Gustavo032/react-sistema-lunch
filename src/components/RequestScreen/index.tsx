@@ -34,14 +34,14 @@ export function RequestScreen(){
 
             <Grid
                 h="100%"
-                templateRows="repeat(2, 1fr)"
-                templateColumns="repeat(2, 1fr)"
+                templateRows={{ base: "repeat(4, 1fr)", md: "repeat(2, 1fr)" }} // 4 linhas em telas pequenas, 2 linhas em telas médias e maiores
+                templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }} // 1 coluna em telas pequenas, 2 colunas em telas médias e maiores
                 gap={6}
                 position="absolute"
                 top="50%"
                 left="50%"
                 transform="translate(-50%, -50%)"
-								w="60rem" // Largura total dos 2 quadrados + 6px de gap
+								w={{ base: "90%", md: "60rem" }} // Largura total ajustada para 90% da tela em telas pequenas, 60rem em telas médias e maiores
 								zIndex={2}
 								padding="5rem"
 								>
