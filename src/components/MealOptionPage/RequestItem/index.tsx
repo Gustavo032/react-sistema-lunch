@@ -69,7 +69,7 @@ export function RequestItem(props: RequestItemProps) {
     }
 		console.log(itemsIds);
     try {
-      const response = await axios.post('http://localhost:3333/create/requests', {
+      const response = await axios.post('https://maplebear.codematch.com.br/create/requests', {
         itemsIds: itemsIds
       }, {
         headers: {
@@ -109,7 +109,7 @@ export function RequestItem(props: RequestItemProps) {
       try {
         let response;
         if (itemTitle === "Almoço" || itemTitle === "Café da Tarde" || itemTitle === "Café da Manhã") {
-          response = await axios.get('http://localhost:3333/items/all', {
+          response = await axios.get('https://maplebear.codematch.com.br/items/all', {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -117,7 +117,7 @@ export function RequestItem(props: RequestItemProps) {
           const filteredItems = response.data.items.item.filter((item: MenuItemProps) => item.title === itemTitle);
           setMenuItems(filteredItems);
         } else {
-					response = await axios.get('http://localhost:3333/items/all', {
+					response = await axios.get('https://maplebear.codematch.com.br/items/all', {
             headers: {
               Authorization: `Bearer ${token}`,
             },

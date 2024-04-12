@@ -51,7 +51,7 @@ const AllRequests = () => {
         '$1'
       );
 
-      const response = await axios.get(`http://localhost:3333/requests/all`, {
+      const response = await axios.get(`https://maplebear.codematch.com.br/requests/all`, {
         params: {
           startDate: format(startDate, 'MM/dd/yyyy'),
           endDate: format(endDate, 'MM/dd/yyyy'),
@@ -105,7 +105,7 @@ const AllRequests = () => {
         '$1'
       );
 
-      const response = await axios.get(`http://localhost:3333/requests/all`, {
+      const response = await axios.get(`https://maplebear.codematch.com.br/requests/all`, {
         params: {
           startDate: startDate,
           endDate: endDate
