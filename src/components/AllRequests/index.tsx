@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Text, Image, FormLabel } from '@chakra-ui/react';
-import { endOfDay, format, startOfDay } from 'date-fns';
+import { endOfMonth, format, startOfMonth } from 'date-fns';
 import * as XLSX from 'xlsx';
 import DatePicker from 'react-datepicker'; // Import from react-datepicker
 import 'react-datepicker/dist/react-datepicker.css'; // Import styles
@@ -10,11 +10,13 @@ import UserList from '../UserList';
 const AllRequests = () => {
   const [requests, setRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
-	const [startDate, setStartDate] = useState<Date>(startOfDay(new Date())); // Definindo startDate como o primeiro dia do mês atual
-  const [endDate, setEndDate] = useState<Date>(endOfDay(new Date())); // Definindo endDate como o último dia do mês atual
+	const [startDate, setStartDate] = useState<Date>(startOfMonth(new Date())); // Definindo startDate como o primeiro dia do mês atual
+  const [endDate, setEndDate] = useState<Date>(endOfMonth(new Date())); // Definindo endDate como o último dia do mês atual
 
   const [totalPriceSum, setTotalPriceSum] = useState(0); // Estado para armazenar a soma dos total_price
+
 
 	useEffect(() => {
 		// Define uma função para realizar o fetch dos pedidos
@@ -33,6 +35,7 @@ const AllRequests = () => {
 	
 		// Define as dependências como vazio para garantir que este efeito só seja executado uma vez
 	}, []);
+
 	
 	useEffect(() => {
 		fetchRequests();
@@ -105,7 +108,7 @@ const AllRequests = () => {
         '$1'
       );
 
-      const response = await axios.get(`https://maplebear.codematch.com.br/requests/all`, {
+      const response = await axios.get(`http://localhost:3333/requests/all`, {
         params: {
           startDate: startDate,
           endDate: endDate
