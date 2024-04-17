@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, ButtonGroup, Stack, Text, useColorModeValue } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex, Stack, Text, useColorModeValue } from "@chakra-ui/react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -9,20 +9,26 @@ interface MenuItemProps {
   price: number;
 }
 
-function MenuItem({ item, quantity, onQuantityChange }: any) {
+function MenuItem({ item, quantity, onQuantityChange, isFirst }: any) {
   const handleDecrement = () => {
     if (quantity > 0) {
       onQuantityChange(item.id, quantity - 1);
     }
   };
 
+  const borderTopStyle = isFirst ? {} : { borderTop: "solid black 0.06rem" };
+
   return (
-    <li key={item.id} style={{ marginBottom: "1rem" }}>
-      <label>
+    <li key={item.id} style={{ marginBottom: "0.3rem", paddingTop: "0.3rem", ...borderTopStyle }}>
+      <label style={{ display: 'flex', justifyContent: "space-between", alignItems: "center" }}>
         {item.title} - R$ {item.price}
-        <Button onClick={handleDecrement}>-</Button>
-        {quantity}
-        <Button onClick={() => onQuantityChange(item.id, quantity + 1)}>+</Button>
+        <Flex>
+          <Button onClick={handleDecrement}>-</Button>
+          <Text margin="0 0.3rem" fontSize="1.3rem">
+            {quantity}
+          </Text>
+          <Button onClick={() => onQuantityChange(item.id, quantity + 1)}>+</Button>
+        </Flex>
       </label>
     </li>
   );
@@ -155,8 +161,9 @@ export function RequestItem(props: RequestItemProps) {
         <Text color="black" fontWeight="bold" fontSize="xl">Item selecionado: {itemTitle}</Text>
         {itemTitle === "Cantina" && (
           <ul>           
-            {menuItems.map((item) => (
+            {menuItems.map((item, index) => (
               <MenuItem
+								isFirst={index===0}
                 key={item.id}
                 item={item}
                 quantity={quantities[item.id] || 0}
@@ -189,7 +196,7 @@ export function RequestItem(props: RequestItemProps) {
         <Text color="black" fontWeight="bold" fontSize="xl">Total: R$ { menuItems.length > 0 && menuItems[0].title === itemTitle ? menuItems[0].price : total.toFixed(2)}</Text>
         <ButtonGroup flex={"row"} alignItems={"center"} justifyContent="space-between" w="100%" alignSelf={"center"}>
           <Button as={Link} to="/dashboard" colorScheme="blue" w="40%" variant="outline">Voltar</Button>
-					<Button colorScheme="red" w="40%" onClick={handleContinue}>Continuar</Button>
+					<Button colorScheme="red" w="40%" onClick={handleContinue} disabled={menuItems.length > 2 ? true : false}>Continuar</Button>
         </ButtonGroup>
       </Stack>
     </Box>

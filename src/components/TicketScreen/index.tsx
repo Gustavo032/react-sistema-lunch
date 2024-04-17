@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Center, Text, UnorderedList, ListItem, Button, Flex, useColorModeValue } from "@chakra-ui/react";
+import { useNavigate } from 'react-router-dom';
 
 interface TicketScreenProps {
   ticketData: any;
@@ -7,32 +8,37 @@ interface TicketScreenProps {
 
 export function TicketScreen(props: TicketScreenProps) {
   const { ticketData } = props;
+  const navigate = useNavigate(); // Obtenha o objeto de histórico
 
   const handlePrint = () => {
     window.print();
+
+    setTimeout(() => {
+      // Redirecionamento após 3 segundos
+      navigate("/?endRequest=true"); // Redireciona para a tela de login
+    }, 100);
   };
 
   return (
     <Center h="100vh" bgSize="cover" bgPosition="center" backgroundImage="./img/mapleBearBackground.jpg">
-				<Text
-					position="absolute"
-					top="4"
-					left="4"
-					color="white"
-					fontSize="2xl"
-					zIndex="2" // Ajusta a camada de empilhamento para que o texto esteja sobre o overlay
-				>
-					MapleBear Granja Viana
-				</Text>
-      {/* Overlay escuro */}
+      <Text
+        position="absolute"
+        top="4"
+        left="4"
+        color="white"
+        fontSize="2xl"
+        zIndex="2"
+      >
+        MapleBear Granja Viana
+      </Text>
       <Flex
         position="fixed"
         top="0"
         left="0"
         right="0"
         bottom="0"
-        bg="rgba(0, 0, 0, 0.5)" // Define um overlay escuro
-        zIndex="1" // Ajusta a camada de empilhamento
+        bg="rgba(0, 0, 0, 0.5)"
+        zIndex="1"
       ></Flex>
       <Box
         zIndex={2}
@@ -59,7 +65,7 @@ export function TicketScreen(props: TicketScreenProps) {
           ))}
         </UnorderedList>
         <Text mt={4} fontWeight="bold" textAlign="left">Total: R$ {ticketData.total}</Text>
-        <Button mt={6} colorScheme="blue" onClick={handlePrint}>Confirmar Pedido</Button>
+        <Button mt={6} colorScheme="blue" onClick={handlePrint}>Imprima Seu Ticket</Button>
       </Box>
     </Center>
   );

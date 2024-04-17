@@ -3,8 +3,8 @@ import axios from 'axios';
 import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Text, Image, FormLabel } from '@chakra-ui/react';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import * as XLSX from 'xlsx';
-import DatePicker from 'react-datepicker'; // Import from react-datepicker
-import 'react-datepicker/dist/react-datepicker.css'; // Import styles
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import UserList from '../UserList';
 
 const Control = () => {
@@ -13,10 +13,9 @@ const Control = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(false);
-	const [startDate, setStartDate] = useState<Date | null>(startOfMonth(new Date())); // Definindo startDate como o primeiro dia do mês atual
-  const [endDate, setEndDate] = useState<Date | null>(endOfMonth(new Date())); // Definindo endDate como o último dia do mês atual
-
-  const [totalPriceSum, setTotalPriceSum] = useState(0); // Estado para armazenar a soma dos total_price
+  const [startDate, setStartDate] = useState<Date | null>(startOfMonth(new Date()));
+  const [endDate, setEndDate] = useState<Date | null>(endOfMonth(new Date()));
+  const [totalPriceSum, setTotalPriceSum] = useState(0);
 
   useEffect(() => {
     if (userId) {
@@ -25,17 +24,13 @@ const Control = () => {
   }, [currentPage, userId, startDate, endDate]);
 
   useEffect(() => {
-    // Ao atualizar os pedidos, recalcula a soma dos total_price
     calculateTotalPriceSum();
   }, [requests]);
 
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const token = document.cookie.replace(
-        /(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
-        '$1'
-      );
+      const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
 
       const response = await axios.get(`https://maplebear.codematch.com.br/requests/history`, {
         params: {
@@ -67,6 +62,10 @@ const Control = () => {
     }
   };
 
+	const formatCurrency = (value:any) => {
+    return parseFloat(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  };
+
   const calculateTotalPriceSum = () => {
     const sum = requests.reduce((accumulator, request:any) => {
       return accumulator + parseFloat(request.total_price.replace('R$', '').replace('.', '').replace(',', '.'));
@@ -79,24 +78,9 @@ const Control = () => {
     setCurrentPage(1);
   };
 
-  // const handleNextPage = () => {
-  //   setCurrentPage(currentPage + 1);
-  // };
-
-	// const handlePreviousPage = () => {
-  //   setCurrentPage(currentPage - 1);
-  // };
-
-	const formatCurrency = (value:any) => {
-    return parseFloat(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  };
-
-	const exportToExcel = async () => {
+  const exportToExcel = async () => {
     try {
-      const token = document.cookie.replace(
-        /(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
-        '$1'
-      );
+      const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
 
       const response = await axios.get(`https://maplebear.codematch.com.br/requests/history`, {
         params: {
@@ -128,48 +112,64 @@ const Control = () => {
     }
   };
 
-	const handleStartDateChange = (date:any) => {
-		// Define a hora de início como 00:00:00 do dia selecionado
-		const startOfDay = new Date(date);
-		startOfDay.setHours(0, 0, 0, 0);
-		setStartDate(startOfDay);
-		filterRequests(startOfDay, endDate);
-	};
+  const handleStartDateChange = (date:any) => {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    setStartDate(startOfDay);
+    filterRequests(startOfDay, endDate);
+  };
 
-	const handleEndDateChange = (date:any) => {
-		// Define a hora de término como 23:59:59 do dia selecionado
-		const endOfDay = new Date(date);
-		endOfDay.setHours(23, 59, 59, 999); // Definindo hora para o final do dia
-		setEndDate(endOfDay);
-		filterRequests(startDate, endOfDay);
-	};
-	
+  const handleEndDateChange = (date:any) => {
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    setEndDate(endOfDay);
+    filterRequests(startDate, endOfDay);
+  };
 
-	
-	const filterRequests = (start:any, end:any) => {
-		let filtered = requests;
-		if (start && end) {
-			filtered = requests.filter((request:any) => {
-				const requestDate = new Date(request.created_at);
-				return requestDate >= start && requestDate <= end;
-			});
-		} else if (start && !end) {
-			filtered = requests.filter((request:any) => {
-				const requestDate = new Date(request.created_at);
-				return requestDate >= start;
-			});
-		} else if (!start && end) {
-			filtered = requests.filter((request:any) => {
-				const requestDate = new Date(request.created_at);
-				return requestDate <= end;
-			});
-		}
-		setFilteredRequests(filtered);
-		// Após atualizar o estado filteredRequests, chame fetchRequests
-		// para buscar os dados atualizados do servidor
-	};
-	
-	
+  const filterRequests = (start:any, end:any) => {
+    let filtered = requests;
+    if (start && end) {
+      filtered = requests.filter((request:any) => {
+        const requestDate = new Date(request.created_at);
+        return requestDate >= start && requestDate <= end;
+      });
+    } else if (start && !end) {
+      filtered = requests.filter((request:any) => {
+        const requestDate = new Date(request.created_at);
+        return requestDate >= start;
+      });
+    } else if (!start && end) {
+      filtered = requests.filter((request:any) => {
+        const requestDate = new Date(request.created_at);
+        return requestDate <= end;
+      });
+    }
+    setFilteredRequests(filtered);
+  };
+
+  const handlePrintTicket = async () => {
+    try {
+      const requestData = {
+        requestId: '2438cd7a-f782-4685-95f2-a6573c92332d',
+        user: 'Gustavo Ramos Silva Santos',
+        dateTime: '15/04/2024, 14:19:04',
+        items: [
+            { name: 'Fruta', quantity: 1, price: 3 },
+            { name: 'Suco', quantity: 1, price: 5 },
+            { name: 'Sorvete', quantity: 1, price: 12 },
+            { name: 'Açaí', quantity: 1, price: 12 },
+            { name: 'Salgado', quantity: 1, price: 9 },
+            { name: 'Lanche do Dia', quantity: 1, price: 15 }
+        ],
+        total: 56
+      };
+
+      await axios.post('http://localhost:3003/printTicket', requestData);
+      console.log("Ticket impresso com sucesso!");
+    } catch (error) {
+      console.error("Erro ao imprimir o ticket:", error);
+    }
+  };
 
   return (
     <Box p="4" bgColor="gray.900" minH="100vh">
@@ -178,31 +178,28 @@ const Control = () => {
       ) : (
         <>
           <Flex mb="4" alignItems="center" justifyContent={"space-between"}>
-						{/* <Flex justifyContent="flex-end" mb="4">
-							<Text>Total: {totalPriceSum.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
-						</Flex> */}
-						<Button border="solid gray 0.16rem" onClick={() => setUserId(null)} mr="2" h="3rem" w="4rem" bgColor="gray.100">&#8592;</Button>
+            <Button border="solid gray 0.16rem" onClick={() => setUserId(null)} mr="2" h="3rem" w="4rem" bgColor="gray.100">&#8592;</Button>
 
-						<Flex justify="center" bgColor="gray.100" w="20%" border="solid gray 0.05rem" p="0.06rem 0" borderRadius="9999999px">
-							<Image src="/Logo_Maple_Bear.png" h="3rem" />
-						</Flex>
-						<Flex w="50%" align="center" >
-							<Flex width="100%" h="100%" alignItems="center" ml="2" border="solid gray 0.16rem" bgColor="gray.200" p="0.2rem" borderRadius={"0.25rem"} justify={"center"}>
-								<Text as={FormLabel} mt="0.5rem" htmlFor="inputDateStart" mr="2">Data Inicial:</Text>
-								<Box as={DatePicker} id="inputDateStart" bgColor="gray.100" width="100%" border="solid 0.12rem black" borderRadius={"0.25rem"} height="2.5rem" textAlign="center" selected={startDate} onChange={handleStartDateChange} dateFormat="dd/MM/yyyy" />
-							</Flex>
-							
-							<Flex width="100%" h="100%" alignItems="center" ml="2" border="solid gray 0.16rem" bgColor="gray.200" p="0.2rem" borderRadius={"0.25rem"} justify={"center"}>
-								<Text as={FormLabel} mt="0.5rem" htmlFor="inputDateEnd" ml="2" mr="2">Data Final:</Text>
-								<Box as={DatePicker} id="inputDateEnd" bgColor="gray.100" width="100%" border="solid 0.12rem black" borderRadius={"0.25rem"} height="2.5rem" textAlign="center" selected={endDate} onChange={handleEndDateChange} dateFormat="dd/MM/yyyy" />
-							</Flex>
-						</Flex>
-					</Flex>
-					
-          <Box p="4" bg="gray.100" borderRadius="md" border="solid gray 0.16rem">
-            <Table variant="simple">
-              <Thead>
-                <Tr>
+            <Flex justify="center" bgColor="gray.100" w="20%" border="solid gray 0.05rem" p="0.06rem 0" borderRadius="9999999px">
+              <Image src="/Logo_Maple_Bear.png" h="3rem" />
+            </Flex>
+            <Flex w="50%" align="center" >
+              <Flex width="100%" h="100%" alignItems="center" ml="2" border="solid gray 0.16rem" bgColor="gray.200" p="0.2rem" borderRadius={"0.25rem"} justify={"center"}>
+                <Text as={FormLabel} mt="0.5rem" htmlFor="inputDateStart" mr="2">Data Inicial:</Text>
+                <Box as={DatePicker} id="inputDateStart" bgColor="gray.100" width="100%" border="solid 0.12rem black" borderRadius={"0.25rem"} height="2.5rem" textAlign="center" selected={startDate} onChange={handleStartDateChange} dateFormat="dd/MM/yyyy" />
+              </Flex>
+              
+              <Flex width="100%" h="100%" alignItems="center" ml="2" border="solid gray 0.16rem" bgColor="gray.200" p="0.2rem" borderRadius={"0.25rem"} justify={"center"}>
+                <Text as={FormLabel} mt="0.5rem" htmlFor="inputDateEnd" ml="2" mr="2">Data Final:</Text>
+                <Box as={DatePicker} id="inputDateEnd" bgColor="gray.100" width="100%" border="solid 0.12rem black" borderRadius={"0.25rem"} height="2.5rem" textAlign="center" selected={endDate} onChange={handleEndDateChange} dateFormat="dd/MM/yyyy" />
+              </Flex>
+            </Flex>
+          </Flex>
+          
+          <Box p="4" bg="gray.300" borderRadius="md"  borderColor="gray.900" border="solid gray 0.16rem">
+            <Table variant="simple"  borderColor="gray.900">
+              <Thead  borderColor="gray.900">
+                <Tr borderColor="gray.900">
                   <Th>Nº</Th>
                   <Th>Usuário</Th>
                   <Th>Itens</Th>
@@ -210,9 +207,12 @@ const Control = () => {
                   <Th>Data de Criação</Th>
                 </Tr>
               </Thead>
-              <Tbody>
+              <Tbody  borderColor="gray.900">
                 {filteredRequests.map((request:any, index:number) => (
-                  <Tr key={index}>
+                  <Tr _before={{
+                    borderColor: '#000'
+                  }}
+                    key={index}>
                     <Td>{request.sequence}</Td>
                     <Td>{request.user_name}</Td>
                     <Td>
@@ -231,6 +231,7 @@ const Control = () => {
           </Box>
           <Flex justify="center" mt="4">
             <Button onClick={exportToExcel} colorScheme='green' ml="2">Exportar Planilha</Button>
+            <Button onClick={handlePrintTicket} colorScheme='blue' ml="2">Imprima seu Ticket</Button>
           </Flex>
         </>
       )}
