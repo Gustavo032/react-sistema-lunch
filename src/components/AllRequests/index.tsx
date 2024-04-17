@@ -182,11 +182,11 @@ const AllRequests = () => {
   return (
     <Box p="4" bgColor="gray.900" minH="100vh">
         <>
-          <Flex mb="4" alignItems="center" justifyContent={"space-between"}>
+          {/* <Flex mb="4" alignItems="center" justifyContent={"space-between"}> */}
 						{/* <Flex justifyContent="flex-end" mb="4">
 							<Text>Total: {totalPriceSum.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
 						</Flex> */}
-						<Flex justify="center" bgColor="gray.100" w="20%" border="solid gray 0.05rem" p="0.06rem 0" borderRadius="9999999px">
+						{/* <Flex justify="center" bgColor="gray.100" w="20%" border="solid gray 0.05rem" p="0.06rem 0" borderRadius="9999999px">
 							<Image src="/Logo_Maple_Bear.png" h="3rem" />
 						</Flex>
 						<Flex w="50%" align="center" >
@@ -200,7 +200,7 @@ const AllRequests = () => {
 								<Box as={DatePicker} id="inputDateEnd" bgColor="gray.100" width="100%" border="solid 0.12rem black" borderRadius={"0.25rem"} height="2.5rem" textAlign="center" selected={endDate} onChange={handleEndDateChange} dateFormat="dd/MM/yyyy" />
 							</Flex>
 						</Flex>
-					</Flex>
+					</Flex> */}
 					
           <Box p="4" bg="gray.100" borderRadius="md" border="solid gray 0.16rem">
             <Table variant="simple">
@@ -232,9 +232,9 @@ const AllRequests = () => {
               </Tbody>
             </Table>
           </Box>
-          <Flex justify="center" mt="4">
+          {/* <Flex justify="center" mt="4">
             <Button onClick={exportToExcel} colorScheme='green' ml="2">Exportar Planilha</Button>
-          </Flex>
+          </Flex> */}
         </>
     </Box>
   );
