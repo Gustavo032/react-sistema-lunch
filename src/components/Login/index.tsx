@@ -144,7 +144,7 @@ export default function LoginScreen() {
             onChange={(e) => setUserEmail(e.target.value)}
           />
         </FormControl>
-        <FormControl id="email">
+        <FormControl id="password">
           <FormLabel color="gray.800">Senha</FormLabel>
           <Input
             type="password"
