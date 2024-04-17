@@ -231,7 +231,6 @@ const Control = () => {
           </Box>
           <Flex justify="center" mt="4">
             <Button onClick={exportToExcel} colorScheme='green' ml="2">Exportar Planilha</Button>
-            <Button onClick={handlePrintTicket} colorScheme='blue' ml="2">Imprima seu Ticket</Button>
           </Flex>
         </>
       )}

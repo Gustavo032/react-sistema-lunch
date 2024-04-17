@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Button,
   Flex,
@@ -10,23 +10,41 @@ import {
   Input,
   Stack,
   useColorModeValue,
-	useToast,
+  useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+	ModalCloseButton,
+	Icon,
 } from '@chakra-ui/react';
 import axios from 'axios';
+import { FaRegCheckCircle } from 'react-icons/fa';
 
 export default function LoginScreen() {
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-	const toast = useToast();
-
+  const [showModal, setShowModal] = useState(false); // Estado para controlar a exibição do modal
+  const toast = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const endRequest = params.get('endRequest');
+    if (endRequest === 'true') {
+      setShowModal(true);
+    }
+  }, [location.search]);
 
   async function loginUserFunction() {
     try {
       const response = await axios.post('https://maplebear.codematch.com.br/sessions', {
         email: userEmail,
-				password: userPassword,
+        password: userPassword,
       });
 
       if (response.data.token) {
@@ -35,11 +53,11 @@ export default function LoginScreen() {
 
         document.cookie = `refreshToken=${response.data.token};expires=${expirationDate.toUTCString()};path=/`;
       }
-			navigate('/dashboard');
-			
+      navigate('/dashboard');
+
     } catch (error) {
-			console.error('Error:', error);
-			throw error
+      console.error('Error:', error);
+      throw error;
     }
   }
 
@@ -47,13 +65,12 @@ export default function LoginScreen() {
     event.preventDefault();
     try {
       // Exibir o toast de carregamento enquanto a promessa está pendente
-      const result = await toast.promise(loginUserFunction(), {
+      await toast.promise(loginUserFunction(), {
         loading: { title: 'Entrando...', description: 'Por favor, aguarde...' },
         success: { title: 'Usuário logado com sucesso!', description: 'Looks great' },
         error: { title: 'Erro ao logar usuário', description: 'Something wrong' },
       });
-      console.log(result); // Pode ser útil para depuração
-    } catch (error:any) {
+    } catch (error) {
       console.error('Error creating user:', error);
     }
   };
@@ -68,16 +85,16 @@ export default function LoginScreen() {
       bgPosition="center"
       position="relative" // Para posicionar elementos filhos relativos a este
     >
-			<Text
-				position="absolute"
-				top="4"
-				left="4"
-				color="white"
-				fontSize="2xl"
-				zIndex="2" // Ajusta a camada de empilhamento para que o texto esteja sobre o overlay
-			>
-				MapleBear Granja Viana
-			</Text>
+      <Text
+        position="absolute"
+        top="4"
+        left="4"
+        color="white"
+        fontSize="2xl"
+        zIndex="2" // Ajusta a camada de empilhamento para que o texto esteja sobre o overlay
+      >
+        MapleBear Granja Viana
+      </Text>
       {/* Overlay escuro */}
       <Flex
         position="fixed"
@@ -103,8 +120,8 @@ export default function LoginScreen() {
         bg="rgba(255, 255, 255, 0.8)"
         zIndex="2" // Ajusta a camada de empilhamento para que o formulário esteja sobre o overlay escuro
         position="relative" // Define a posição relativa para que o zIndex funcione corretamente
-				border="#fff solid 0.12rem"
-			>
+        border="#fff solid 0.12rem"
+      >
         <Heading color="gray.800" lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
           Faça seu pedido
         </Heading>
@@ -124,10 +141,10 @@ export default function LoginScreen() {
               color: 'gray.500',
             }}
             value={userEmail}
-            onChange={(e)=>setUserEmail(e.target.value)}
+            onChange={(e) => setUserEmail(e.target.value)}
           />
         </FormControl>
-				<FormControl id="email">
+        <FormControl id="email">
           <FormLabel color="gray.800">Senha</FormLabel>
           <Input
             type="password"
@@ -139,7 +156,7 @@ export default function LoginScreen() {
               color: 'gray.500',
             }}
             value={userPassword}
-            onChange={(e)=>setUserPassword(e.target.value)}
+            onChange={(e) => setUserPassword(e.target.value)}
           />
         </FormControl>
         <Stack spacing={6}>
@@ -169,6 +186,36 @@ export default function LoginScreen() {
           )}
         </Stack>
       </Stack>
+
+      {/* Modal */}
+      
+			<Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered>
+				<ModalOverlay />
+				<ModalContent
+					bg="white"
+					color="gray.800"
+					borderRadius="xl"
+					p={4}
+					textAlign="center"
+					boxShadow="md"
+				>
+					<ModalCloseButton color="gray.400" />
+					<ModalHeader mt={4} fontSize="xl" fontWeight="bold">
+						Obrigado pelo seu pedido!
+					</ModalHeader>
+					<ModalBody fontSize="md">
+						<Flex flexDir={'column'}>
+							<Icon as={FaRegCheckCircle} alignSelf={"center"} color="green.500" mt={1} fontSize="3xl" />
+							Leve o ticket impresso ao refeitório
+						</Flex>
+					</ModalBody>
+					<ModalFooter justifyContent="center" mt={4}>
+						<Button colorScheme="red" onClick={() => setShowModal(false)}>
+							Fechar
+						</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
     </Flex>
   );
 }

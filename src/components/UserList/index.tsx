@@ -112,8 +112,8 @@ const UserList = ({ onSelectUser }:any) => {
     <Box p="4" bg="gray.100" borderRadius="md" border="solid gray 0.16rem">
       <Flex mb="4" w="100%" justifyContent={"space-between"}>
         <Flex w="30%" justify={"center"}>
-					<Input placeholder="Filtrar por nome" value={filterName} _placeholder={{color:"gray.700"}} border="solid black 0.06rem" _focus={{backgroundColor: "#fff"}} bgColor={"gray.200"} onChange={handleFilterName} mr="2" />
-					<Input placeholder="Filtrar por ID" value={filterId} _placeholder={{color:"gray.700"}} border="solid black 0.06rem" _focus={{backgroundColor: "#fff"}} bgColor={"gray.200"} onChange={handleFilterId} />
+					<Input placeholder="Filtrar por ID" value={filterId} _placeholder={{color:"gray.700"}} border="solid black 0.06rem" _focus={{backgroundColor: "#fff"}} bgColor={"gray.200"} onChange={handleFilterId} mr="2" />
+					<Input placeholder="Filtrar por nome" value={filterName} _placeholder={{color:"gray.700"}} border="solid black 0.06rem" _focus={{backgroundColor: "#fff"}} bgColor={"gray.200"} onChange={handleFilterName} />
 				</Flex>
 
 				<Flex justify="center" bgColor="gray.100"  w="20%" borderRadius="9999999px">
