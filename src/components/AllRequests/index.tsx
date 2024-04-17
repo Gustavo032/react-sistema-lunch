@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Text, Image, FormLabel } from '@chakra-ui/react';
-import { endOfMonth, format, startOfMonth } from 'date-fns';
+import { endOfDay, endOfMonth, format, startOfDay, startOfMonth } from 'date-fns';
 import * as XLSX from 'xlsx';
 import DatePicker from 'react-datepicker'; // Import from react-datepicker
 import 'react-datepicker/dist/react-datepicker.css'; // Import styles
@@ -12,8 +12,8 @@ const AllRequests = () => {
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
-	const [startDate, setStartDate] = useState<Date>(startOfMonth(new Date())); // Definindo startDate como o primeiro dia do mês atual
-  const [endDate, setEndDate] = useState<Date>(endOfMonth(new Date())); // Definindo endDate como o último dia do mês atual
+	const [startDate, setStartDate] = useState<Date>(startOfDay(new Date())); // Definindo startDate como o primeiro dia do mês atual
+  const [endDate, setEndDate] = useState<Date>(endOfDay(new Date())); // Definindo endDate como o último dia do mês atual
 
   const [totalPriceSum, setTotalPriceSum] = useState(0); // Estado para armazenar a soma dos total_price
 
