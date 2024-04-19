@@ -1,23 +1,56 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Box, Center, Text, UnorderedList, ListItem, Button, Flex, useColorModeValue } from "@chakra-ui/react";
 import { useNavigate } from 'react-router-dom';
+
 
 interface TicketScreenProps {
   ticketData: any;
 }
 
+export function createRefToPrint(contentElement: HTMLElement): HTMLElement {
+  const clonedContent = contentElement.cloneNode(true) as HTMLElement;
+
+  // Remover elementos indesejados (por exemplo, botões)
+  const elementsToRemove = clonedContent.querySelectorAll("button");
+  elementsToRemove.forEach(element => element.remove());
+
+  // Definir estilos de impressão
+  clonedContent.style.position = "static"; // Impede que o conteúdo flutue na impressão
+  clonedContent.style.width = "100%"; // Garante que o conteúdo se ajuste ao papel
+
+  // Adicionar estilos de impressão personalizados
+  clonedContent.style.fontFamily = "Arial, sans-serif"; // Define a fonte para a impressão
+  clonedContent.style.padding = "20px"; // Adiciona um preenchimento para o conteúdo
+  clonedContent.style.backgroundColor = "white"; // Define a cor de fundo para branco
+
+  // Definir tamanho de papel personalizado (por exemplo, 80mm x 200mm para uma impressora térmica)
+  clonedContent.style.width = "80mm";
+  clonedContent.style.height = "200mm";
+
+  return clonedContent;
+}
+
 export function TicketScreen(props: TicketScreenProps) {
   const { ticketData } = props;
   const navigate = useNavigate(); // Obtenha o objeto de histórico
+  const contentRef = useRef<HTMLDivElement | null>(null);
 
   const handlePrint = () => {
-    window.print();
+    if (!contentRef.current) return;
+
+    const printableContent = createRefToPrint(contentRef.current);
+    const printWindow = window.open();
+    if (printWindow) {
+      printWindow.document.body.appendChild(printableContent);
+      printWindow.print();
+      printWindow.close();
+    }
 
     setTimeout(() => {
-      // Redirecionamento após 3 segundos
-      navigate("/?endRequest=true"); // Redireciona para a tela de login
-    }, 100);
+      navigate("/?endRequest=true");
+    }, 1000);
   };
+
 
   return (
     <Center h="100vh" bgSize="cover" bgPosition="center" backgroundImage="./img/mapleBearBackground.jpg">
@@ -49,6 +82,7 @@ export function TicketScreen(props: TicketScreenProps) {
         boxShadow="lg"
         textAlign="center"
         bgColor={useColorModeValue("white", "gray.700")}
+				ref={contentRef}
       >
         <Text fontSize="xl" textAlign="left">Detalhes do Pedido</Text>
         <Text fontSize="sm" textAlign="left" color="gray.500">ID da solicitação: {ticketData.requestId}</Text>

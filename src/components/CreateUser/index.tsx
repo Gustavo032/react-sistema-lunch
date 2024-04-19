@@ -8,6 +8,7 @@ export default function CreateUserScreen() {
     name: '',
     email: '',
     password: '',
+		credit: '',
     role: 'MEMBER'
   });
   const [errorMessage, setErrorMessage] = useState('');
@@ -39,6 +40,7 @@ export default function CreateUserScreen() {
         name: '',
         email: '',
         password: '',
+				credit: '',
         role: 'MEMBER'
       });
     } catch (error) {
@@ -140,7 +142,6 @@ export default function CreateUserScreen() {
 				<FormLabel color="gray.800">Email</FormLabel>
 				<Input
 					type="text"
-					inputMode="numeric"
 					bg={'gray.100'}
 					placeholder="Digite o Email"
 					border={0}
@@ -167,6 +168,25 @@ export default function CreateUserScreen() {
 					}}
 					value={userData.password}
 					onChange={(e)=>setUserData({ ...userData, password: e.target.value })}
+					maxLength={120}
+				/>
+			</FormControl>
+
+			<FormControl id="credit">
+				<FormLabel color="gray.800">Crédito do Usuário</FormLabel>
+				<Input
+					type="number"
+					inputMode="numeric"
+					bg={'gray.100'}
+					placeholder="Defina o Crédito do Usuário"
+					border={0}
+					color={'gray.900'}
+					_placeholder={{
+						color: 'gray.500',
+					}}
+					step={0.01}
+					value={userData.credit}
+					onChange={(e)=>setUserData({ ...userData, credit: String(Number(parseFloat(e.target.value.replace(/[^0-9.]/g, '')).toFixed(2))) })}
 					maxLength={120}
 				/>
 			</FormControl>
