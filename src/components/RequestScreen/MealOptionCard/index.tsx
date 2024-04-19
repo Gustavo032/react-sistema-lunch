@@ -5,9 +5,9 @@ import { TbClockOff } from "react-icons/tb";
 
 export function MealOptionCard(props:any) {
   const [hovered, setHovered] = useState(false);
-	const [isBreakfastTime, setIsBreakfastTime] = useState(false);
-	const [isAlunchTime, setIsAlunchTime] = useState(false);
-	const [isAfternoonTeaTime, setIsAfternoonTeaTime] = useState(false);
+	const [isBreakfastTime, setIsBreakfastTime] = useState(true);
+	const [isAlunchTime, setIsAlunchTime] = useState(true);
+	const [isAfternoonTeaTime, setIsAfternoonTeaTime] = useState(true);
 	
 	
   const handleMouseEnter = () => {
