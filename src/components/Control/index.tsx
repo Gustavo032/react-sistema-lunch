@@ -147,29 +147,29 @@ const Control = () => {
     setFilteredRequests(filtered);
   };
 
-  const handlePrintTicket = async () => {
-    try {
-      const requestData = {
-        requestId: '2438cd7a-f782-4685-95f2-a6573c92332d',
-        user: 'Gustavo Ramos Silva Santos',
-        dateTime: '15/04/2024, 14:19:04',
-        items: [
-            { name: 'Fruta', quantity: 1, price: 3 },
-            { name: 'Suco', quantity: 1, price: 5 },
-            { name: 'Sorvete', quantity: 1, price: 12 },
-            { name: 'Açaí', quantity: 1, price: 12 },
-            { name: 'Salgado', quantity: 1, price: 9 },
-            { name: 'Lanche do Dia', quantity: 1, price: 15 }
-        ],
-        total: 56
-      };
+  // const handlePrintTicket = async () => {
+  //   try {
+  //     const requestData = {
+  //       requestId: '2438cd7a-f782-4685-95f2-a6573c92332d',
+  //       user: 'Gustavo Ramos Silva Santos',
+  //       dateTime: '15/04/2024, 14:19:04',
+  //       items: [
+  //           { name: 'Fruta', quantity: 1, price: 3 },
+  //           { name: 'Suco', quantity: 1, price: 5 },
+  //           { name: 'Sorvete', quantity: 1, price: 12 },
+  //           { name: 'Açaí', quantity: 1, price: 12 },
+  //           { name: 'Salgado', quantity: 1, price: 9 },
+  //           { name: 'Lanche do Dia', quantity: 1, price: 15 }
+  //       ],
+  //       total: 56
+  //     };
 
-      await axios.post('http://localhost:3003/printTicket', requestData);
-      console.log("Ticket impresso com sucesso!");
-    } catch (error) {
-      console.error("Erro ao imprimir o ticket:", error);
-    }
-  };
+  //     await axios.post('http://localhost:3003/printTicket', requestData);
+  //     console.log("Ticket impresso com sucesso!");
+  //   } catch (error) {
+  //     console.error("Erro ao imprimir o ticket:", error);
+  //   }
+  // };
 
   return (
     <Box p="4" bgColor="gray.900" minH="100vh">

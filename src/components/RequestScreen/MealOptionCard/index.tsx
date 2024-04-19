@@ -38,9 +38,9 @@ export function MealOptionCard(props:any) {
 		}
 	
 		if(hours >= 18 && hours < 8){
-			setIsBreakfastTime(false);
-			setIsAlunchTime(false);
-			setIsAfternoonTeaTime(false);
+			setIsBreakfastTime(true);
+			setIsAlunchTime(true);
+			setIsAfternoonTeaTime(true);
 		}
 	};
 	
