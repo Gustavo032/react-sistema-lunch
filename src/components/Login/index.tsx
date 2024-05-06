@@ -22,6 +22,7 @@ import {
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { FaRegCheckCircle } from 'react-icons/fa';
+import { io } from 'socket.io-client';
 
 export default function LoginScreen() {
   const [userEmail, setUserEmail] = useState('');
@@ -32,17 +33,58 @@ export default function LoginScreen() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
+	useEffect(() => {
     const params = new URLSearchParams(location.search);
     const endRequest = params.get('endRequest');
     if (endRequest === 'true') {
       setShowModal(true);
     }
-  }, [location.search]);
+
+    // Abrir a conexão WebSocket
+    const socket = new WebSocket('ws://localhost:3333');
+    socket.onopen = function() {
+			console.log('Conexão estabelecida.');
+		};
+		
+    // Lidar com mensagens recebidas do servidor
+    socket.onmessage = function(message:any) {
+		
+      console.log('Mensagem recebida do servidor WebSocket:', message);
+			
+			// Aqui você pode tratar a mensagem recebida e tomar as ações necessárias, como navegar para outra página
+			console.log(message);
+
+			if (message.data) {
+
+				const response = JSON.parse(message.data);
+				console.log(response);
+
+				const expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() + 7); // Expira em 7 dias
+
+        document.cookie = `refreshToken=${response.refreshToken};expires=${expirationDate.toUTCString()};path=/`;
+				
+				console.log(document.cookie);
+				navigate('/dashboard');
+				socket.close()
+      }
+
+			console.log('dados vazios recebidos');
+    }
+
+		socket.onclose = function(event) {
+			console.log('Conexão fechada:', event);
+		};
+		
+		socket.onerror = function(error) {
+			console.error('Erro:', error);
+		};
+  }, [location.search, navigate]);
+
 
   async function loginUserFunction() {
     try {
-      const response = await axios.post('https://maplebear.codematch.com.br/sessions', {
+      const response = await axios.post('http://localhost:3333/sessions', {
         email: userEmail,
         password: userPassword,
       });

@@ -30,7 +30,7 @@ export default function CreateUserScreen() {
   const createUser = async () => {
     try {
 
-      const response = await axios.post('https://maplebear.codematch.com.br/users',userData, {
+      const response = await axios.post('http://localhost:3333/users',userData, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
