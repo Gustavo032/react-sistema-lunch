@@ -32,7 +32,7 @@ const Control = () => {
       setLoading(true);
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
 
-      const response = await axios.get(`http://localhost:3333/requests/history`, {
+      const response = await axios.get(`https://maplebear.codematch.com.br/requests/history`, {
         params: {
           page: currentPage,
           userId: userId,
@@ -82,7 +82,7 @@ const Control = () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
 
-      const response = await axios.get(`http://localhost:3333/requests/history`, {
+      const response = await axios.get(`https://maplebear.codematch.com.br/requests/history`, {
         params: {
           page: currentPage,
           userId: userId,

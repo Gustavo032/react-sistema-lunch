@@ -25,7 +25,7 @@ const UserList = ({ onSelectUser }:any) => {
 				'$1'
 			);
 	
-			const response = await axios.get(`http://localhost:3333/users/all`, {
+			const response = await axios.get(`https://maplebear.codematch.com.br/users/all`, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
@@ -35,7 +35,7 @@ const UserList = ({ onSelectUser }:any) => {
 	
 			// Fetch total price sum for each user
 			const userTotalPricePromises = fetchedUsers.map((user:any) => {
-				return axios.get(`http://localhost:3333/total-price-sum/${user.id}/${String(selectedMonth)}/${String(selectedYear)}`, {
+				return axios.get(`https://maplebear.codematch.com.br/total-price-sum/${user.id}/${String(selectedMonth)}/${String(selectedYear)}`, {
 					headers: {
 						Authorization: `Bearer ${token}`,
 					},
@@ -88,7 +88,7 @@ const UserList = ({ onSelectUser }:any) => {
 		onClose()
 
 		try {
-			await axios.delete(`http://localhost:3333/users/${userId}/delete`, {
+			await axios.delete(`https://maplebear.codematch.com.br/users/${userId}/delete`, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
