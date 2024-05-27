@@ -13,7 +13,8 @@ const UserList = ({ onSelectUser }:any) => {
 	const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
 	const toast = useToast(); // Adicionando o hook useToast
-
+	
+	/* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     fetchUsers();
   }, [selectedMonth, selectedYear]);
@@ -25,7 +26,7 @@ const UserList = ({ onSelectUser }:any) => {
 				'$1'
 			);
 	
-			const response = await axios.get(`https://maplebear.codematch.com.br/users/all`, {
+			const response = await axios.get(`http://10.0.0.50:3333/users/all`, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
@@ -35,7 +36,7 @@ const UserList = ({ onSelectUser }:any) => {
 	
 			// Fetch total price sum for each user
 			const userTotalPricePromises = fetchedUsers.map((user:any) => {
-				return axios.get(`https://maplebear.codematch.com.br/total-price-sum/${user.id}/${String(selectedMonth)}/${String(selectedYear)}`, {
+				return axios.get(`http://10.0.0.50:3333/total-price-sum/${user.id}/${String(selectedMonth)}/${String(selectedYear)}`, {
 					headers: {
 						Authorization: `Bearer ${token}`,
 					},
@@ -76,7 +77,7 @@ const UserList = ({ onSelectUser }:any) => {
   const filteredUsers = users.filter((user:any) => {
     return user.name.toLowerCase().includes(filterName.toLowerCase()) && user.id.includes(filterId);
   });
-	const { isOpen, onOpen, onClose } = useDisclosure()
+	const { onClose } = useDisclosure()
   const cancelRef = useRef<HTMLButtonElement>(null); // Specify the correct type
 	
 	const token = document.cookie.replace(
@@ -88,7 +89,7 @@ const UserList = ({ onSelectUser }:any) => {
 		onClose()
 
 		try {
-			await axios.delete(`https://maplebear.codematch.com.br/users/${userId}/delete`, {
+			await axios.delete(`http://10.0.0.50:3333/users/${userId}/delete`, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},

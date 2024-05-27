@@ -1,23 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Text, Image, FormLabel } from '@chakra-ui/react';
-import { endOfDay, endOfMonth, format, startOfDay, startOfMonth } from 'date-fns';
-import * as XLSX from 'xlsx';
-import DatePicker from 'react-datepicker'; // Import from react-datepicker
+import { Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Text, Image } from '@chakra-ui/react';
+import { endOfDay, format, startOfDay } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css'; // Import styles
-import UserList from '../UserList';
 
 const AllRequests = () => {
   const [requests, setRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-	const [startDate, setStartDate] = useState<Date>(startOfDay(new Date())); // Definindo startDate como o primeiro dia do mês atual
-  const [endDate, setEndDate] = useState<Date>(endOfDay(new Date())); // Definindo endDate como o último dia do mês atual
+  // const [loading, setLoading] = useState(false);
+	const [startDate] = useState<Date>(startOfDay(new Date())); // Definindo startDate como o primeiro dia do mês atual
+  const [endDate] = useState<Date>(endOfDay(new Date())); // Definindo endDate como o último dia do mês atual
 
   const [totalPriceSum, setTotalPriceSum] = useState(0); // Estado para armazenar a soma dos total_price
-
-
+	
+	
+	/* eslint-disable react-hooks/exhaustive-deps */
 	useEffect(() => {
 		// Define uma função para realizar o fetch dos pedidos
 		const fetchRequestsPeriodically = () => {
@@ -36,7 +33,6 @@ const AllRequests = () => {
 		// Define as dependências como vazio para garantir que este efeito só seja executado uma vez
 	}, []);
 
-	
 	useEffect(() => {
 		fetchRequests();
   }, [startDate, endDate]);
@@ -48,13 +44,13 @@ const AllRequests = () => {
 
   const fetchRequests = async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const token = document.cookie.replace(
         /(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
         '$1'
       );
 
-      const response = await axios.get(`https://maplebear.codematch.com.br/requests/all`, {
+      const response = await axios.get(`http://10.0.0.50:3333/requests/all`, {
         params: {
           startDate: format(startDate, 'MM/dd/yyyy'),
           endDate: format(endDate, 'MM/dd/yyyy'),
@@ -78,7 +74,7 @@ const AllRequests = () => {
     } catch (error) {
       console.error('Erro ao buscar requests:', error);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -95,89 +91,7 @@ const AllRequests = () => {
 
 	// const handlePreviousPage = () => {
   //   setCurrentPage(currentPage - 1);
-  // };
-
-	const formatCurrency = (value:any) => {
-    return parseFloat(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  };
-
-	const exportToExcel = async () => {
-    try {
-      const token = document.cookie.replace(
-        /(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
-        '$1'
-      );
-
-      const response = await axios.get(`https://maplebear.codematch.com.br/requests/all`, {
-        params: {
-          startDate: startDate,
-          endDate: endDate
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const requestsForExport = response.data.requests.map((request:any) => ({
-        "ID": request.id,
-        "Usuário": request.user_name,
-        "Itens": request.items.map((item:any) => `${item.title} - ${formatCurrency(item.price)}`).join("\n"), // Formata o preço de cada item
-        "Preço Total": formatCurrency(request.total_price), // Formata o valor total
-        "Data de Criação": format(new Date(request.created_at), 'dd/MM/yyyy HH:mm:ss')
-      }));
-
-      const worksheet = XLSX.utils.json_to_sheet(requestsForExport);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, `Relatório Pedidos`);
-      XLSX.writeFile(workbook, `pedidos.xlsx`);
-
-    } catch (error) {
-      console.error('Erro ao exportar para Excel:', error);
-    }
-  };
-
-	const handleStartDateChange = (date:any) => {
-		// Define a hora de início como 00:00:00 do dia selecionado
-		const startOfDay = new Date(date);
-		startOfDay.setHours(0, 0, 0, 0);
-		setStartDate(startOfDay);
-		filterRequests(startOfDay, endDate);
-	};
-
-	const handleEndDateChange = (date:any) => {
-		// Define a hora de término como 23:59:59 do dia selecionado
-		const endOfDay = new Date(date);
-		endOfDay.setHours(23, 59, 59, 999); // Definindo hora para o final do dia
-		setEndDate(endOfDay);
-		filterRequests(startDate, endOfDay);
-	};
-	
-
-	
-	const filterRequests = (start:any, end:any) => {
-		let filtered = requests;
-		if (start && end) {
-			filtered = requests.filter((request:any) => {
-				const requestDate = new Date(request.created_at);
-				return requestDate >= start && requestDate <= end;
-			});
-		} else if (start && !end) {
-			filtered = requests.filter((request:any) => {
-				const requestDate = new Date(request.created_at);
-				return requestDate >= start;
-			});
-		} else if (!start && end) {
-			filtered = requests.filter((request:any) => {
-				const requestDate = new Date(request.created_at);
-				return requestDate <= end;
-			});
-		}
-		setFilteredRequests(filtered);
-		// Após atualizar o estado filteredRequests, chame fetchRequests
-		// para buscar os dados atualizados do servidor
-	};
-	
-	
+  // };	
 
   return (
     <Box p="4" bgColor="gray.900" minH="100vh">

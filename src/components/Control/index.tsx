@@ -12,11 +12,12 @@ const Control = () => {
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [userId, setUserId] = useState(null);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState<Date | null>(startOfMonth(new Date()));
   const [endDate, setEndDate] = useState<Date | null>(endOfMonth(new Date()));
   const [totalPriceSum, setTotalPriceSum] = useState(0);
 
+	/* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     if (userId) {
       fetchRequests();
@@ -29,10 +30,10 @@ const Control = () => {
 
   const fetchRequests = async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
 
-      const response = await axios.get(`https://maplebear.codematch.com.br/requests/history`, {
+      const response = await axios.get(`http://10.0.0.50:3333/requests/history`, {
         params: {
           page: currentPage,
           userId: userId,
@@ -58,7 +59,7 @@ const Control = () => {
     } catch (error) {
       console.error('Erro ao buscar requests:', error);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -82,7 +83,7 @@ const Control = () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
 
-      const response = await axios.get(`https://maplebear.codematch.com.br/requests/history`, {
+      const response = await axios.get(`http://10.0.0.50:3333/requests/history`, {
         params: {
           page: currentPage,
           userId: userId,

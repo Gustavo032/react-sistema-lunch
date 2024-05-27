@@ -16,6 +16,7 @@ import UserList from "./components/UserList";
 import CreateUserScreen from "./components/CreateUser";
 import CreateItemScreen from "./components/CreateItem";
 import AllRequests from "./components/AllRequests";
+import Initial from "./components/Initial";
 
 export const App = () => {
   const [ticketData, setTicketData] = useState<any>(null);
@@ -23,7 +24,8 @@ export const App = () => {
   return(
     <ChakraProvider theme={theme}>
       <Routes>
-        <Route path="/" element={<LoginScreen/>} />
+        <Route path="/" element={<Initial />} />
+        <Route path="/login" element={<LoginScreen />} />
         <Route path="/dashboard" element={<RequestScreen />} />
         <Route path="/validateCheckIn" element={<ReadQRCode />} />
         <Route path="/mealOptionPage/:option" element={<MealOptionPage ticketData={ticketData} setTicketData={setTicketData} />} />
@@ -33,7 +35,7 @@ export const App = () => {
         <Route path="/userList" element={<UserList />} />
         <Route path="/createUser" element={<CreateUserScreen />} />
         <Route path="/createItem" element={<CreateItemScreen />} />
-        <Route path="/*" element={<NotFound/>} />
+        <Route path="/*" element={<NotFound />} />
       </Routes>
 			
     </ChakraProvider>

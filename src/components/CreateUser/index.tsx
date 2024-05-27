@@ -28,11 +28,11 @@ export default function CreateUserScreen() {
     if(token==="") {
       navigate('/');
     }
-  },[])
+  },[navigate,token])
   
   const createUser = async () => {
     try {
-      const response = await axios.post('https://maplebear.codematch.com.br/users', userData, {
+      const response = await axios.post('http://10.0.0.50:3333/users', userData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json', // Altere o tipo de conteúdo para application/json
@@ -77,7 +77,7 @@ export default function CreateUserScreen() {
     // Verificar o tamanho do arquivo
     if (file.size > 200 * 1024) {
       // Se a imagem exceder 200KB, redimensioná-la
-      const compressedFile = await imageCompression(file, { maxSizeMB: 0.2 });
+      const compressedFile = await imageCompression(file, { maxSizeMB: 0.1 });
       // Exibir a imagem redimensionada
       const reader:any = new FileReader();
       reader.onload = () => {

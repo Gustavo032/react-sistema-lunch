@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Flex, FormControl, FormLabel, Heading, Input, Select, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
+import { Button, Flex, FormControl, FormLabel, Heading, Input, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,6 +18,7 @@ export default function CreateItemScreen() {
 	const navigate = useNavigate();
 	
 	console.log(typeof token);
+	/* eslint-disable react-hooks/exhaustive-deps */
 	useEffect(() => {
 		if(token==="") {
 			navigate('/');
@@ -27,7 +28,7 @@ export default function CreateItemScreen() {
   const createItem = async () => {
     try {
 
-      const response = await axios.post('https://maplebear.codematch.com.br/items/create', itemData, {
+      const response = await axios.post('http://10.0.0.50:3333/items/create', itemData, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},

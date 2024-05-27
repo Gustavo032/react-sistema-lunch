@@ -31,7 +31,7 @@ export function ReadQRCode() {
   //   );
 
   //   axios.patch(
-  //     `https://maplebear.codematch.com.br/check-ins/${qrValue}/validate`,
+  //     `http://10.0.0.50:3333/check-ins/${qrValue}/validate`,
   //     {},
   //     {
   //       headers: {
