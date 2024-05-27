@@ -3,6 +3,7 @@ import { Box, Button, Flex, FormControl, FormLabel, Heading, Image, Input, Selec
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
+import { ArrowBackIcon } from '@chakra-ui/icons';
 
 export default function CreateUserScreen() {
   const [userData, setUserData] = useState({
@@ -25,14 +26,23 @@ export default function CreateUserScreen() {
   
   console.log(typeof token);
   useEffect(() => {
-    if(token==="") {
+    const getCookie = (name: string): string | undefined => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) {
+        return parts.pop()?.split(';').shift();
+      }
+    };
+
+    const userRole = getCookie('userRole');
+    if (userRole !== 'ADMIN') {
       navigate('/');
     }
-  },[navigate,token])
+  }, [navigate]);
   
   const createUser = async () => {
     try {
-      const response = await axios.post('http://10.0.0.50:3333/users', userData, {
+      const response = await axios.post('http://localhost:3333/users', userData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json', // Altere o tipo de conteúdo para application/json
@@ -116,7 +126,18 @@ export default function CreateUserScreen() {
         fontSize="2xl"
         zIndex="2" // Ajusta a camada de empilhamento para que o texto esteja sobre o overlay
       >
+			 <Button
+        colorScheme="whiteAlpha"
+        onClick={() => navigate('/admin')}
+        zIndex="2"
+				mr="1rem"
+        _hover={{ bg: 'whiteAlpha.800' }}
+        _active={{ bg: 'whiteAlpha.600' }}
+      >
+        <ArrowBackIcon color="white" boxSize={6} />
+      </Button>
         MapleBear Granja Viana
+			 {/* Botão de Voltar */}
       </Text>
       {/* Overlay escuro */}
       <Flex

@@ -55,6 +55,7 @@ export default function LoginScreen() {
         expirationDate.setDate(expirationDate.getDate() + 7);
 
         document.cookie = `refreshToken=${response.refreshToken};expires=${expirationDate.toUTCString()};path=/`;
+        document.cookie = `userRole=${response.data.role};expires=${expirationDate.toUTCString()};path=/`;
         console.log(document.cookie);
         socket.close();
         navigate('/dashboard');
@@ -80,7 +81,7 @@ export default function LoginScreen() {
 
   async function loginUserFunction() {
     try {
-      const response = await axios.post('http://10.0.0.50:3333/sessions', {
+      const response = await axios.post('http://localhost:3333/sessions', {
         email: userEmail,
         password: userPassword,
       });
@@ -90,8 +91,13 @@ export default function LoginScreen() {
         expirationDate.setDate(expirationDate.getDate() + 7);
 
         document.cookie = `refreshToken=${response.data.token};expires=${expirationDate.toUTCString()};path=/`;
+        document.cookie = `userRole=${response.data.role};expires=${expirationDate.toUTCString()};path=/`;
       }
-      navigate('/dashboard');
+			if(response.data.role === 'ADMIN') {
+      	navigate('/admin');
+			} else {
+      	navigate('/dashboard');
+			}
     } catch (error) {
       console.error('Error:', error);
       throw error;

@@ -6,6 +6,8 @@ import * as XLSX from 'xlsx';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import UserList from '../UserList';
+import { useNavigate } from 'react-router-dom';
+import { ArrowBackIcon } from '@chakra-ui/icons';
 
 const Control = () => {
   const [requests, setRequests] = useState([]);
@@ -16,8 +18,24 @@ const Control = () => {
   const [startDate, setStartDate] = useState<Date | null>(startOfMonth(new Date()));
   const [endDate, setEndDate] = useState<Date | null>(endOfMonth(new Date()));
   const [totalPriceSum, setTotalPriceSum] = useState(0);
+	const navigate = useNavigate();
 
 	/* eslint-disable react-hooks/exhaustive-deps */
+	useEffect(() => {
+    const getCookie = (name: string): string | undefined => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) {
+        return parts.pop()?.split(';').shift();
+      }
+    };
+
+    const userRole = getCookie('userRole');
+    if (userRole !== 'ADMIN') {
+      navigate('/');
+    }
+  }, [navigate]);
+
   useEffect(() => {
     if (userId) {
       fetchRequests();
@@ -33,7 +51,7 @@ const Control = () => {
       // setLoading(true);
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
 
-      const response = await axios.get(`http://10.0.0.50:3333/requests/history`, {
+      const response = await axios.get(`http://localhost:3333/requests/history`, {
         params: {
           page: currentPage,
           userId: userId,
@@ -83,7 +101,7 @@ const Control = () => {
     try {
       const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
 
-      const response = await axios.get(`http://10.0.0.50:3333/requests/history`, {
+      const response = await axios.get(`http://localhost:3333/requests/history`, {
         params: {
           page: currentPage,
           userId: userId,
@@ -174,6 +192,18 @@ const Control = () => {
 
   return (
     <Box p="4" bgColor="gray.900" minH="100vh">
+			<Button
+				colorScheme="whiteAlpha"
+				onClick={() => navigate('/admin')}
+				zIndex="2"
+				h="3rem"
+				mr="1rem"
+				mb="1rem"
+				_hover={{ bg: 'whiteAlpha.800' }}
+				_active={{ bg: 'whiteAlpha.600' }}
+				>
+				<ArrowBackIcon color="white" boxSize={6} />
+			</Button>
       {!userId ? (
         <UserList onSelectUser={handleSelectUser} />
       ) : (

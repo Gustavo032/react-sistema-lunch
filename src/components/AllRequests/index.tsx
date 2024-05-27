@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Text, Image } from '@chakra-ui/react';
+import { Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Text, Image, Button } from '@chakra-ui/react';
 import { endOfDay, format, startOfDay } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css'; // Import styles
+import { useNavigate } from 'react-router-dom';
+import { ArrowBackIcon } from '@chakra-ui/icons';
 
 const AllRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -12,9 +14,24 @@ const AllRequests = () => {
   const [endDate] = useState<Date>(endOfDay(new Date())); // Definindo endDate como o último dia do mês atual
 
   const [totalPriceSum, setTotalPriceSum] = useState(0); // Estado para armazenar a soma dos total_price
-	
+  const navigate = useNavigate();
 	
 	/* eslint-disable react-hooks/exhaustive-deps */
+	useEffect(() => {
+    const getCookie = (name: string): string | undefined => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) {
+        return parts.pop()?.split(';').shift();
+      }
+    };
+
+    const userRole = getCookie('userRole');
+    if (userRole !== 'ADMIN') {
+      navigate('/');
+    }
+  }, [navigate]);
+
 	useEffect(() => {
 		// Define uma função para realizar o fetch dos pedidos
 		const fetchRequestsPeriodically = () => {
@@ -50,7 +67,7 @@ const AllRequests = () => {
         '$1'
       );
 
-      const response = await axios.get(`http://10.0.0.50:3333/requests/all`, {
+      const response = await axios.get(`http://localhost:3333/requests/all`, {
         params: {
           startDate: format(startDate, 'MM/dd/yyyy'),
           endDate: format(endDate, 'MM/dd/yyyy'),
@@ -100,8 +117,21 @@ const AllRequests = () => {
 						{/* <Flex justifyContent="flex-end" mb="4">
 							<Text>Total: {totalPriceSum.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
 						</Flex> */}
-						<Flex justify="center" bgColor="gray.100" w="20%" border="solid gray 0.05rem" p="0.06rem 0" borderRadius="9999999px">
-							<Image src="/Logo_Maple_Bear.png" h="3rem" />
+						<Flex w="30%">
+							<Button
+								colorScheme="whiteAlpha"
+								onClick={() => navigate('/admin')}
+								zIndex="2"
+								h="3rem"
+								mr="1rem"
+								_hover={{ bg: 'whiteAlpha.800' }}
+								_active={{ bg: 'whiteAlpha.600' }}
+								>
+								<ArrowBackIcon color="white" boxSize={6} />
+							</Button>
+							<Flex justify="center" bgColor="gray.100" w="100%" border="solid gray 0.05rem" p="0.06rem 0" borderRadius="9999999px">
+								<Image src="/Logo_Maple_Bear.png" h="3rem" />
+							</Flex>
 						</Flex>
 						{/* <Flex w="50%" align="center" >
 							<Flex width="100%" h="100%" alignItems="center" ml="2" border="solid gray 0.16rem" bgColor="gray.200" p="0.2rem" borderRadius={"0.25rem"} justify={"center"}>

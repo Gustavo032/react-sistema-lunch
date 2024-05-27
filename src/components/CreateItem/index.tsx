@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Flex, FormControl, FormLabel, Heading, Input, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { ArrowBackIcon } from '@chakra-ui/icons';
 
 export default function CreateItemScreen() {
   const [itemData, setItemData] = useState({
@@ -20,15 +21,24 @@ export default function CreateItemScreen() {
 	console.log(typeof token);
 	/* eslint-disable react-hooks/exhaustive-deps */
 	useEffect(() => {
-		if(token==="") {
-			navigate('/');
-		}
-	},[])
+    const getCookie = (name: string): string | undefined => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) {
+        return parts.pop()?.split(';').shift();
+      }
+    };
+
+    const userRole = getCookie('userRole');
+    if (userRole !== 'ADMIN') {
+      navigate('/');
+    }
+  }, [navigate]);
 	
   const createItem = async () => {
     try {
 
-      const response = await axios.post('http://10.0.0.50:3333/items/create', itemData, {
+      const response = await axios.post('http://localhost:3333/items/create', itemData, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
@@ -79,6 +89,16 @@ export default function CreateItemScreen() {
 			fontSize="2xl"
 			zIndex="2" // Ajusta a camada de empilhamento para que o texto esteja sobre o overlay
 		>
+			 <Button
+        colorScheme="whiteAlpha"
+        onClick={() => navigate('/admin')}
+        zIndex="2"
+				mr="1rem"
+        _hover={{ bg: 'whiteAlpha.800' }}
+        _active={{ bg: 'whiteAlpha.600' }}
+      >
+        <ArrowBackIcon color="white" boxSize={6} />
+      </Button>
 			MapleBear Granja Viana
 		</Text>
 		{/* Overlay escuro */}
