@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Text, Image, Button } from '@chakra-ui/react';
+import { Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Text, Image, Button, Select } from '@chakra-ui/react';
 import { endOfDay, format, startOfDay } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css'; // Import styles
 import { useNavigate } from 'react-router-dom';
@@ -9,59 +9,67 @@ import { ArrowBackIcon } from '@chakra-ui/icons';
 const AllRequests = () => {
   const [requests, setRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
-  // const [loading, setLoading] = useState(false);
-	const [startDate] = useState<Date>(startOfDay(new Date())); // Definindo startDate como o primeiro dia do mês atual
+  const [startDate] = useState<Date>(startOfDay(new Date())); // Definindo startDate como o primeiro dia do mês atual
   const [endDate] = useState<Date>(endOfDay(new Date())); // Definindo endDate como o último dia do mês atual
 
-  const [totalPriceSum, setTotalPriceSum] = useState(0); // Estado para armazenar a soma dos total_price
   const navigate = useNavigate();
-	
-	/* eslint-disable react-hooks/exhaustive-deps */
-	useEffect(() => {
-    const getCookie = (name: string): string | undefined => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) {
-        return parts.pop()?.split(';').shift();
-      }
-    };
 
+  const getCookie = (name: string): string | undefined => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+      return parts.pop()?.split(';').shift();
+    }
+  };
+
+  const setCookie = (name: string, value: string, expires: Date) => {
+    document.cookie = `${name}=${value}; expires=${expires.toUTCString()}; path=/`;
+  };
+
+  const setStatusCookie = (id: string, status: string) => {
+    const endOfDayDate = endOfDay(new Date());
+    setCookie(`status_${id}`, status, endOfDayDate);
+  };
+
+  const getStatusCookie = (id: string): string => {
+    return getCookie(`status_${id}`) || 'Em Aberto';
+  };
+
+  const handleStatusChange = (id: string, status: string) => {
+    setRequests((prevRequests: any) =>
+      prevRequests.map((request: any) =>
+        request.id === id ? { ...request, status } : request
+      )
+    );
+    setStatusCookie(id, status);
+  };
+
+  /* eslint-disable react-hooks/exhaustive-deps */
+  useEffect(() => {
     const userRole = getCookie('userRole');
     if (userRole !== 'ADMIN') {
       navigate('/');
     }
   }, [navigate]);
 
-	useEffect(() => {
-		// Define uma função para realizar o fetch dos pedidos
-		const fetchRequestsPeriodically = () => {
-			fetchRequests(); // Chama a função fetchRequests
-	
-			// Define o intervalo para chamar a função fetchRequests a cada 1 minuto (60000 milissegundos)
-			const intervalId = setInterval(fetchRequests, 1000);
-	
-			// Retorna uma função que limpa o intervalo quando o componente for desmontado
-			return () => clearInterval(intervalId);
-		};
-	
-		// Chama a função fetchRequestsPeriodically quando o componente for montado
-		fetchRequestsPeriodically();
-	
-		// Define as dependências como vazio para garantir que este efeito só seja executado uma vez
-	}, []);
+  useEffect(() => {
+    const fetchRequestsPeriodically = () => {
+      fetchRequests();
 
-	useEffect(() => {
-		fetchRequests();
-  }, [startDate, endDate]);
+      const intervalId = setInterval(fetchRequests, 60000);
+
+      return () => clearInterval(intervalId);
+    };
+
+    fetchRequestsPeriodically();
+  }, []);
 
   useEffect(() => {
-    // Ao atualizar os pedidos, recalcula a soma dos total_price
-    calculateTotalPriceSum();
-  }, [requests]);
+    fetchRequests();
+  }, [startDate, endDate, requests]);
 
   const fetchRequests = async () => {
     try {
-      // setLoading(true);
       const token = document.cookie.replace(
         /(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
         '$1'
@@ -77,109 +85,93 @@ const AllRequests = () => {
         },
       });
 
-      const formattedRequests = response.data.requests.map((request:any) => ({
+      const formattedRequests = response.data.requests.map((request: any) => ({
         ...request,
         created_at: format(new Date(request.created_at), 'dd/MM/yyyy HH:mm:ss'),
-        total_price: parseFloat(request.total_price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-        items: request.items.map((item:any) => ({
-          ...item,
-          price: parseFloat(item.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-        }))
+        status: getStatusCookie(request.id) // Get status from cookie or default to 'Em Aberto'
       }));
       setRequests(formattedRequests);
       setFilteredRequests(formattedRequests);
     } catch (error) {
       console.error('Erro ao buscar requests:', error);
-    } finally {
-      // setLoading(false);
     }
   };
 
-  const calculateTotalPriceSum = () => {
-    const sum = requests.reduce((accumulator, request:any) => {
-      return accumulator + parseFloat(request.total_price.replace('R$', '').replace('.', '').replace(',', '.'));
-    }, 0);
-    setTotalPriceSum(sum);
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Em Aberto':
+        return 'yellow.200';
+      case 'Pedido Feito':
+        return 'green.200';
+      case 'Em Preparo':
+        return 'blue.200';
+      default:
+        return 'gray.100';
+    }
   };
-
-  // const handleNextPage = () => {
-  //   setCurrentPage(currentPage + 1);
-  // };
-
-	// const handlePreviousPage = () => {
-  //   setCurrentPage(currentPage - 1);
-  // };	
 
   return (
     <Box p="4" bgColor="gray.900" minH="100vh">
-        <>
-          <Flex mb="4" alignItems="center" justifyContent={"space-between"}>
-						{/* <Flex justifyContent="flex-end" mb="4">
-							<Text>Total: {totalPriceSum.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
-						</Flex> */}
-						<Flex w="30%">
-							<Button
-								colorScheme="whiteAlpha"
-								onClick={() => navigate('/admin')}
-								zIndex="2"
-								h="3rem"
-								mr="1rem"
-								_hover={{ bg: 'whiteAlpha.800' }}
-								_active={{ bg: 'whiteAlpha.600' }}
-								>
-								<ArrowBackIcon color="white" boxSize={6} />
-							</Button>
-							<Flex justify="center" bgColor="gray.100" w="100%" border="solid gray 0.05rem" p="0.06rem 0" borderRadius="9999999px">
-								<Image src="/Logo_Maple_Bear.png" h="3rem" />
-							</Flex>
-						</Flex>
-						{/* <Flex w="50%" align="center" >
-							<Flex width="100%" h="100%" alignItems="center" ml="2" border="solid gray 0.16rem" bgColor="gray.200" p="0.2rem" borderRadius={"0.25rem"} justify={"center"}>
-								<Text as={FormLabel} mt="0.5rem" htmlFor="inputDateStart" mr="2">Data Inicial:</Text>
-								<Box as={DatePicker} id="inputDateStart" bgColor="gray.100" width="100%" border="solid 0.12rem black" borderRadius={"0.25rem"} height="2.5rem" textAlign="center" selected={startDate} onChange={handleStartDateChange} dateFormat="dd/MM/yyyy" />
-							</Flex>
-							
-							<Flex width="100%" h="100%" alignItems="center" ml="2" border="solid gray 0.16rem" bgColor="gray.200" p="0.2rem" borderRadius={"0.25rem"} justify={"center"}>
-								<Text as={FormLabel} mt="0.5rem" htmlFor="inputDateEnd" ml="2" mr="2">Data Final:</Text>
-								<Box as={DatePicker} id="inputDateEnd" bgColor="gray.100" width="100%" border="solid 0.12rem black" borderRadius={"0.25rem"} height="2.5rem" textAlign="center" selected={endDate} onChange={handleEndDateChange} dateFormat="dd/MM/yyyy" />
-							</Flex>
-						</Flex>*/}
-					</Flex> 
-					
-          <Box p="4" bg="gray.100" borderRadius="md" border="solid gray 0.16rem">
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>Nº</Th>
-                  <Th>Usuário</Th>
-                  <Th>Itens</Th>
-                  <Th>Preço Total: 	<Text fontSize="1.20rem" color="blue.500" fontWeight="600">{totalPriceSum.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text></Th>
-                  <Th>Data de Criação</Th>
+      <>
+        <Flex mb="4" alignItems="center" justifyContent={"space-between"}>
+          <Flex w="30%">
+            <Button
+              colorScheme="whiteAlpha"
+              onClick={() => navigate('/admin')}
+              zIndex="2"
+              h="3rem"
+              mr="1rem"
+              _hover={{ bg: 'whiteAlpha.800' }}
+              _active={{ bg: 'whiteAlpha.600' }}
+            >
+              <ArrowBackIcon color="white" boxSize={6} />
+            </Button>
+            <Flex justify="center" bgColor="gray.100" w="100%" border="solid gray 0.05rem" p="0.06rem 0" borderRadius="9999999px">
+              <Image src="/Logo_Maple_Bear.png" h="3rem" />
+            </Flex>
+          </Flex>
+        </Flex>
+
+        <Box p="4" bg="gray.100" borderRadius="md" border="solid gray 0.16rem">
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>Nº</Th>
+                <Th>Usuário</Th>
+                <Th>Itens</Th>
+                <Th>Status</Th>
+                <Th>Data de Criação</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {filteredRequests.map((request: any, index: number) => (
+                <Tr key={index} bgColor={getStatusColor(request.status)}>
+                  <Td>{request.sequence}</Td>
+                  <Td>{request.user_name}</Td>
+                  <Td>
+                    <ul>
+                      {request.items.map((item: any, itemIndex: number) => (
+                        <li key={itemIndex}>{item.title}</li>
+                      ))}
+                    </ul>
+                  </Td>
+                  <Td>
+                    <Select
+                      value={request.status}
+                      onChange={(e) => handleStatusChange(request.id, e.target.value)}
+                    >
+                      <option value="Em Aberto">Em Aberto</option>
+                      <option value="Pedido Feito">Pedido Feito</option>
+                      <option value="Em Preparo">Em Preparo</option>
+                    </Select>
+                  </Td>
+                  <Td>{request.created_at}</Td>
                 </Tr>
-              </Thead>
-              <Tbody>
-                {filteredRequests.map((request:any, index:number) => (
-                  <Tr key={index}>
-                    <Td>{request.sequence}</Td>
-                    <Td>{request.user_name}</Td>
-                    <Td>
-                      <ul>
-                        {request.items.map((item:any, itemIndex:number) => (
-                          <li key={itemIndex}>{item.title} - {item.price}</li>
-                        ))}
-                      </ul>
-                    </Td>
-                    <Td>{request.total_price}</Td>
-                    <Td>{request.created_at}</Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </Box>
-          {/* <Flex justify="center" mt="4">
-            <Button onClick={exportToExcel} colorScheme='green' ml="2">Exportar Planilha</Button>
-          </Flex> */}
-        </>
+              ))}
+            </Tbody>
+          </Table>
+        </Box>
+      </>
     </Box>
   );
 };
