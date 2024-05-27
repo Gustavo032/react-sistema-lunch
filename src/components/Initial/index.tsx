@@ -14,6 +14,9 @@ export default function PresentationScreen() {
   };
 
 	useEffect(() => {
+		document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = 'userRole=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+		
     const params = new URLSearchParams(location.search);
     const endRequest = params.get('endRequest');
     if (endRequest === 'true') {

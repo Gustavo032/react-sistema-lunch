@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 import { ArrowBackIcon } from '@chakra-ui/icons';
+import { Link } from 'react-router-dom';
 
 export default function CreateUserScreen() {
   const [userData, setUserData] = useState({
@@ -166,9 +167,13 @@ export default function CreateUserScreen() {
         position="relative" // Define a posição relativa para que o zIndex funcione corretamente
         border="#fff solid 0.12rem"
       >
-        <Heading color="gray.800" lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
-          Criar Usuário
-        </Heading>
+				<Flex justifyContent={"space-between"}>
+					<Heading color="gray.800" lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
+						Criar Usuário
+					</Heading>
+					<Button as={Link} to="/controle" colorScheme="blue">Listar Usuários</Button>
+				</Flex>
+
         <Text
           fontSize={{ base: 'sm', sm: 'md' }}
           color={useColorModeValue('gray.800', 'gray.800')}

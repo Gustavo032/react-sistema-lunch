@@ -8,6 +8,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import UserList from '../UserList';
 import { useNavigate } from 'react-router-dom';
 import { ArrowBackIcon } from '@chakra-ui/icons';
+import { Link } from 'react-router-dom';
 
 const Control = () => {
   const [requests, setRequests] = useState([]);
@@ -192,18 +193,21 @@ const Control = () => {
 
   return (
     <Box p="4" bgColor="gray.900" minH="100vh">
-			<Button
-				colorScheme="whiteAlpha"
-				onClick={() => navigate('/admin')}
-				zIndex="2"
-				h="3rem"
-				mr="1rem"
-				mb="1rem"
-				_hover={{ bg: 'whiteAlpha.800' }}
-				_active={{ bg: 'whiteAlpha.600' }}
-				>
-				<ArrowBackIcon color="white" boxSize={6} />
-			</Button>
+			<Flex w="100%" justifyContent={"space-between"} align={"center"}>	
+				<Button
+					colorScheme="whiteAlpha"
+					onClick={() => navigate('/admin')}
+					zIndex="2"
+					h="3rem"
+					mr="1rem"
+					mb="1rem"
+					_hover={{ bg: 'whiteAlpha.800' }}
+					_active={{ bg: 'whiteAlpha.600' }}
+					>
+					<ArrowBackIcon color="white" boxSize={6} />
+				</Button>
+				<Button as={Link} to="/createUser" colorScheme="green">Criar Usuário</Button>
+			</Flex>
       {!userId ? (
         <UserList onSelectUser={handleSelectUser} />
       ) : (
