@@ -40,7 +40,7 @@ export default function LoginScreen() {
       setShowModal(true);
     }
 
-    const socket = new WebSocket('ws://10.0.0.50:3333');
+    const socket = new WebSocket('ws://192.168.0.149:3333');
     socket.onopen = function() {
       console.log('Conexão estabelecida.');
     };
@@ -55,7 +55,7 @@ export default function LoginScreen() {
         expirationDate.setDate(expirationDate.getDate() + 7);
 
         document.cookie = `refreshToken=${response.refreshToken};expires=${expirationDate.toUTCString()};path=/`;
-        document.cookie = `userRole=${response.data.role};expires=${expirationDate.toUTCString()};path=/`;
+        document.cookie = `userRole=${response.role};expires=${expirationDate.toUTCString()};path=/`;
         console.log(document.cookie);
         socket.close();
         navigate('/dashboard');
@@ -81,7 +81,7 @@ export default function LoginScreen() {
 
   async function loginUserFunction() {
     try {
-      const response = await axios.post('http://localhost:3333/sessions', {
+      const response = await axios.post('http://192.168.0.149:3333/sessions', {
         email: userEmail,
         password: userPassword,
       });

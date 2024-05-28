@@ -38,7 +38,7 @@ export default function CreateItemScreen() {
   const createItem = async () => {
     try {
 
-      const response = await axios.post('http://localhost:3333/items/create', itemData, {
+      const response = await axios.post('http://192.168.0.149:3333/items/create', itemData, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},

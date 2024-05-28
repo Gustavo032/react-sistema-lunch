@@ -43,7 +43,7 @@ export default function CreateUserScreen() {
   
   const createUser = async () => {
     try {
-      const response = await axios.post('http://localhost:3333/users', userData, {
+      const response = await axios.post('http://192.168.0.149:3333/users', userData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json', // Altere o tipo de conteúdo para application/json

@@ -25,7 +25,7 @@ const UserList = ({ onSelectUser }:any) => {
         '$1'
       );
 
-      const response = await axios.get(`http://localhost:3333/users/all`, {
+      const response = await axios.get(`http://192.168.0.149:3333/users/all`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -34,7 +34,7 @@ const UserList = ({ onSelectUser }:any) => {
       setUsers(fetchedUsers);
 
       const userTotalPricePromises = fetchedUsers.map((user:any) => {
-        return axios.get(`http://localhost:3333/total-price-sum/${user.id}/${String(selectedMonth)}/${String(selectedYear)}`, {
+        return axios.get(`http://192.168.0.149:3333/total-price-sum/${user.id}/${String(selectedMonth)}/${String(selectedYear)}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -86,7 +86,7 @@ const UserList = ({ onSelectUser }:any) => {
   const handleDeleteUser = async (userId:any) => {
     onClose();
     try {
-      await axios.delete(`http://localhost:3333/users/${userId}/delete`, {
+      await axios.delete(`http://192.168.0.149:3333/users/${userId}/delete`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
