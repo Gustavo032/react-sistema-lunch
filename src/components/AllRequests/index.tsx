@@ -75,7 +75,7 @@ const AllRequests = () => {
         '$1'
       );
 
-      const response = await axios.get(`http://192.168.2.108:3333/requests/all`, {
+      const response = await axios.get(`http://192.168.0.68:3333/requests/all`, {
         params: {
           startDate: format(startDate, 'MM/dd/yyyy'),
           endDate: format(endDate, 'MM/dd/yyyy'),

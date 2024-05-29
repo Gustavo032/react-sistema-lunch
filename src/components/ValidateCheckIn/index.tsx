@@ -31,7 +31,7 @@ export function ReadQRCode() {
   //   );
 
   //   axios.patch(
-  //     `http://192.168.2.108:3333/check-ins/${qrValue}/validate`,
+  //     `http://192.168.0.68:3333/check-ins/${qrValue}/validate`,
   //     {},
   //     {
   //       headers: {

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Box, Center, Text, UnorderedList, ListItem, Button, Flex, useColorModeValue } from "@chakra-ui/react";
+import { Box, Center, Text, UnorderedList, ListItem, Button, Flex, useColorModeValue, useBreakpointValue } from "@chakra-ui/react";
 import { useNavigate } from 'react-router-dom';
 
 
@@ -51,7 +51,31 @@ export function TicketScreen(props: TicketScreenProps) {
     }, 1000);
   };
 
-
+	const ResponsiveButton = () => {
+		const navigate = useNavigate();
+	
+		const buttonComponent = useBreakpointValue({
+			base: (
+				<Button mt={6} colorScheme="blue" onClick={() => navigate('/')}>
+					Encerrar e Sair
+				</Button>
+			),
+			md: (
+				<Button mt={6} colorScheme="blue" onClick={handlePrint}>
+					Imprima Seu Ticket
+				</Button>
+			),
+		}, {
+			fallback: String(
+				<Button mt={6} colorScheme="blue" onClick={() => navigate('/')}>
+					Encerrar e Sair
+				</Button>
+			),
+		});
+	
+		return buttonComponent ?? null;
+	};
+	
   return (
     <Center h="100vh" bgSize="cover" bgPosition="center" backgroundImage="./img/mapleBearBackground.jpg">
       <Text
@@ -99,7 +123,7 @@ export function TicketScreen(props: TicketScreenProps) {
           ))}
         </UnorderedList>
         <Text mt={4} fontWeight="bold" textAlign="left">Total: R$ {ticketData.total}</Text>
-        <Button mt={6} colorScheme="blue" onClick={handlePrint}>Imprima Seu Ticket</Button>
+        <ResponsiveButton/>
       </Box>
     </Center>
   );
