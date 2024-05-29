@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Input, Flex, Icon, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, AlertDialogFooter, useToast, Image, Text, FormLabel } from '@chakra-ui/react';
-import { FaTrash } from 'react-icons/fa';
+import imageCompression from 'browser-image-compression';
+import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Input, Flex, Icon, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, AlertDialogFooter, useToast, Image, Text, FormLabel, FormControl, Select } from '@chakra-ui/react';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 const UserList = ({ onSelectUser }:any) => {
   const [users, setUsers] = useState([]);
@@ -11,6 +12,10 @@ const UserList = ({ onSelectUser }:any) => {
   const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUser, setSelectedUser] = useState<any>({});
+	const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
+	const [imagePreview, setImagePreview] = useState('');
+
   
   const toast = useToast();
 
@@ -25,7 +30,7 @@ const UserList = ({ onSelectUser }:any) => {
         '$1'
       );
 
-      const response = await axios.get(`http://192.168.0.149:3333/users/all`, {
+      const response = await axios.get(`http://192.168.2.108:3333/users/all`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -34,7 +39,7 @@ const UserList = ({ onSelectUser }:any) => {
       setUsers(fetchedUsers);
 
       const userTotalPricePromises = fetchedUsers.map((user:any) => {
-        return axios.get(`http://192.168.0.149:3333/total-price-sum/${user.id}/${String(selectedMonth)}/${String(selectedYear)}`, {
+        return axios.get(`http://192.168.2.108:3333/total-price-sum/${user.id}/${String(selectedMonth)}/${String(selectedYear)}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -57,6 +62,15 @@ const UserList = ({ onSelectUser }:any) => {
     onSelectUser(userId);
   };
 
+	const handleModifyUser = (user:any) => {
+		setSelectedUser(user);
+		setIsModifyModalOpen(true);
+	};
+
+	const handleCloseModifyModal = () => {
+		setIsModifyModalOpen(false);
+	};
+	
   const handleFilterName = (event:any) => {
     const value = event.target.value;
     setFilterName(value);
@@ -83,10 +97,48 @@ const UserList = ({ onSelectUser }:any) => {
     '$1'
   );
 
+
+	const handleImageChange = async (e:any) => {
+		const file = e.target.files[0];
+	
+		// Verificar se foi selecionado um arquivo
+		if (!file) return;
+	
+		// Verificar se o arquivo é uma imagem
+		if (!file.type.includes('image')) {
+			alert('Por favor, selecione uma imagem.');
+			return;
+		}
+	
+		// Verificar o tamanho do arquivo
+		if (file.size > 200 * 1024) {
+			// Se a imagem exceder 200KB, redimensioná-la
+			const compressedFile = await imageCompression(file, { maxSizeMB: 0.1 });
+			// Exibir a imagem redimensionada
+			const reader:any = new FileReader();
+			reader.onload = () => {
+				setImagePreview(reader.result);
+				// Atualizar o estado do usuário com a imagem
+				setSelectedUser({ ...selectedUser, image: reader.result });
+			};
+			reader.readAsDataURL(compressedFile);
+		} else {
+			// Exibir a imagem sem redimensionamento
+			const reader:any = new FileReader();
+			reader.onload = () => {
+				setImagePreview(reader.result);
+				// Atualizar o estado do usuário com a imagem
+				setSelectedUser({ ...selectedUser, image: reader.result });
+			};
+			reader.readAsDataURL(file);
+		}
+	};
+	
+
   const handleDeleteUser = async (userId:any) => {
     onClose();
     try {
-      await axios.delete(`http://192.168.0.149:3333/users/${userId}/delete`, {
+      await axios.delete(`http://192.168.2.108:3333/users/${userId}/delete`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -103,6 +155,28 @@ const UserList = ({ onSelectUser }:any) => {
       console.error('Erro ao excluir usuário:', error);
     }
   };
+
+	const handleUpdateUser = async (updatedUser:any) => {
+		try {
+			await axios.put(`http://192.168.2.108:3333/users/${updatedUser.id}/update`, updatedUser, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+	
+			toast({
+				title: 'Usuário atualizado com sucesso!',
+				status: 'success',
+				duration: 3000,
+				isClosable: true,
+			});
+			fetchUsers();
+			handleCloseModifyModal();
+		} catch (error) {
+			console.error('Erro ao atualizar usuário:', error);
+		}
+	};
+	
 
   const totalFatura = Object.values(userTotalPrices).reduce((sum:any, price:any) => sum + price, 0);
 
@@ -174,6 +248,81 @@ const UserList = ({ onSelectUser }:any) => {
                 <Button onClick={() => handleSelectUser(user.id)} bgColor="blue.400">Selecionar</Button>
               </Td>
               <Td>
+								<Button onClick={() => handleModifyUser(user)} bgColor="orange.400"><Icon as={FaEdit} w="1rem" h="1rem"/></Button>
+								<AlertDialog
+									motionPreset='slideInBottom'
+									leastDestructiveRef={cancelRef}
+									onClose={handleCloseModifyModal}
+									isOpen={isModifyModalOpen}
+									isCentered
+								>
+									<AlertDialogOverlay />
+									<AlertDialogContent>
+										<AlertDialogHeader>Modificar Usuário</AlertDialogHeader>
+										<AlertDialogCloseButton />
+										<AlertDialogBody>
+										<FormControl>
+											<FormLabel>Nome</FormLabel>
+											<Input 
+												value={selectedUser.name ? selectedUser.name : '' } 
+												onChange={(e) => setSelectedUser({ ...selectedUser, name: e.target.value })}
+											/>
+										</FormControl>
+										<FormControl>
+											<FormLabel>Email</FormLabel>
+											<Input 
+												value={selectedUser.email ? selectedUser.email : '' } 
+												onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })}
+											/>
+										</FormControl>
+										<FormControl>
+											<FormLabel>Senha</FormLabel>
+											<Input 
+												value={selectedUser.password ? selectedUser.password : '' } 
+												onChange={(e) => setSelectedUser({ ...selectedUser, password: e.target.value })}
+											/>
+										</FormControl>
+										<FormControl>
+											<FormLabel>Limite de crédito</FormLabel>
+											<Input 
+												type="number"
+												value={selectedUser.credit_limit ? selectedUser.credit_limit : '' } 
+												onChange={(e) => setSelectedUser({ ...selectedUser, credit_limit: e.target.value })}
+											/>
+										</FormControl>
+										<FormControl>
+											<FormLabel>Função</FormLabel>
+											<Select
+												value={selectedUser.role ? selectedUser.role : '' } 
+												onChange={(e:any) => setSelectedUser({ ...selectedUser, role: e.target.value })}
+											>
+												<option value="ADMIN">Administrador</option>
+												<option value="MEMBER">Usuário</option>
+											</Select>
+										</FormControl>
+										<FormControl>
+											<FormLabel>Imagem</FormLabel>
+											<Input type="file" onChange={handleImageChange} />
+											{imagePreview && (
+												<Box mt={2}>
+													<Image src={imagePreview} alt="Preview" maxW="200px" maxH="200px" />
+												</Box>
+											)}
+										</FormControl>
+
+									</AlertDialogBody>
+
+										<AlertDialogFooter>
+											<Button ref={cancelRef} onClick={handleCloseModifyModal}>
+												Cancelar
+											</Button>
+											<Button colorScheme='orange' ml={3} onClick={() => handleUpdateUser(selectedUser)}>
+												Salvar
+											</Button>
+										</AlertDialogFooter>
+									</AlertDialogContent>
+								</AlertDialog>
+
                 <Button onClick={() => setSelectedUserId(user.id)} bgColor="red.400"><Icon as={FaTrash} w="1rem" size="1rem"/></Button>
                 <AlertDialog
                   motionPreset='slideInBottom'
