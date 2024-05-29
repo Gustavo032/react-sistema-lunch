@@ -1,14 +1,14 @@
 import { Box, Flex, Grid, Text, useToast, useBreakpointValue } from "@chakra-ui/react";
 import { MealOptionCard } from "./MealOptionCard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 export function RequestScreen() {
   const [countdown, setCountdown] = useState(8); // Estado para o contador
   const navigate = useNavigate(); // Hook para navegação
   const toast = useToast(); // Hook para exibir notificações
-
-  const isSmallScreen = useBreakpointValue({ base: true, md: false }, {fallback: String(true)});
+  const isSmallScreen = useBreakpointValue({ base: true, md: false }, { fallback: String(true) });
+  const firstRender = useRef(true); // Ref para controlar o primeiro render
 
   useEffect(() => {
     if (isSmallScreen) {
@@ -23,20 +23,25 @@ export function RequestScreen() {
   }, [isSmallScreen]);
 
   useEffect(() => {
+    if (isSmallScreen) {
+      return; // Não exibe o toast em telas pequenas
+    }
+
     if (countdown === 0) {
       navigate('/');
     }
-    
-    if (!isSmallScreen && countdown > 0) {
+
+    if (countdown > 0) {
       const toastId = `countdown-toast-${countdown}`;
       if (!toast.isActive(toastId)) {
         toast({
           id: toastId,
-          title: `Retornando em ${countdown} segundos...`,
+          title: firstRender.current ? "Escolha seu Pedido!" : `Retornando em ${countdown} segundos...`,
           status: "info",
           duration: 1000, // Duração do toast em milissegundos
           isClosable: true,
         });
+        firstRender.current = false; // Set firstRender to false after first toast
       }
     }
   }, [countdown, toast, navigate, isSmallScreen]);

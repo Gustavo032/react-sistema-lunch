@@ -65,7 +65,7 @@ export default function LoginScreen() {
       }
     };
 
-    socket.onclose = function(event:any) {
+    socket.onclose = function(event) {
       console.log('Conexão fechada:', event);
     };
 
@@ -110,11 +110,15 @@ export default function LoginScreen() {
   const handleLogin = async (event:any) => {
     event.preventDefault();
     try {
-      await toast.promise(loginUserFunction(), {
-        loading: { title: 'Entrando...', description: 'Por favor, aguarde...' },
-        success: { title: 'Usuário logado com sucesso!', description: 'Looks great' },
-        error: { title: 'Erro ao logar usuário', description: 'Something wrong' },
-      });
+      if (!isSmallScreen) {
+        await toast.promise(loginUserFunction(), {
+          loading: { title: 'Entrando...', description: 'Por favor, aguarde...' },
+          success: { title: 'Usuário logado com sucesso!', description: 'Looks great' },
+          error: { title: 'Erro ao logar usuário', description: 'Something wrong' },
+        });
+      } else {
+        await loginUserFunction();
+      }
     } catch (error) {
       console.error('Error creating user:', error);
     }
