@@ -1,4 +1,4 @@
-import { Box, Flex, Grid, Text, useToast } from "@chakra-ui/react";
+import { Box, Flex, Grid, Text, useToast, useBreakpointValue } from "@chakra-ui/react";
 import { MealOptionCard } from "./MealOptionCard";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,29 +8,38 @@ export function RequestScreen() {
   const navigate = useNavigate(); // Hook para navegação
   const toast = useToast(); // Hook para exibir notificações
 
+  const isSmallScreen = useBreakpointValue({ base: true, md: false }, {fallback: String(true)});
+
   useEffect(() => {
+    if (isSmallScreen) {
+      return; // Não inicia o contador em telas pequenas
+    }
+
     const timer = setInterval(() => {
       setCountdown((prevCountdown) => prevCountdown - 1);
     }, 1000); // Atualiza a cada segundo
 
-    if (countdown === 0) {
-      clearInterval(timer);
-      navigate('/');
-    }
-
     return () => clearInterval(timer); // Limpa o timer se o componente for desmontado
-  }, [countdown, navigate]);
+  }, [isSmallScreen]);
 
   useEffect(() => {
-    if (countdown > 0) {
-      toast({
-        title: `Retornando em ${countdown} segundos...`,
-        status: "info",
-        duration: 1000, // Duração do toast em milissegundos
-        isClosable: true,
-      });
+    if (countdown === 0) {
+      navigate('/');
     }
-  }, [countdown, toast]);
+    
+    if (!isSmallScreen && countdown > 0) {
+      const toastId = `countdown-toast-${countdown}`;
+      if (!toast.isActive(toastId)) {
+        toast({
+          id: toastId,
+          title: `Retornando em ${countdown} segundos...`,
+          status: "info",
+          duration: 1000, // Duração do toast em milissegundos
+          isClosable: true,
+        });
+      }
+    }
+  }, [countdown, toast, navigate, isSmallScreen]);
 
   return (
     <Box
