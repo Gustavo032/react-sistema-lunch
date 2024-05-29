@@ -146,6 +146,21 @@ export default function AdminDashboard() {
           >
             Controle Geral
           </Button>
+					<Button
+            color={'white'}
+            bgColor={'red.500'}
+            _hover={{
+              bgColor: 'red',
+              opacity: 0.5,
+            }}
+            _active={{
+              bgColor: 'red.300',
+            }}
+            variant={'solid'}
+            onClick={() => navigate('/dashboard')}
+          >
+            Solicitar uma Refeição
+          </Button>
         </SimpleGrid>
       </Stack>
     </Flex>

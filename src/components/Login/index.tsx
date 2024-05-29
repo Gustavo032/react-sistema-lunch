@@ -19,6 +19,7 @@ import {
   ModalCloseButton,
   Icon,
   Spinner,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { FaRegCheckCircle } from 'react-icons/fa';
@@ -32,6 +33,8 @@ export default function LoginScreen() {
   const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -93,11 +96,11 @@ export default function LoginScreen() {
         document.cookie = `refreshToken=${response.data.token};expires=${expirationDate.toUTCString()};path=/`;
         document.cookie = `userRole=${response.data.role};expires=${expirationDate.toUTCString()};path=/`;
       }
-			if(response.data.role === 'ADMIN') {
-      	navigate('/admin');
-			} else {
-      	navigate('/dashboard');
-			}
+      if(response.data.role === 'ADMIN') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error) {
       console.error('Error:', error);
       throw error;
@@ -164,7 +167,7 @@ export default function LoginScreen() {
         <Heading color="gray.800" lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
           Faça seu pedido
         </Heading>
-        {!showEmailLogin ? (
+        {!showEmailLogin && !isSmallScreen ? (
           <>
             <Text
               fontSize={{ base: 'sm', sm: 'md' }}
@@ -244,22 +247,24 @@ export default function LoginScreen() {
               >
                 Continuar
               </Button>
-              <Button
-                mt={-4}
-                color={'white'}
-                bgColor={'blue.500'}
-                _hover={{
-                  bgColor: 'blue',
-                  opacity: 0.5,
-                }}
-                _active={{
-                  bgColor: 'blue.300',
-                }}
-                variant={'solid'}
-                onClick={() => setShowEmailLogin(false)}
-              >
-                Entrar com Facial
-              </Button>
+              {!isSmallScreen && (
+                <Button
+                  mt={-4}
+                  color={'white'}
+                  bgColor={'blue.500'}
+                  _hover={{
+                    bgColor: 'blue',
+                    opacity: 0.5,
+                  }}
+                  _active={{
+                    bgColor: 'blue.300',
+                  }}
+                  variant={'solid'}
+                  onClick={() => setShowEmailLogin(false)}
+                >
+                  Entrar com Facial
+                </Button>
+              )}
               {errorMessage !== '' && (
                 <Stack
                   direction={{ base: 'column', sm: 'row' }}
