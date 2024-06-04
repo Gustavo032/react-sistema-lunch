@@ -30,7 +30,7 @@ const UserList = ({ onSelectUser }:any) => {
         '$1'
       );
 
-      const response = await axios.get(`http://192.168.0.68:3333/users/all`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/users/all`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -39,7 +39,7 @@ const UserList = ({ onSelectUser }:any) => {
       setUsers(fetchedUsers);
 
       const userTotalPricePromises = fetchedUsers.map((user:any) => {
-        return axios.get(`http://192.168.0.68:3333/total-price-sum/${user.id}/${String(selectedMonth)}/${String(selectedYear)}`, {
+        return axios.get(`${process.env.REACT_APP_API_BASE_URL}/total-price-sum/${user.id}/${String(selectedMonth)}/${String(selectedYear)}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -138,7 +138,7 @@ const UserList = ({ onSelectUser }:any) => {
   const handleDeleteUser = async (userId:any) => {
     onClose();
     try {
-      await axios.delete(`http://192.168.0.68:3333/users/${userId}/delete`, {
+      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/users/${userId}/delete`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -158,7 +158,7 @@ const UserList = ({ onSelectUser }:any) => {
 
 	const handleUpdateUser = async (updatedUser:any) => {
 		try {
-			await axios.put(`http://192.168.0.68:3333/users/${updatedUser.id}/update`, updatedUser, {
+			await axios.put(`${process.env.REACT_APP_API_BASE_URL}/users/${updatedUser.id}/update`, updatedUser, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},

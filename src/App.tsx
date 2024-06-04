@@ -21,6 +21,7 @@ import AdminDashboard from "./components/AdminDash";
 
 export const App = () => {
   const [ticketData, setTicketData] = useState<any>(null);
+	window.history.forward(); 
 
   return(
     <ChakraProvider theme={theme}>
@@ -39,7 +40,6 @@ export const App = () => {
         <Route path="/createItem" element={<CreateItemScreen />} />
         <Route path="/*" element={<NotFound />} />
       </Routes>
-			
     </ChakraProvider>
   )
 }

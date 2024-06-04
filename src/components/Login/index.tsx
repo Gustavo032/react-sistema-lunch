@@ -43,7 +43,7 @@ export default function LoginScreen() {
       setShowModal(true);
     }
 
-    const socket = new WebSocket('ws://192.168.0.68:3333');
+    const socket = new WebSocket('ws://192.168.2.115:3333');
     socket.onopen = function() {
       console.log('Conexão estabelecida.');
     };
@@ -84,7 +84,7 @@ export default function LoginScreen() {
 
   async function loginUserFunction() {
     try {
-      const response = await axios.post('http://192.168.0.68:3333/sessions', {
+      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/sessions`, {
         email: userEmail,
         password: userPassword,
       });
