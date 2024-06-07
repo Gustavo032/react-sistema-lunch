@@ -1,16 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Text, Image, Button, Select } from '@chakra-ui/react';
+import { Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Image, Button, Select, Input } from '@chakra-ui/react';
 import { endOfDay, format, startOfDay } from 'date-fns';
-import 'react-datepicker/dist/react-datepicker.css'; // Import styles
+import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 
+interface RequestItem {
+  id: string;
+  title: string;
+}
+
+interface Request {
+  id: string;
+  sequence: number;
+  user_name: string;
+  items: RequestItem[];
+  status: string;
+  created_at: string;
+}
+
 const AllRequests = () => {
-  const [requests, setRequests] = useState([]);
-  const [filteredRequests, setFilteredRequests] = useState([]);
-  const [startDate] = useState<Date>(startOfDay(new Date())); // Definindo startDate como o primeiro dia do mês atual
-  const [endDate] = useState<Date>(endOfDay(new Date())); // Definindo endDate como o último dia do mês atual
+  const [requests, setRequests] = useState<Request[]>([]);
+  const [filteredRequests, setFilteredRequests] = useState<Request[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [startDate] = useState<Date>(startOfDay(new Date()));
+  const [endDate] = useState<Date>(endOfDay(new Date()));
 
   const navigate = useNavigate();
 
@@ -36,15 +50,14 @@ const AllRequests = () => {
   };
 
   const handleStatusChange = (id: string, status: string) => {
-    setRequests((prevRequests: any) =>
-      prevRequests.map((request: any) =>
+    setRequests((prevRequests) =>
+      prevRequests.map((request) =>
         request.id === id ? { ...request, status } : request
       )
     );
     setStatusCookie(id, status);
   };
 
-  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     const userRole = getCookie('userRole');
     if (userRole !== 'ADMIN') {
@@ -53,49 +66,59 @@ const AllRequests = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const fetchRequestsPeriodically = () => {
-      fetchRequests();
+    const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'http://localhost:3333';
+    const socketUrl = `${urlBase.replace(/^http/, 'ws')}/requests/updates`;
 
-      const intervalId = setInterval(fetchRequests, 60000);
+    let socket: WebSocket;
 
-      return () => clearInterval(intervalId);
+    const connect = () => {
+      socket = new WebSocket(socketUrl);
+
+      socket.onopen = () => {
+        console.log('Conectado ao servidor WebSocket');
+      };
+
+      socket.onmessage = (event) => {
+				try {
+					const data = JSON.parse(event.data);
+					if (data && (data.event === 'initialRequests' || data.event === 'newRequest')) {
+						const updatedRequests: Request[] = data.requests || [data.request];
+						const formattedRequests = updatedRequests.map((request) => ({
+							...request,
+							status: getStatusCookie(request.id),
+							created_at: format(new Date(request.created_at), 'dd/MM/yyyy HH:mm:ss')
+						}));
+				
+						if (data.event === 'initialRequests') {
+							setRequests(formattedRequests);
+							setFilteredRequests(formattedRequests);
+						} else if (data.event === 'newRequest') {
+							setRequests((prevRequests) => [...formattedRequests, ...prevRequests]);
+							setFilteredRequests((prevRequests) => [...formattedRequests, ...prevRequests]);
+						}
+					} else {
+						console.error('Unknown event type or data format:', data);
+					}
+				} catch (error) {
+					console.error('Error parsing WebSocket message:', error);
+				}				
+				
+      };
+
+      // socket.onclose = (event) => {
+      //   console.log(`WebSocket closed: ${event.code}, ${event.reason}`);
+      //   // Tentativa de reconexão após 3 segundos
+      //   setTimeout(connect, 3000);
+      // };
+
+      socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        socket.close();
+      };
     };
 
-    fetchRequestsPeriodically();
+    connect();
   }, []);
-
-  useEffect(() => {
-    fetchRequests();
-  }, [startDate, endDate, requests]);
-
-  const fetchRequests = async () => {
-    try {
-      const token = document.cookie.replace(
-        /(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
-        '$1'
-      );
-
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/requests/all`, {
-        params: {
-          startDate: format(startDate, 'MM/dd/yyyy'),
-          endDate: format(endDate, 'MM/dd/yyyy'),
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const formattedRequests = response.data.requests.map((request: any) => ({
-        ...request,
-        created_at: format(new Date(request.created_at), 'dd/MM/yyyy HH:mm:ss'),
-        status: getStatusCookie(request.id) // Get status from cookie or default to 'Em Aberto'
-      }));
-      setRequests(formattedRequests);
-      setFilteredRequests(formattedRequests);
-    } catch (error) {
-      console.error('Erro ao buscar requests:', error);
-    }
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -108,6 +131,16 @@ const AllRequests = () => {
       default:
         return 'gray.100';
     }
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = event.target.value.toLowerCase();
+    setSearchTerm(searchTerm);
+
+    const filtered = requests.filter((request) =>
+      request.user_name.toLowerCase().includes(searchTerm)
+    );
+    setFilteredRequests(filtered);
   };
 
   return (
@@ -133,6 +166,12 @@ const AllRequests = () => {
         </Flex>
 
         <Box p="4" bg="gray.100" borderRadius="md" border="solid gray 0.16rem">
+          <Input
+            placeholder="Pesquisar por nome"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            mb="4"
+          />
           <Table variant="simple">
             <Thead>
               <Tr>
@@ -144,13 +183,13 @@ const AllRequests = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {filteredRequests.map((request: any, index: number) => (
+              {filteredRequests && filteredRequests.map((request, index) => (
                 <Tr key={index} bgColor={getStatusColor(request.status)}>
                   <Td>{request.sequence}</Td>
                   <Td>{request.user_name}</Td>
                   <Td>
                     <ul>
-                      {request.items.map((item: any, itemIndex: number) => (
+                      {request.items && request.items.map((item, itemIndex) => (
                         <li key={itemIndex}>{item.title}</li>
                       ))}
                     </ul>

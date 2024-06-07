@@ -43,7 +43,8 @@ export default function LoginScreen() {
       setShowModal(true);
     }
 
-    const socket = new WebSocket('ws://192.168.2.115:3333');
+		const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'localhost:3333'
+    const socket = new WebSocket(`${urlBase.replace(/^http/, 'ws')}`);
     socket.onopen = function() {
       console.log('Conexão estabelecida.');
     };
