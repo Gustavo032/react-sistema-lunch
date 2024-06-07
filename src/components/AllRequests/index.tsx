@@ -79,37 +79,40 @@ const AllRequests = () => {
       };
 
       socket.onmessage = (event) => {
-				try {
-					const data = JSON.parse(event.data);
-					if (data && (data.event === 'initialRequests' || data.event === 'newRequest')) {
-						const updatedRequests: Request[] = data.requests || [data.request];
-						const formattedRequests = updatedRequests.map((request) => ({
-							...request,
-							status: getStatusCookie(request.id),
-							created_at: format(new Date(request.created_at), 'dd/MM/yyyy HH:mm:ss')
-						}));
-				
-						if (data.event === 'initialRequests') {
-							setRequests(formattedRequests);
-							setFilteredRequests(formattedRequests);
-						} else if (data.event === 'newRequest') {
-							setRequests((prevRequests) => [...formattedRequests, ...prevRequests]);
-							setFilteredRequests((prevRequests) => [...formattedRequests, ...prevRequests]);
-						}
-					} else {
-						console.error('Unknown event type or data format:', data);
-					}
-				} catch (error) {
-					console.error('Error parsing WebSocket message:', error);
-				}				
-				
-      };
+        try {
+          const data = JSON.parse(event.data);
+          if (data && (data.event === 'initialRequests' || data.event === 'newRequest')) {
+            const updatedRequests: Request[] = data.requests || [data.request];
+            const formattedRequests = updatedRequests.map((request) => ({
+              ...request,
+              status: getStatusCookie(request.id),
+              created_at: format(new Date(request.created_at), 'dd/MM/yyyy HH:mm:ss')
+            }));
 
-      // socket.onclose = (event) => {
-      //   console.log(`WebSocket closed: ${event.code}, ${event.reason}`);
-      //   // Tentativa de reconexão após 3 segundos
-      //   setTimeout(connect, 3000);
-      // };
+            if (data.event === 'initialRequests') {
+              setRequests(formattedRequests);
+              setFilteredRequests(formattedRequests);
+            } else if (data.event === 'newRequest') {
+              setRequests((prevRequests) => {
+                const newRequests = formattedRequests.filter(
+                  (newRequest) => !prevRequests.some((request) => request.id === newRequest.id)
+                );
+                return [...newRequests, ...prevRequests];
+              });
+              setFilteredRequests((prevRequests) => {
+                const newRequests = formattedRequests.filter(
+                  (newRequest) => !prevRequests.some((request) => request.id === newRequest.id)
+                );
+                return [...newRequests, ...prevRequests];
+              });
+            }
+          } else {
+            console.error('Unknown event type or data format:', data);
+          }
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+        }
+      };
 
       socket.onerror = (error) => {
         console.error('WebSocket error:', error);
@@ -183,14 +186,14 @@ const AllRequests = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {filteredRequests && filteredRequests.map((request, index) => (
-                <Tr key={index} bgColor={getStatusColor(request.status)}>
+              {filteredRequests && filteredRequests.map((request) => (
+                <Tr key={request.id} bgColor={getStatusColor(request.status)}>
                   <Td>{request.sequence}</Td>
                   <Td>{request.user_name}</Td>
                   <Td>
                     <ul>
-                      {request.items && request.items.map((item, itemIndex) => (
-                        <li key={itemIndex}>{item.title}</li>
+                      {request.items && request.items.map((item, index) => (
+                        <li key={`${request.id}-${item.id}-${index}`}>{item.title}</li>
                       ))}
                     </ul>
                   </Td>
