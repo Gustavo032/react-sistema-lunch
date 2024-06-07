@@ -50,11 +50,19 @@ const AllRequests = () => {
   };
 
   const handleStatusChange = (id: string, status: string) => {
-    setRequests((prevRequests) =>
-      prevRequests.map((request) =>
+    const updateRequests = (requestsList: Request[]) => 
+      requestsList.map((request) =>
         request.id === id ? { ...request, status } : request
-      )
-    );
+      );
+
+    setRequests((prevRequests) => {
+      const updatedRequests = updateRequests(prevRequests);
+      setFilteredRequests(updatedRequests.filter((request) =>
+        request.user_name.toLowerCase().includes(searchTerm)
+      ));
+      return updatedRequests;
+    });
+
     setStatusCookie(id, status);
   };
 
