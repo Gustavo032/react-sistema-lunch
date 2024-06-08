@@ -12,6 +12,11 @@ export default function CreateUserScreen() {
     email: '',
     password: '',
     credit: '',
+    father_name: '',
+    father_email: '',
+    mother_name: '',
+    mother_email: '',
+    user_class: '', // Renomeado para userClass
     role: 'MEMBER',
     image: '' // Adicione um estado para armazenar a imagem em base64
   });
@@ -22,10 +27,9 @@ export default function CreateUserScreen() {
     '$1'
   );
   const [imagePreview, setImagePreview] = useState('');
-  
+
   const navigate = useNavigate();
-  
-  console.log(typeof token);
+
   useEffect(() => {
     const getCookie = (name: string): string | undefined => {
       const value = `; ${document.cookie}`;
@@ -40,7 +44,7 @@ export default function CreateUserScreen() {
       navigate('/');
     }
   }, [navigate]);
-  
+
   const createUser = async () => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/users`, userData, {
@@ -53,7 +57,7 @@ export default function CreateUserScreen() {
     } catch (error) {
       console.error('Error creating user:', error);
       throw error; // Re-throw the error to be caught by the promise chain
-    } 
+    }
   };
 
   const handleSubmit = async (e:any) => {
@@ -114,31 +118,32 @@ export default function CreateUserScreen() {
       minH={'100vh'}
       align={'center'}
       justify={'center'}
+			backgroundAttachment={"fixed"}
       backgroundImage="./img/mapleBearBackground.jpg"
       bgSize="cover"
       bgPosition="center"
       position="relative" // Para posicionar elementos filhos relativos a este
     >
       <Text
-        position="absolute"
+        position="fixed"
         top="4"
         left="4"
         color="white"
         fontSize="2xl"
         zIndex="2" // Ajusta a camada de empilhamento para que o texto esteja sobre o overlay
       >
-			 <Button
-        colorScheme="whiteAlpha"
-        onClick={() => navigate('/admin')}
-        zIndex="2"
-				mr="1rem"
-        _hover={{ bg: 'whiteAlpha.800' }}
-        _active={{ bg: 'whiteAlpha.600' }}
-      >
-        <ArrowBackIcon color="white" boxSize={6} />
-      </Button>
+        <Button
+          colorScheme="whiteAlpha"
+          onClick={() => navigate('/admin')}
+          zIndex="2"
+          mr="1rem"
+          _hover={{ bg: 'whiteAlpha.800' }}
+          _active={{ bg: 'whiteAlpha.600' }}
+        >
+          <ArrowBackIcon color="white" boxSize={6} />
+        </Button>
         MapleBear Granja Viana
-			 {/* Botão de Voltar */}
+        {/* Botão de Voltar */}
       </Text>
       {/* Overlay escuro */}
       <Flex
@@ -167,12 +172,12 @@ export default function CreateUserScreen() {
         position="relative" // Define a posição relativa para que o zIndex funcione corretamente
         border="#fff solid 0.12rem"
       >
-				<Flex justifyContent={"space-between"}>
-					<Heading color="gray.800" lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
-						Criar Usuário
-					</Heading>
-					<Button as={Link} to="/controle" colorScheme="blue">Listar Usuários</Button>
-				</Flex>
+        <Flex justifyContent={"space-between"}>
+          <Heading color="gray.800" lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
+            Criar Usuário
+          </Heading>
+          <Button as={Link} to="/controle" colorScheme="blue">Listar Usuários</Button>
+        </Flex>
 
         <Text
           fontSize={{ base: 'sm', sm: 'md' }}
@@ -205,7 +210,7 @@ export default function CreateUserScreen() {
             maxLength={120}
           />
         </FormControl>
-        
+
         <FormControl id="email">
           <FormLabel color="gray.800">Email</FormLabel>
           <Input
@@ -226,7 +231,7 @@ export default function CreateUserScreen() {
         <FormControl id="password">
           <FormLabel color="gray.800">Senha</FormLabel>
           <Input
-            type="text"
+            type="password" // Altere o tipo de texto para senha
             bg={'gray.100'}
             placeholder="Digite a Senha"
             border={0}
@@ -259,6 +264,91 @@ export default function CreateUserScreen() {
           />
         </FormControl>
 
+        <FormControl id="father_name">
+          <FormLabel color="gray.800">Nome do Pai</FormLabel>
+          <Input
+            type="text"
+            bg={'gray.100'}
+            placeholder="Digite o Nome do Pai"
+            border={0}
+            color={'gray.900'}
+            _placeholder={{
+              color: 'gray.500',
+            }}
+            value={userData.father_name}
+            onChange={(e)=>setUserData({ ...userData, father_name: e.target.value })}
+            maxLength={120}
+          />
+        </FormControl>
+
+        <FormControl id="father_email">
+          <FormLabel color="gray.800">Email do Pai</FormLabel>
+          <Input
+            type="email"
+            bg={'gray.100'}
+            placeholder="Digite o Email do Pai"
+            border={0}
+            color={'gray.900'}
+            _placeholder={{
+              color: 'gray.500',
+            }}
+            value={userData.father_email}
+            onChange={(e)=>setUserData({ ...userData, father_email: e.target.value })}
+            maxLength={120}
+          />
+        </FormControl>
+
+        <FormControl id="mother_name">
+          <FormLabel color="gray.800">Nome da Mãe</FormLabel>
+          <Input
+            type="text"
+            bg={'gray.100'}
+            placeholder="Digite o Nome da Mãe"
+            border={0}
+            color={'gray.900'}
+            _placeholder={{
+              color: 'gray.500',
+            }}
+            value={userData.mother_name}
+            onChange={(e)=>setUserData({ ...userData, mother_name: e.target.value })}
+            maxLength={120}
+          />
+        </FormControl>
+
+        <FormControl id="mother_email">
+          <FormLabel color="gray.800">Email da Mãe</FormLabel>
+          <Input
+            type="email"
+            bg={'gray.100'}
+            placeholder="Digite o Email da Mãe"
+            border={0}
+            color={'gray.900'}
+            _placeholder={{
+              color: 'gray.500',
+            }}
+            value={userData.mother_email}
+            onChange={(e)=>setUserData({ ...userData, mother_email: e.target.value })}
+            maxLength={120}
+          />
+        </FormControl>
+
+        <FormControl id="user_class">
+          <FormLabel color="gray.800">Classe do Usuário</FormLabel>
+          <Input
+            type="text"
+            bg={'gray.100'}
+            placeholder="Digite a Classe do Usuário"
+            border={0}
+            color={'gray.900'}
+            _placeholder={{
+              color: 'gray.500',
+            }}
+            value={userData.user_class}
+            onChange={(e)=>setUserData({ ...userData, user_class: e.target.value })}
+            maxLength={120}
+          />
+        </FormControl>
+
         <FormControl id="role">
           <FormLabel color="gray.800">Função</FormLabel>
           <Select
@@ -276,6 +366,7 @@ export default function CreateUserScreen() {
             <option value='MEMBER'>Usuário</option>
           </Select>
         </FormControl>
+        
         <Stack spacing={6}>
           <Button
             type="submit"
