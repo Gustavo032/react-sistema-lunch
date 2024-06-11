@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Flex, FormControl, FormLabel, Heading, Image, Input, Select, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
+import { Box, Button, Checkbox, Flex, FormControl, FormLabel, Heading, Image, Input, Select, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
@@ -21,6 +21,7 @@ export default function CreateUserScreen() {
     image: '' // Adicione um estado para armazenar a imagem em base64
   });
   const [errorMessage, setErrorMessage] = useState('');
+  const [parentsEnabled, setParentsEnabled] = useState(false); // Estado para habilitar/desabilitar campos dos pais
   const toast = useToast();
   const token = document.cookie.replace(
     /(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
@@ -186,12 +187,14 @@ export default function CreateUserScreen() {
 
         <FormControl id="userImage">
           <FormLabel color="gray.800">Imagem do Usuário</FormLabel>
-          <Input type="file" onChange={handleImageChange} />
-          {imagePreview && (
-            <Box mt={2}>
-              <Image src={imagePreview} alt="Preview" maxW="200px" maxH="200px" />
-            </Box>
-          )}
+					<Flex>
+						{imagePreview && (
+							<Box mt={2} border="0.06rem white solid">
+								<Image src={imagePreview} alt="Preview" maxW="200px" maxH="200px" />
+							</Box>
+						)}
+						<Input type="file" alignContent={"center"} onChange={handleImageChange} />
+					</Flex>
         </FormControl>
 
         <FormControl id="name">
@@ -264,7 +267,21 @@ export default function CreateUserScreen() {
           />
         </FormControl>
 
-        <FormControl id="father_name">
+        <Checkbox
+          isChecked={parentsEnabled}
+          onChange={() => setParentsEnabled(!parentsEnabled)}
+          colorScheme="blue"
+          my={4}
+					borderRadius={"1rem"}
+					p="0.5rem 1rem"
+					fontWeight={400}
+					color="#fff"
+					bgColor="#E53E3E"
+        >
+          Incluir dados dos pais
+        </Checkbox>
+
+        <FormControl id="father_name" display={parentsEnabled ? 'block' : 'none'}>
           <FormLabel color="gray.800">Nome do Pai</FormLabel>
           <Input
             type="text"
@@ -281,7 +298,7 @@ export default function CreateUserScreen() {
           />
         </FormControl>
 
-        <FormControl id="father_email">
+        <FormControl id="father_email" display={parentsEnabled ? 'block' : 'none'}>
           <FormLabel color="gray.800">Email do Pai</FormLabel>
           <Input
             type="email"
@@ -298,7 +315,7 @@ export default function CreateUserScreen() {
           />
         </FormControl>
 
-        <FormControl id="mother_name">
+        <FormControl id="mother_name" display={parentsEnabled ? 'block' : 'none'}>
           <FormLabel color="gray.800">Nome da Mãe</FormLabel>
           <Input
             type="text"
@@ -315,7 +332,7 @@ export default function CreateUserScreen() {
           />
         </FormControl>
 
-        <FormControl id="mother_email">
+        <FormControl id="mother_email" display={parentsEnabled ? 'block' : 'none'}>
           <FormLabel color="gray.800">Email da Mãe</FormLabel>
           <Input
             type="email"
@@ -333,11 +350,11 @@ export default function CreateUserScreen() {
         </FormControl>
 
         <FormControl id="user_class">
-          <FormLabel color="gray.800">Classe do Usuário</FormLabel>
+          <FormLabel color="gray.800">Turma do Usuário</FormLabel>
           <Input
             type="text"
             bg={'gray.100'}
-            placeholder="Digite a Classe do Usuário"
+            placeholder="Digite a Turma do Usuário"
             border={0}
             color={'gray.900'}
             _placeholder={{
@@ -363,6 +380,7 @@ export default function CreateUserScreen() {
             onChange={(e)=>setUserData({ ...userData, role: e.target.value })}
           >
             <option value='ADMIN'>Administrador</option>
+            <option value='MIDDLE'>Cantina</option>
             <option value='MEMBER'>Usuário</option>
           </Select>
         </FormControl>
