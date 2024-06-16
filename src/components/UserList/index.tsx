@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import imageCompression from 'browser-image-compression';
-import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Input, Flex, Icon, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, AlertDialogFooter, useToast, Image, Text, FormLabel, FormControl, Select, Stack, Heading, Center, Avatar, AvatarBadge, IconButton, useColorModeValue } from '@chakra-ui/react';
+import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Input, Flex, Icon, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, AlertDialogFooter, useToast, Image, Text, FormLabel, FormControl, Select, Stack, Heading, Center, Avatar, AvatarBadge, IconButton, useColorModeValue, Checkbox } from '@chakra-ui/react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { SmallCloseIcon } from '@chakra-ui/icons';
 
@@ -10,6 +10,7 @@ const UserList = ({ onSelectUser }:any) => {
   const [filterName, setFilterName] = useState('');
   const [filterId, setFilterId] = useState('');
   const [userTotalPrices, setUserTotalPrices] = useState<any>({});
+  const [parentsEnabled, setParentsEnabled] = useState(false); // Estado para habilitar/desabilitar campos dos pais
   const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [selectedUserId, setSelectedUserId] = useState(null);
@@ -38,6 +39,15 @@ const UserList = ({ onSelectUser }:any) => {
       });
       const fetchedUsers = response.data.users.user;
       setUsers(fetchedUsers);
+
+			fetchedUsers.sort((a:any, b:any) => {
+				const nameA = a.name.toLowerCase();
+				const nameB = b.name.toLowerCase();
+				if (nameA < nameB) return -1;
+				if (nameA > nameB) return 1;
+				return 0;
+			});
+		
 
       const userTotalPricePromises = fetchedUsers.map((user:any) => {
         return axios.get(`${process.env.REACT_APP_API_BASE_URL}/total-price-sum/${user.id}/${String(selectedMonth)}/${String(selectedYear)}`, {
@@ -70,6 +80,7 @@ const UserList = ({ onSelectUser }:any) => {
 
   const handleCloseModifyModal = () => {
     setIsModifyModalOpen(false);
+		setImagePreview(null)
   };
 
   const handleFilterName = (event:any) => {
@@ -220,32 +231,42 @@ const UserList = ({ onSelectUser }:any) => {
           </Flex>
         </Flex>
       </Flex>
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th>ID</Th>
-            <Th>Nome</Th>
-            <Th>Fatura Total <Text fontSize="1.20rem" color="blue.500" fontWeight="600">{formatPrice(totalFatura)}</Text></Th>
-            <Th></Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {filteredUsers.map((user:any) => (
-            <Tr key={user.id}>
-              <Td>{user.id}</Td>
-              <Td>{user.name}</Td>
-              <Td>{formatPrice(userTotalPrices[user.id] || 0)}</Td>
-              <Td>
-                <Button size="sm" colorScheme="blue" mr="2" onClick={() => handleModifyUser(user)} leftIcon={<FaEdit />}>Editar</Button>
-                <Button size="sm" colorScheme="red" onClick={() => setSelectedUserId(user.id)} leftIcon={<FaTrash />}>Excluir</Button>
-              </Td>
-							<Td>
-                <Button onClick={() => handleSelectUser(user.id)} bgColor="teal.500" color="white">Ver Detalhes</Button>
-              </Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
+			<Box style={{ overflowX: 'auto' }}>
+				<Table variant="simple">
+					<Thead>
+						<Tr>
+							{/* <Th>ID</Th> */}
+							<Th>Foto</Th>
+							<Th>Nome</Th>
+							<Th>Fatura Total <Text fontSize="1.20rem" color="blue.500" fontWeight="600">{formatPrice(totalFatura)}</Text></Th>
+							<Th>Responsável</Th>
+							<Th></Th>
+						</Tr>
+					</Thead>
+					<Tbody >
+						{filteredUsers.map((user:any) => (
+							<Tr key={user.id}>
+								{/* <Td>{user.id}</Td> */}
+								<Td><Image w="3rem" h="3rem" src={user.image}/></Td>
+								<Td>{user.name}</Td>
+								<Td>{formatPrice(userTotalPrices[user.id] || 0)}</Td>
+								<Td>
+									{user.father_name && <div>{user.father_name} (pai)</div>}
+									{user.mother_name && <div>{user.mother_name} (mãe)</div>}
+									{!user.father_name && !user.mother_name && <div>não cadastrado</div>}
+								</Td>
+								<Td>
+									<Button size="sm" colorScheme="blue" mr="2" onClick={() => handleModifyUser(user)} leftIcon={<FaEdit />}>Editar</Button>
+									<Button size="sm" colorScheme="red" onClick={() => setSelectedUserId(user.id)} leftIcon={<FaTrash />}>Excluir</Button>
+								</Td>
+								<Td>
+									<Button onClick={() => handleSelectUser(user.id)} bgColor="teal.500" color="white">Ver Detalhes</Button>
+								</Td>
+							</Tr>
+						))}
+					</Tbody>
+				</Table>
+			</Box>
       <AlertDialog
         isOpen={selectedUserId !== null}
         leastDestructiveRef={cancelRef}
@@ -270,96 +291,159 @@ const UserList = ({ onSelectUser }:any) => {
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">Editar Usuário</AlertDialogHeader>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">Editar Usuário: <br /> <Text as={"span"} color="gray.500">{selectedUser.id}</Text></AlertDialogHeader>
             <AlertDialogCloseButton />
             <AlertDialogBody>
-              <Flex justify="center">
-                <Center w="full" py={6}>
-                  <Box w="full" bg={useColorModeValue('white', 'gray.800')} rounded="lg" p={6}>
-									<Stack direction={['column', 'row']} spacing={6}>
-										<Center>
-											<Avatar size="xl"  src={imagePreview.length === 0 ? imagePreview : selectedUser.image}>
-												<AvatarBadge
-													as={IconButton}
-													size="sm"
-													rounded="full"
-													top="-10px"
-													colorScheme="red"
-													aria-label="remove Image"
-													icon={<SmallCloseIcon onClick={() => setImagePreview('')}/>}
-												/>
-											</Avatar>
-										</Center>
-										<Center w="100%">
-											<Input p="0.1rem" accept="image/*" onChange={handleImageChange} alignContent={"center"} type="file" w="59%" border="none"/>
-										</Center>
+							<Center w="full" py={6}>
+								<Box w="full" bg={useColorModeValue('white', 'gray.800')} rounded="lg" p={6}>
+								<Stack direction={['column', 'row']} spacing={6}>
+									<Center>
+										<Avatar size="xl"  src={imagePreview ? imagePreview : selectedUser.image}>
+											<AvatarBadge
+												as={IconButton}
+												size="sm"
+												rounded="full"
+												top="-10px"
+												colorScheme="red"
+												onClick={()=> {}}
+												aria-label="remove Image"
+												icon={<SmallCloseIcon p="0.2rem" w="100%" h="100%" onClick={() => {if(imagePreview){setImagePreview(null)} else {selectedUser.image=null}}}/>}
+											/>
+										</Avatar>
+									</Center>
+									<Center w="100%">
+										<Input p="0.1rem" onChange={handleImageChange} alignContent={"center"} type="file" w="59%" border="none"/>
+									</Center>
+								</Stack>
+									<Stack spacing={4} mt={8}>
+										<FormControl>
+											<FormLabel>Nome</FormLabel>
+											<Input 
+												value={selectedUser.name ? selectedUser.name : '' } 
+												onChange={(e) => setSelectedUser({ ...selectedUser, name: e.target.value })}
+											/>
+										</FormControl>
+										<FormControl>
+											<FormLabel>Email</FormLabel>
+											<Input 
+												value={selectedUser.email ? selectedUser.email : '' } 
+												onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })}
+											/>
+										</FormControl>
+										<FormControl>
+											<FormLabel>Senha</FormLabel>
+											<Input 
+												value={selectedUser.password ? selectedUser.password : '' } 
+												onChange={(e) => setSelectedUser({ ...selectedUser, password: e.target.value })}
+											/>
+										</FormControl>
+										<FormControl>
+											<FormLabel>Limite de crédito</FormLabel>
+											<Input 
+												type="number"
+												value={selectedUser.credit_limit ? selectedUser.credit_limit : '' } 
+												onChange={(e) => setSelectedUser({ ...selectedUser, credit_limit: e.target.value })}
+											/>
+										</FormControl>
+										<Checkbox
+											isChecked={parentsEnabled}
+											onChange={() => setParentsEnabled(!parentsEnabled)}
+											colorScheme="blue"
+											my={4}
+											borderRadius={"1rem"}
+											p="0.5rem 1rem"
+											fontWeight={400}
+											color="#fff"
+											bgColor="#E53E3E"
+										>
+											Incluir dados dos pais
+										</Checkbox>
+
+										<FormControl id="father_name" display={parentsEnabled ? 'block' : 'none'}>
+											<FormLabel color="gray.800">Nome do Pai</FormLabel>
+											<Input
+												type="text"
+												bg={'gray.100'}
+												placeholder="Digite o Nome do Pai"
+												border={0}
+												color={'gray.900'}
+												_placeholder={{
+													color: 'gray.500',
+												}}
+												value={selectedUser.father_name ? selectedUser.father_name : ''}
+												onChange={(e)=>setSelectedUser({ ...selectedUser, father_name: e.target.value })}
+												maxLength={120}
+											/>
+										</FormControl>
+
+										<FormControl id="father_email" display={parentsEnabled ? 'block' : 'none'}>
+											<FormLabel color="gray.800">Email do Pai</FormLabel>
+											<Input
+												type="email"
+												bg={'gray.100'}
+												placeholder="Digite o Email do Pai"
+												border={0}
+												color={'gray.900'}
+												_placeholder={{
+													color: 'gray.500',
+												}}
+												value={selectedUser.father_email ? selectedUser.father_email : ''}
+												onChange={(e)=>setSelectedUser({ ...selectedUser, father_email: e.target.value })}
+												maxLength={120}
+											/>
+										</FormControl>
+
+										<FormControl id="mother_name" display={parentsEnabled ? 'block' : 'none'}>
+											<FormLabel color="gray.800">Nome da Mãe</FormLabel>
+											<Input
+												type="text"
+												bg={'gray.100'}
+												placeholder="Digite o Nome da Mãe"
+												border={0}
+												color={'gray.900'}
+												_placeholder={{
+													color: 'gray.500',
+												}}
+												value={selectedUser.mother_name ? selectedUser.mother_name : "" }
+												onChange={(e)=>setSelectedUser({ ...selectedUser, mother_name: e.target.value })}
+												maxLength={120}
+											/>
+										</FormControl>
+
+										<FormControl id="mother_email" display={parentsEnabled ? 'block' : 'none'}>
+											<FormLabel color="gray.800">Email da Mãe</FormLabel>
+											<Input
+												type="email"
+												bg={'gray.100'}
+												placeholder="Digite o Email da Mãe"
+												border={0}
+												color={'gray.900'}
+												_placeholder={{
+													color: 'gray.500',
+												}}
+												value={selectedUser.mother_email ? selectedUser.mother_email : ''}
+												onChange={(e)=>setSelectedUser({ ...selectedUser, mother_email: e.target.value })}
+												maxLength={120}
+											/>
+										</FormControl>
+										<FormControl>
+											<FormLabel>Função</FormLabel>
+											<Select
+												value={selectedUser.role ? selectedUser.role : '' } 
+												onChange={(e:any) => setSelectedUser({ ...selectedUser, role: e.target.value })}
+											>
+												<option value="ADMIN">Administrador</option>
+												<option value="MIDDLE">Cantina</option>
+												<option value="MEMBER">Aluno</option>
+											</Select>
+										</FormControl>
 									</Stack>
-									  {/* <Box mt={-12} pos="relative">
-                      <Avatar size="xl" src={imagePreview} mb={4} pos="relative" _after={{
-                        content: '""',
-                        w: 4,
-                        h: 4,
-                        bg: 'green.300',
-                        border: '2px solid white',
-                        rounded: 'full',
-                        pos: 'absolute',
-                        bottom: 0,
-                        right: 3,
-                      }} />
-                      <Center>
-                        <IconButton colorScheme="teal" aria-label="Edit Image" icon={<SmallCloseIcon />} onClick={() => setImagePreview('')} />
-                      </Center>
-                      <Input type="file" accept="image/*" onChange={handleImageChange} />
-                    </Box> */}
-                    <Stack spacing={4} mt={8}>
-											<FormControl>
-												<FormLabel>Nome</FormLabel>
-												<Input 
-													value={selectedUser.name ? selectedUser.name : '' } 
-													onChange={(e) => setSelectedUser({ ...selectedUser, name: e.target.value })}
-												/>
-											</FormControl>
-											<FormControl>
-												<FormLabel>Email</FormLabel>
-												<Input 
-													value={selectedUser.email ? selectedUser.email : '' } 
-													onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })}
-												/>
-											</FormControl>
-											<FormControl>
-												<FormLabel>Senha</FormLabel>
-												<Input 
-													value={selectedUser.password ? selectedUser.password : '' } 
-													onChange={(e) => setSelectedUser({ ...selectedUser, password: e.target.value })}
-												/>
-											</FormControl>
-											<FormControl>
-												<FormLabel>Limite de crédito</FormLabel>
-												<Input 
-													type="number"
-													value={selectedUser.credit_limit ? selectedUser.credit_limit : '' } 
-													onChange={(e) => setSelectedUser({ ...selectedUser, credit_limit: e.target.value })}
-												/>
-											</FormControl>
-											<FormControl>
-												<FormLabel>Função</FormLabel>
-												<Select
-													value={selectedUser.role ? selectedUser.role : '' } 
-													onChange={(e:any) => setSelectedUser({ ...selectedUser, role: e.target.value })}
-												>
-													<option value="ADMIN">Administrador</option>
-													<option value="MIDDLE">Cantina</option>
-													<option value="MEMBER">Aluno</option>
-												</Select>
-											</FormControl>
-                    </Stack>
-                  </Box>
-                </Center>
-              </Flex>
+								</Box>
+							</Center>
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={handleCloseModifyModal}>Cancelar</Button>
-              <Button colorScheme="blue" ml={3} onClick={() => handleUpdateUser(selectedUser)}>Salvar</Button>
+              <Button colorScheme="blue" ml={3} onClick={() => {handleUpdateUser(selectedUser); setImagePreview(null)} }>Salvar</Button>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialogOverlay>

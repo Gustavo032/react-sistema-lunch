@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Checkbox, Flex, FormControl, FormLabel, Heading, Image, Input, Select, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
+import { Avatar, AvatarBadge, Box, Button, Center, Checkbox, Flex, FormControl, FormLabel, Heading, IconButton, Image, Input, Select, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
-import { ArrowBackIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon, SmallCloseIcon } from '@chakra-ui/icons';
 import { Link } from 'react-router-dom';
 
 export default function CreateUserScreen() {
-  const [userData, setUserData] = useState({
+  const [userData, setUserData] = useState<any>({
     name: '',
     email: '',
     password: '',
     credit: '',
-    father_name: '',
-    father_email: '',
-    mother_name: '',
-    mother_email: '',
-    user_class: '', // Renomeado para userClass
     role: 'MEMBER',
     image: '' // Adicione um estado para armazenar a imagem em base64
   });
@@ -185,7 +180,25 @@ export default function CreateUserScreen() {
           color={useColorModeValue('gray.800', 'gray.800')}
         ></Text>
 
-        <FormControl id="userImage">
+				<Stack direction={['column', 'row']} spacing={6}>
+					<Center>
+						<Avatar size="xl"  src={imagePreview ? imagePreview : userData.image}>
+							<AvatarBadge
+								as={IconButton}
+								size="sm"
+								rounded="full"
+								top="-10px"
+								colorScheme="red"
+								aria-label="remove Image"
+								icon={<SmallCloseIcon onClick={() => setImagePreview('')}/>}
+							/>
+						</Avatar>
+					</Center>
+					<Center w="100%">
+						<Input p="0.1rem" onChange={handleImageChange} alignContent={"center"} type="file" w="48%" border="none"/>
+					</Center>
+				</Stack>
+        {/* <FormControl id="userImage">
           <FormLabel color="gray.800">Imagem do Usuário</FormLabel>
 					<Flex>
 						{imagePreview && (
@@ -195,7 +208,7 @@ export default function CreateUserScreen() {
 						)}
 						<Input type="file" alignContent={"center"} onChange={handleImageChange} />
 					</Flex>
-        </FormControl>
+        </FormControl> */}
 
         <FormControl id="name">
           <FormLabel color="gray.800">Nome</FormLabel>
