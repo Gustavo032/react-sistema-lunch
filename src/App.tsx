@@ -18,6 +18,7 @@ import CreateItemScreen from "./components/CreateItem";
 import AllRequests from "./components/AllRequests";
 import Initial from "./components/Initial";
 import AdminDashboard from "./components/AdminDash";
+import { ListItens } from "./components/Items";
 
 export const App = () => {
   const [ticketData, setTicketData] = useState<any>(null);
@@ -37,7 +38,7 @@ export const App = () => {
         <Route path="/allRequests" element={<AllRequests />} />
         {/* <Route path="/userList" element={<UserList />} /> */}
         <Route path="/createUser" element={<CreateUserScreen />} />
-        <Route path="/createItem" element={<CreateItemScreen />} />
+        <Route path="/createItem" element={<ListItens />} />
         <Route path="/*" element={<NotFound />} />
       </Routes>
     </ChakraProvider>

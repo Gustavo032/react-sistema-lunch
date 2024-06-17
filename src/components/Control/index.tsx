@@ -117,7 +117,7 @@ const Control = () => {
       const requestsForExport = response.data.requests.map((request:any) => ({
         "ID": request.id,
         "Usuário": request.user_name,
-        "Itens": request.items.map((item:any) => `${item.title} - ${formatCurrency(item.price)}`).join("\n"), // Formata o preço de cada item
+        "Itens": request.requestItems.map((item:any) => `${item.itemTitle} - ${formatCurrency(item.itemPrice)}`).join("\n"), // Formata o preço de cada item
         "Preço Total": formatCurrency(request.total_price), // Formata o valor total
         "Data de Criação": format(new Date(request.created_at), 'dd/MM/yyyy HH:mm:ss')
       }));
@@ -252,8 +252,8 @@ const Control = () => {
                     <Td>{request.user_name}</Td>
                     <Td>
                       <ul>
-                        {request.items.map((item:any, itemIndex:number) => (
-                          <li key={itemIndex}>{item.title} - {item.price}</li>
+                        {request.requestItems.map((item:any, itemIndex:number) => (
+                          <li key={itemIndex}>{item.itemTitle} - {Number(item.itemPrice).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}</li>
                         ))}
                       </ul>
                     </Td>

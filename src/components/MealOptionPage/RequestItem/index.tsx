@@ -21,7 +21,7 @@ function MenuItem({ item, quantity, onQuantityChange, isFirst }: any) {
   return (
     <li key={item.id} style={{ marginBottom: "0.3rem", paddingTop: "0.3rem", ...borderTopStyle }}>
       <label style={{ display: 'flex', justifyContent: "space-between", alignItems: "center" }}>
-        {item.title} - R$ {item.price}
+        {item.title} - {Number(item.price).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}
         <Flex>
           <Button onClick={handleDecrement}>-</Button>
           <Text margin="0 0.3rem" fontSize="1.3rem">
@@ -155,6 +155,8 @@ export function RequestItem(props: RequestItemProps) {
     setQuantities(newQuantities);
   };
 
+	const totalQuantity:any = Object.values(quantities).reduce((sum:any, quantity:any) => sum + quantity, 0);
+
   return (
     <Box rounded="lg" bg={useColorModeValue('white', 'gray.700')} boxShadow="lg" p={8}>
       <Stack spacing={4}>
@@ -196,7 +198,7 @@ export function RequestItem(props: RequestItemProps) {
         <Text color="black" fontWeight="bold" fontSize="xl">Total: R$ { menuItems.length > 0 && menuItems[0].title === itemTitle ? menuItems[0].price : total.toFixed(2)}</Text>
         <ButtonGroup flex={"row"} alignItems={"center"} justifyContent="space-between" w="100%" alignSelf={"center"}>
           <Button as={Link} to="/dashboard" colorScheme="blue" w="40%" variant="outline">Voltar</Button>
-					<Button colorScheme="red" w="40%" onClick={handleContinue} disabled={menuItems.length > 2 ? true : false}>Continuar</Button>
+          <Button colorScheme="red" w="40%" onClick={totalQuantity > 0 ? handleContinue : undefined} disabled={totalQuantity === 0}>Continuar</Button>
         </ButtonGroup>
       </Stack>
     </Box>

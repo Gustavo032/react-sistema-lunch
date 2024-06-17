@@ -6,14 +6,15 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 
 interface RequestItem {
-  id: string;
-  title: string;
+  itemId: string;
+  itemTitle: string;
 }
 
 interface Request {
   id: string;
   sequence: number;
   user_name: string;
+	requestItems: RequestItem[]; 
   items: RequestItem[];
   status: string;
   created_at: string;
@@ -200,8 +201,8 @@ const AllRequests = () => {
                   <Td>{request.user_name}</Td>
                   <Td>
                     <ul>
-                      {request.items && request.items.map((item, index) => (
-                        <li key={`${request.id}-${item.id}-${index}`}>{item.title}</li>
+                      {request.requestItems && request.requestItems.map((item, index) => (
+                        <li key={`${request.id}-${item.itemId}-${index}`}>{item.itemTitle}</li>
                       ))}
                     </ul>
                   </Td>
