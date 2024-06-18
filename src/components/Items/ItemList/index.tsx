@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Stack, Text } from '@chakra-ui/react';
+import { Box, Button, Text, SimpleGrid } from '@chakra-ui/react';
 import { FiTrash2 } from 'react-icons/fi';
 
 interface Item {
@@ -15,18 +15,20 @@ interface ItemListProps {
   onDelete: (id: string) => void;
 }
 
-export function ItemList({ items, onDelete }:ItemListProps){
+const ItemList: React.FC<ItemListProps> = ({ items, onDelete }) => {
   return (
-    <Stack spacing={4}>
+    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
       {items.map((item) => (
         <Box key={item.id} p={5} shadow="md" borderWidth="1px" borderRadius="md">
-          <Text>{item.title}</Text>
-          <Text>Price: ${item.price}</Text>
-          <Button leftIcon={<FiTrash2 />} colorScheme="red" onClick={() => onDelete(item.id)}>
-            Delete
+          <Text fontWeight="bold" mb={2}>{item.title}</Text>
+          <Text>Preço: {Number(item.price).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}</Text>
+          <Button leftIcon={<FiTrash2 />} colorScheme="red" mt={4} onClick={() => onDelete(item.id)}>
+            Excluir
           </Button>
         </Box>
       ))}
-    </Stack>
+    </SimpleGrid>
   );
 };
+
+export default ItemList;

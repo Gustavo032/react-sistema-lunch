@@ -18,7 +18,7 @@ import CreateItemScreen from "./components/CreateItem";
 import AllRequests from "./components/AllRequests";
 import Initial from "./components/Initial";
 import AdminDashboard from "./components/AdminDash";
-import { ListItens } from "./components/Items";
+import ListItens from "./components/Items";
 
 export const App = () => {
   const [ticketData, setTicketData] = useState<any>(null);

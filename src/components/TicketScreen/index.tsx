@@ -117,12 +117,12 @@ export function TicketScreen(props: TicketScreenProps) {
           {ticketData.items.map((item: any, index: number) => (
             item.quantity > 0 && (
               <ListItem key={index}>
-                {item.title} - Quantidade: {item.quantity} - Preço: R$ {item.price}
+                {item.title} - Quantidade: {item.quantity} - Preço: {Number(item.price).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}
               </ListItem>
             )
           ))}
         </UnorderedList>
-        <Text mt={4} fontWeight="bold" textAlign="left">Total: R$ {ticketData.total}</Text>
+        <Text mt={4} fontWeight="bold" textAlign="left">Total: {Number(ticketData.total).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}</Text>
         <ResponsiveButton/>
       </Box>
     </Center>
