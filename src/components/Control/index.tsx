@@ -146,6 +146,25 @@ const Control = () => {
     filterRequests(startDate, endOfDay);
   };
 
+	const handleDelete = async (requestId: string) => {
+		const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+		
+    if (window.confirm("Tem certeza que deseja excluir este pedido?")) {
+      try {
+        await axios.delete(`http://localhost:3333/requests/${requestId}/delete`, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				});
+        setRequests((prevRequests) => prevRequests.filter((request: any) => request.id !== requestId));
+        setFilteredRequests((prevRequests) => prevRequests.filter((request: any) => request.id !== requestId));
+        calculateTotalPriceSum();
+      } catch (error) {
+        console.error('Erro ao excluir pedido:', error);
+      }
+    }
+  };
+
   const filterRequests = (start:any, end:any) => {
     let filtered = requests;
     if (start && end) {
@@ -259,6 +278,10 @@ const Control = () => {
                     </Td>
                     <Td>{request.total_price}</Td>
                     <Td>{request.created_at}</Td>
+										<Td>
+                    <Button colorScheme="red" onClick={() => handleDelete(request.id)}>Excluir</Button>
+                  </Td>
+
                   </Tr>
                 ))}
               </Tbody>

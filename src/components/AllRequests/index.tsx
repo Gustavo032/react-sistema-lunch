@@ -3,7 +3,8 @@ import { Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Image, Button, Select, Inpu
 import { endOfDay, format, startOfDay } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
-import { ArrowBackIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon, DeleteIcon } from '@chakra-ui/icons';
+import axios from 'axios';
 
 interface RequestItem {
   itemId: string;
@@ -14,7 +15,7 @@ interface Request {
   id: string;
   sequence: number;
   user_name: string;
-	requestItems: RequestItem[]; 
+  requestItems: RequestItem[];
   items: RequestItem[];
   status: string;
   created_at: string;
@@ -51,7 +52,7 @@ const AllRequests = () => {
   };
 
   const handleStatusChange = (id: string, status: string) => {
-    const updateRequests = (requestsList: Request[]) => 
+    const updateRequests = (requestsList: Request[]) =>
       requestsList.map((request) =>
         request.id === id ? { ...request, status } : request
       );
@@ -65,6 +66,24 @@ const AllRequests = () => {
     });
 
     setStatusCookie(id, status);
+  };
+
+  const handleDeleteRequest = async (id: string) => {
+		const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+		
+    if (window.confirm('Tem certeza de que deseja excluir este pedido?')) {
+      try {
+        await axios.delete(`http://localhost:3333/requests/${id}/delete`, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				});
+        setRequests((prevRequests) => prevRequests.filter((request) => request.id !== id));
+        setFilteredRequests((prevRequests) => prevRequests.filter((request) => request.id !== id));
+      } catch (error) {
+        console.error('Error deleting request:', error);
+      }
+    }
   };
 
   useEffect(() => {
@@ -192,6 +211,7 @@ const AllRequests = () => {
                 <Th>Itens</Th>
                 <Th>Status</Th>
                 <Th>Data de Criação</Th>
+                <Th>Ações</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -217,6 +237,16 @@ const AllRequests = () => {
                     </Select>
                   </Td>
                   <Td>{request.created_at}</Td>
+                  <Td>
+                    <Button
+                      colorScheme="red"
+                      size="sm"
+                      onClick={() => handleDeleteRequest(request.id)}
+                      leftIcon={<DeleteIcon />}
+                    >
+                      Excluir
+                    </Button>
+                  </Td>
                 </Tr>
               ))}
             </Tbody>
