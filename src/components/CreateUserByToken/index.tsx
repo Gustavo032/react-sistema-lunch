@@ -1,113 +1,118 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar, AvatarBadge, Box, Button, Center, Checkbox, Flex, FormControl, FormLabel, Heading, IconButton, Image, Input, Select, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Avatar, AvatarBadge, Box, Button, Center, Checkbox, Flex, FormControl, FormLabel, Heading, IconButton, Input, Select, Spinner, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 import { ArrowBackIcon, SmallCloseIcon } from '@chakra-ui/icons';
 import { Link } from 'react-router-dom';
 
-export default function CreateUserScreen() {
+export default function CreateUserByToken() {
+  const { TokenID } = useParams();
+  const navigate = useNavigate();
+  const toast = useToast();
+  const [isValidToken, setIsValidToken] = useState(false);
   const [userData, setUserData] = useState<any>({
     name: '',
     email: '',
     password: '',
     credit: '',
     role: 'MEMBER',
-    image: '' // Adicione um estado para armazenar a imagem em base64
+    image: '',
   });
   const [errorMessage, setErrorMessage] = useState('');
-  const [parentsEnabled, setParentsEnabled] = useState(false); // Estado para habilitar/desabilitar campos dos pais
-  const toast = useToast();
-  const token = document.cookie.replace(
-    /(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
-    '$1'
-  );
-  const [imagePreview, setImagePreview] = useState('');
-
-  const navigate = useNavigate();
+  const [parentsEnabled, setParentsEnabled] = useState(false);
+  const [imagePreview, setImagePreview] = useState<any>('');
+	const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const getCookie = (name: string): string | undefined => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) {
-        return parts.pop()?.split(';').shift();
+    const validateToken = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3333/users/verify-token/${TokenID}`);
+        if (response.data.message === 'Valid token') {
+          setIsValidToken(true);
+        } else {
+          // navigate('/invalid-token'); // Redirecionar para uma página de token inválido
+					console.log("token invalid");
+				}
+      } catch (error) {
+				console.log(error);
+        // navigate('/invalid-token'); // Redirecionar para uma página de token inválido
       }
     };
 
-    const userRole = getCookie('userRole');
-    if (userRole !== 'ADMIN') {
-      navigate('/');
-    }
-  }, [navigate]);
+    validateToken();
+  }, [TokenID, navigate]);
 
   const createUser = async () => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/users`, userData, {
+      const response = await axios.post(`http://localhost:3333/users/${TokenID}/registerToken`, userData, {
         headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json', // Altere o tipo de conteúdo para application/json
+          'Content-Type': 'application/json',
         }
       });
       console.log('User created successfully:', response.data);
     } catch (error) {
       console.error('Error creating user:', error);
-      throw error; // Re-throw the error to be caught by the promise chain
+      throw error;
     }
   };
 
   const handleSubmit = async (e:any) => {
     e.preventDefault();
     try {
-      // Exibir o toast de carregamento enquanto a promessa está pendente
-      const result = await toast.promise(createUser(), {
+      await toast.promise(createUser(), {
         loading: { title: 'Criando usuário...', description: 'Por favor, aguarde...' },
         success: { title: 'Usuário criado com sucesso!', description: 'Looks great' },
         error: { title: 'Erro ao criar usuário', description: 'Something wrong' },
       });
-
-      console.log(result); // Pode ser útil para depuração
     } catch (error:any) {
       console.error('Error creating user:', error);
       setErrorMessage(error.message);
     }
   };
 
-  const handleImageChange = async (e:any) => {
-    const file = e.target.files[0];
-
-    // Verificar se foi selecionado um arquivo
-    if (!file) return;
-
-    // Verificar se o arquivo é uma imagem
-    if (!file.type.includes('image')) {
-      alert('Por favor, selecione uma imagem.');
-      return;
-    }
-
-    // Verificar o tamanho do arquivo
-    if (file.size > 200 * 1024) {
-      // Se a imagem exceder 200KB, redimensioná-la
-      const compressedFile = await imageCompression(file, { maxSizeMB: 0.1 });
-      // Exibir a imagem redimensionada
-      const reader:any = new FileReader();
-      reader.onload = () => {
-        setImagePreview(reader.result);
-        // Converter a imagem para base64 e armazená-la no estado userData
-        setUserData({ ...userData, image: reader.result });
-      };
-      reader.readAsDataURL(compressedFile);
-    } else {
-      // Exibir a imagem sem redimensionamento
-      const reader:any = new FileReader();
-      reader.onload = () => {
-        setImagePreview(reader.result);
-        // Converter a imagem para base64 e armazená-la no estado userData
-        setUserData({ ...userData, image: reader.result });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const handleImageChange = async (e: any) => {
+		const file = e.target.files[0];
+		
+		// Limpar o valor do input para forçar o onChange ser disparado
+		e.target.value = null;
+	
+		if (!file) return;
+		if (!file.type.includes('image')) {
+			alert('Por favor, selecione uma imagem.');
+			return;
+		}
+	
+		setLoading(true); // Ativar o indicador de loading
+	
+		try {
+			if (file.size > 200 * 1024) {
+				const compressedFile = await imageCompression(file, { maxSizeMB: 0.1 });
+				const reader: any = new FileReader();
+				reader.onload = () => {
+					setImagePreview(reader.result);
+					setUserData({ ...userData, image: reader.result });
+				};
+				reader.readAsDataURL(compressedFile);
+			} else {
+				const reader: any = new FileReader();
+				reader.onload = () => {
+					setImagePreview(reader.result);
+					setUserData({ ...userData, image: reader.result });
+				};
+				reader.readAsDataURL(file);
+			}
+		} catch (error) {
+			console.error('Erro ao processar a imagem:', error);
+			alert('Ocorreu um erro ao processar a imagem. Por favor, tente novamente.');
+		} finally {
+			setLoading(false); // Desativar o indicador de loading, seja após sucesso ou erro
+		}
+	};
+	
+  if (!isValidToken) {
+    return <Center>Verificando token...</Center>;
+  }
 
   return (
     <Flex
@@ -172,17 +177,22 @@ export default function CreateUserScreen() {
           <Heading color="gray.800" lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
             Criar Usuário
           </Heading>
-          <Button as={Link} to="/controle" colorScheme="blue">Listar Usuários</Button>
         </Flex>
 
         <Text
           fontSize={{ base: 'sm', sm: 'md' }}
-          color={useColorModeValue('gray.800', 'gray.800')}
+          color={"gray.800"}
         ></Text>
 
 				<Stack direction={['column', 'row']} spacing={6}>
-					<Center>
-						<Avatar size="xl"  src={imagePreview ? imagePreview : userData.image}>
+					{/* Se loading for true, exibe o Spinner */}
+    {loading && <><Text>Aguarde enquanto a imagem é processada </Text><Spinner size="sm" color="blue.500" /></>}
+    
+    {/* Se não estiver carregando, exibe o restante do conteúdo */}
+    {!loading && (
+      <>
+        <Center>
+						<Avatar size="xl"  src={imagePreview}>
 							<AvatarBadge
 								as={IconButton}
 								size="sm"
@@ -190,13 +200,16 @@ export default function CreateUserScreen() {
 								top="-10px"
 								colorScheme="red"
 								aria-label="remove Image"
-								icon={<SmallCloseIcon onClick={() => setImagePreview('')}/>}
+								icon={<SmallCloseIcon p="0.2rem" w="100%" h="100%" onClick={() => {setImagePreview(""); setUserData({ ...userData, image: "" })}}/>}
 							/>
 						</Avatar>
 					</Center>
 					<Center w="100%">
 						<Input p="0.1rem" onChange={handleImageChange} alignContent={"center"} type="file" w="48%" border="none"/>
 					</Center>
+      </>
+    )}
+
 				</Stack>
         {/* <FormControl id="userImage">
           <FormLabel color="gray.800">Imagem do Usuário</FormLabel>
@@ -379,7 +392,7 @@ export default function CreateUserScreen() {
           />
         </FormControl>
 
-        <FormControl id="role">
+        {/* <FormControl id="role">
           <FormLabel color="gray.800">Função</FormLabel>
           <Select
             placeholder='Select option'
@@ -396,7 +409,7 @@ export default function CreateUserScreen() {
             <option value='MIDDLE'>Cantina</option>
             <option value='MEMBER'>Usuário</option>
           </Select>
-        </FormControl>
+        </FormControl> */}
         
         <Stack spacing={6}>
           <Button
