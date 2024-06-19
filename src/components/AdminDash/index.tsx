@@ -157,6 +157,21 @@ export default function AdminDashboard() {
               bgColor: 'red.300',
             }}
             variant={'solid'}
+            onClick={() => navigate('/dashTokens')}
+          >
+            Gerenciar Tokens
+          </Button>
+					<Button
+            color={'white'}
+            bgColor={'red.500'}
+            _hover={{
+              bgColor: 'red',
+              opacity: 0.5,
+            }}
+            _active={{
+              bgColor: 'red.300',
+            }}
+            variant={'solid'}
             onClick={() => navigate('/dashboard')}
           >
             Solicitar uma Refeição
