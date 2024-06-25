@@ -151,7 +151,7 @@ const Control = () => {
 		
     if (window.confirm("Tem certeza que deseja excluir este pedido?")) {
       try {
-        await axios.delete(`http://localhost:3333/requests/${requestId}/delete`, {
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/requests/${requestId}/delete`, {
 					headers: {
 						Authorization: `Bearer ${token}`,
 					},

@@ -73,7 +73,7 @@ const AllRequests = () => {
 		
     if (window.confirm('Tem certeza de que deseja excluir este pedido?')) {
       try {
-        await axios.delete(`http://localhost:3333/requests/${id}/delete`, {
+        await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/requests/${id}/delete`, {
 					headers: {
 						Authorization: `Bearer ${token}`,
 					},

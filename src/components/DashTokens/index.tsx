@@ -54,7 +54,7 @@ const DashTokens = () => {
   const fetchTokens = async () => {
     const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
     try {
-      const response = await axios.get('http://localhost:3333/users/tokens', {
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/users/tokens`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -70,7 +70,7 @@ const DashTokens = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        'http://localhost:3333/users/generateToken',
+        `${process.env.REACT_APP_API_BASE_URL}/users/generateToken`,
         { email },
         {
           headers: {

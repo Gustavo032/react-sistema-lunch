@@ -27,7 +27,7 @@ export default function CreateUserByToken() {
   useEffect(() => {
     const validateToken = async () => {
       try {
-        const response = await axios.get(`http://localhost:3333/users/verify-token/${TokenID}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/users/verify-token/${TokenID}`);
         if (response.data.message === 'Valid token') {
           setIsValidToken(true);
         } else {
@@ -45,7 +45,7 @@ export default function CreateUserByToken() {
 
   const createUser = async () => {
     try {
-      const response = await axios.post(`http://localhost:3333/users/${TokenID}/registerToken`, userData, {
+      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/users/${TokenID}/registerToken`, userData, {
         headers: {
           'Content-Type': 'application/json',
         }

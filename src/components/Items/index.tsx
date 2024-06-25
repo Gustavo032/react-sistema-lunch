@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box,
-  Button,
   Flex,
   Heading,
-  Stack,
+  Button,
   useToast,
   Modal,
   ModalOverlay,
@@ -85,37 +83,30 @@ const ListItens: React.FC = () => {
       position="relative"
     >
       <Flex
-        position="fixed"
-        top="0"
-        left="0"
-        right="0"
-        bottom="0"
-        bg="rgba(0, 0, 0, 0.5)"
-        zIndex="1"
-      ></Flex>
-
-      <Stack
-        spacing={4}
-        w={'full'}
-        maxW={'md'}
-        rounded={'xl'}
-        boxShadow={'lg'}
-        p={6}
-        my={12}
-        bg="rgba(255, 255, 255, 0.8)"
-        zIndex="2"
-        position="relative"
-        border="#fff solid 0.12rem"
+        direction="column"
         align="center"
+        maxW="xl"
+        p={4}
+        bg="rgba(255, 255, 255, 0.8)"
+        rounded="xl"
+        border="1px solid #CBD5E0"
+        boxShadow="lg"
       >
-        <Heading color="gray.800" lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
+        <Heading as="h1" fontSize={{ base: '2xl', md: '3xl' }} mb={4} color="gray.800">
           Lista de Itens
         </Heading>
-        <Button leftIcon={<FaPlus />} colorScheme="blue" onClick={onOpen}>
+        <Button
+          leftIcon={<FaPlus />}
+          colorScheme="blue"
+          onClick={onOpen}
+          mb={4}
+          size="md"
+          fontSize="md"
+        >
           Adicionar Item
         </Button>
         <ItemList items={items} onDelete={handleDelete} />
-      </Stack>
+      </Flex>
 
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
