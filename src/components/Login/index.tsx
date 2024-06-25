@@ -37,13 +37,21 @@ export default function LoginScreen() {
   const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
   useEffect(() => {
+    const currentUrl = window.location.href;
+
+    // Check if the current URL is "https://react-sistema-lunch.vercel.app/"
+    if (currentUrl === "https://react-sistema-lunch.vercel.app/" || currentUrl === "https://react-sistema-lunch.vercel.app/login") {
+      setShowEmailLogin(true);
+      return;
+    }
+
     const params = new URLSearchParams(location.search);
     const endRequest = params.get('endRequest');
     if (endRequest === 'true') {
       setShowModal(true);
     }
 
-		const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'http://192.168.0.192:3333'
+    const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'http://192.168.0.192:3333';
     const socket = new WebSocket(`${urlBase.replace(/^http/, 'ws')}`);
     socket.onopen = function() {
       console.log('Conexão estabelecida.');
