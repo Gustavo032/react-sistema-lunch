@@ -52,7 +52,7 @@ export default function LoginScreen() {
     }
 
     const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'https://maplebear.codematch.com.br';
-    const socket = new WebSocket(`${urlBase.replace(/^http/, 'ws')}`);
+    const socket = new WebSocket(`${urlBase.replace(/^http(s)?:/, 'ws$1:')}`);
     socket.onopen = function() {
       console.log('Conexão estabelecida.');
     };
