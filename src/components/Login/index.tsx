@@ -51,7 +51,7 @@ export default function LoginScreen() {
       setShowModal(true);
     }
 
-    const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'http://192.168.0.192:3333';
+    const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'https://maplebear.codematch.com.br';
     const socket = new WebSocket(`${urlBase.replace(/^http/, 'ws')}`);
     socket.onopen = function() {
       console.log('Conexão estabelecida.');
