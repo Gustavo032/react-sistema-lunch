@@ -94,7 +94,7 @@ const AllRequests = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'http://localhost:3333';
+    const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'https://maplebear.codematch.com.br';
     const socketUrl = `${urlBase.replace(/^http/, 'ws')}/requests/updates`;
 
     let socket: WebSocket;
