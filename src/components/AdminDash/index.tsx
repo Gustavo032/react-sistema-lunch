@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Flex, Text, Stack, SimpleGrid, Link } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const [userRole, setUserRole] = useState<any>('');
 
   useEffect(() => {
     const getCookie = (name: string): string | undefined => {
@@ -14,13 +15,14 @@ export default function AdminDashboard() {
       }
     };
 
-    const userRole = getCookie('userRole');
-    if (userRole !== 'ADMIN') {
+    const role = getCookie('userRole');
+    setUserRole(role);
+    if (role !== 'ADMIN' && role !== 'MIDDLE') {
       navigate('/');
     }
   }, [navigate]);
 
-	const handleLogout = () => {
+  const handleLogout = () => {
     document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     document.cookie = 'userRole=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     navigate('/');
@@ -45,7 +47,7 @@ export default function AdminDashboard() {
         zIndex="2"
       >
         MapleBear Granja Viana
-      </Text>   
+      </Text>
       <Flex
         position="fixed"
         top="0"
@@ -72,110 +74,118 @@ export default function AdminDashboard() {
       >
         <Text color="gray.800" lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
           Bem-vindo ao Painel de Administração<Link
-        position="absolute"
-				color="#000000"
-        top="2rem"
-        right="2rem"
-        fontSize="lg"
-        zIndex="2"
-        onClick={handleLogout}
-				textDecor={"underline"}
-        _hover={{ textDecoration: 'underline', cursor: 'pointer' }}
-      >
-        Sair
-      </Link>
+            position="absolute"
+            color="#000000"
+            top="2rem"
+            right="2rem"
+            fontSize="lg"
+            zIndex="2"
+            onClick={handleLogout}
+            textDecor={"underline"}
+            _hover={{ textDecoration: 'underline', cursor: 'pointer' }}
+          >
+            Sair
+          </Link>
         </Text>
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} w="full">
-          <Button
-            color={'white'}
-            bgColor={'red.500'}
-            _hover={{
-              bgColor: 'red',
-              opacity: 0.5,
-            }}
-            _active={{
-              bgColor: 'red.300',
-            }}
-            variant={'solid'}
-            onClick={() => navigate('/createUser')}
-          >
-            Criar Usuário
-          </Button>
-          <Button
-            color={'white'}
-            bgColor={'red.500'}
-            _hover={{
-              bgColor: 'red',
-              opacity: 0.5,
-            }}
-            _active={{
-              bgColor: 'red.300',
-            }}
-            variant={'solid'}
-            onClick={() => navigate('/createItem')}
-          >
-            Cadastrar Item
-          </Button>
-          <Button
-            color={'white'}
-            bgColor={'red.500'}
-            _hover={{
-              bgColor: 'red',
-              opacity: 0.5,
-            }}
-            _active={{
-              bgColor: 'red.300',
-            }}
-            variant={'solid'}
-            onClick={() => navigate('/allRequests')}
-          >
-            Pedidos em Tempo Real
-          </Button>
-          <Button
-            color={'white'}
-            bgColor={'red.500'}
-            _hover={{
-              bgColor: 'red',
-              opacity: 0.5,
-            }}
-            _active={{
-              bgColor: 'red.300',
-            }}
-            variant={'solid'}
-            onClick={() => navigate('/controle')}
-          >
-            Controle Geral
-          </Button>
-					<Button
-            color={'white'}
-            bgColor={'red.500'}
-            _hover={{
-              bgColor: 'red',
-              opacity: 0.5,
-            }}
-            _active={{
-              bgColor: 'red.300',
-            }}
-            variant={'solid'}
-            onClick={() => navigate('/dashTokens')}
-          >
-            Gerenciar Tokens
-          </Button>
-					<Button
-            color={'white'}
-            bgColor={'red.500'}
-            _hover={{
-              bgColor: 'red',
-              opacity: 0.5,
-            }}
-            _active={{
-              bgColor: 'red.300',
-            }}
-            variant={'solid'}
-            onClick={() => navigate('/dashboard')}
-          >
-            Solicitar uma Refeição
-          </Button>
+          {(userRole === 'ADMIN' || userRole === 'MIDDLE') && (
+            <>
+              <Button
+                color={'white'}
+                bgColor={'red.500'}
+                _hover={{
+                  bgColor: 'red',
+                  opacity: 0.5,
+                }}
+                _active={{
+                  bgColor: 'red.300',
+                }}
+                variant={'solid'}
+                onClick={() => navigate('/allRequests')}
+              >
+                Pedidos em Tempo Real
+              </Button>
+              <Button
+                color={'white'}
+                bgColor={'red.500'}
+                _hover={{
+                  bgColor: 'red',
+                  opacity: 0.5,
+                }}
+                _active={{
+                  bgColor: 'red.300',
+                }}
+                variant={'solid'}
+                onClick={() => navigate('/dashboard')}
+              >
+                Solicitar uma Refeição
+              </Button>
+            </>
+          )}
+          {userRole === 'ADMIN' && (
+            <>
+              <Button
+                color={'white'}
+                bgColor={'red.500'}
+                _hover={{
+                  bgColor: 'red',
+                  opacity: 0.5,
+                }}
+                _active={{
+                  bgColor: 'red.300',
+                }}
+                variant={'solid'}
+                onClick={() => navigate('/createUser')}
+              >
+                Criar Usuário
+              </Button>
+              <Button
+                color={'white'}
+                bgColor={'red.500'}
+                _hover={{
+                  bgColor: 'red',
+                  opacity: 0.5,
+                }}
+                _active={{
+                  bgColor: 'red.300',
+                }}
+                variant={'solid'}
+                onClick={() => navigate('/createItem')}
+              >
+                Cadastrar Item
+              </Button>
+              <Button
+                color={'white'}
+                bgColor={'red.500'}
+                _hover={{
+                  bgColor: 'red',
+                  opacity: 0.5,
+                }}
+                _active={{
+                  bgColor: 'red.300',
+                }}
+                variant={'solid'}
+                onClick={() => navigate('/controle')}
+              >
+                Controle Geral
+              </Button>
+              <Button
+                color={'white'}
+                bgColor={'red.500'}
+                _hover={{
+                  bgColor: 'red',
+                  opacity: 0.5,
+                }}
+                _active={{
+                  bgColor: 'red.300',
+                }}
+                variant={'solid'}
+                onClick={() => navigate('/dashTokens')}
+              >
+                Gerenciar Tokens
+              </Button>
+            </>
+          )}
         </SimpleGrid>
       </Stack>
     </Flex>

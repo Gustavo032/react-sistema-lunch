@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Image, Button, Select, Input } from '@chakra-ui/react';
+import { Table, Thead, Tbody, Tr, Th, Td, Box, Flex, Image, Button, Select, Input, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, useDisclosure } from '@chakra-ui/react';
 import { endOfDay, format, startOfDay } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ interface Request {
   id: string;
   sequence: number;
   user_name: string;
+  userImage: string;
   requestItems: RequestItem[];
   items: RequestItem[];
   status: string;
@@ -27,6 +28,8 @@ const AllRequests = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [startDate] = useState<Date>(startOfDay(new Date()));
   const [endDate] = useState<Date>(endOfDay(new Date()));
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const navigate = useNavigate();
 
@@ -69,15 +72,15 @@ const AllRequests = () => {
   };
 
   const handleDeleteRequest = async (id: string) => {
-		const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
-		
+    const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+    
     if (window.confirm('Tem certeza de que deseja excluir este pedido?')) {
       try {
         await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/requests/${id}/delete`, {
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				});
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setRequests((prevRequests) => prevRequests.filter((request) => request.id !== id));
         setFilteredRequests((prevRequests) => prevRequests.filter((request) => request.id !== id));
       } catch (error) {
@@ -88,14 +91,14 @@ const AllRequests = () => {
 
   useEffect(() => {
     const userRole = getCookie('userRole');
-    if (userRole !== 'ADMIN') {
+    if (userRole !== 'ADMIN' && userRole !== 'MIDDLE') {
       navigate('/');
     }
   }, [navigate]);
 
   useEffect(() => {
     const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'https://maplebear.codematch.com.br';
-		const socketUrl = `${urlBase.replace(/^https?:/, 'ws:')}/requests/updates`;
+    const socketUrl = `${urlBase.replace(/^https?:/, 'ws:')}/requests/updates`;
 
     let socket: WebSocket;
 
@@ -174,6 +177,11 @@ const AllRequests = () => {
     setFilteredRequests(filtered);
   };
 
+  const handleImageClick = (image: string) => {
+    setSelectedImage(image);
+    onOpen();
+  };
+
   return (
     <Box p="4" bgColor="gray.900" minH="100vh">
       <>
@@ -218,7 +226,18 @@ const AllRequests = () => {
               {filteredRequests && filteredRequests.map((request) => (
                 <Tr key={request.id} bgColor={getStatusColor(request.status)}>
                   <Td>{request.sequence}</Td>
-                  <Td>{request.user_name}</Td>
+                  <Td>
+                    <Flex align="center">
+                      <Image 
+                        w="3rem" 
+                        h="3rem" 
+                        src={request.userImage} 
+                        cursor="pointer" 
+                        onClick={() => handleImageClick(request.userImage)} 
+                      />
+                      {request.user_name}
+                    </Flex>
+                  </Td>
                   <Td>
                     <ul>
                       {request.requestItems && request.requestItems.map((item, index) => (
@@ -252,6 +271,19 @@ const AllRequests = () => {
             </Tbody>
           </Table>
         </Box>
+
+        {selectedImage && (
+          <Modal isOpen={isOpen} onClose={onClose} size="xl">
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Imagem do Usuário</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                <Image src={selectedImage} w="100%" />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        )}
       </>
     </Box>
   );
