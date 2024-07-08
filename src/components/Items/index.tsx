@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Flex,
   Heading,
@@ -11,11 +11,12 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-} from '@chakra-ui/react';
-import axios from 'axios';
-import { FaPlus } from 'react-icons/fa';
-import ItemList from './ItemList';
-import ItemForm from './ItemForm';
+  Text,
+} from "@chakra-ui/react";
+import axios from "axios";
+import { FaPlus } from "react-icons/fa";
+import ItemList from "./ItemList";
+import ItemForm from "./ItemForm";
 
 interface Item {
   id: string;
@@ -31,15 +32,18 @@ const ListItens: React.FC = () => {
   const toast = useToast();
   const token = document.cookie.replace(
     /(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
-    '$1'
+    "$1"
   );
 
   const fetchItems = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/items/all`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_BASE_URL}/items/all`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     setItems(response.data.items.item);
   };
 
@@ -48,25 +52,32 @@ const ListItens: React.FC = () => {
   }, []);
 
   const handleDelete = async (id: string) => {
-    await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/items/${id}/delete`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    await axios.delete(
+      `${process.env.REACT_APP_API_BASE_URL}/items/${id}/delete`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     fetchItems();
   };
 
   const handleAdd = async (title: string, price: number) => {
-    await axios.post(`${process.env.REACT_APP_API_BASE_URL}/items/create`, { title, price }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    await axios.post(
+      `${process.env.REACT_APP_API_BASE_URL}/items/create`,
+      { title, price },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     fetchItems();
     toast({
-      title: 'Item adicionado.',
-      description: 'O item foi adicionado com sucesso.',
-      status: 'success',
+      title: "Item adicionado.",
+      description: "O item foi adicionado com sucesso.",
+      status: "success",
       duration: 5000,
       isClosable: true,
     });
@@ -75,13 +86,34 @@ const ListItens: React.FC = () => {
 
   return (
     <Flex
-      minH={'100vh'}
-      align={'center'}
-      justify={'center'}
+      minH={"100vh"}
+      align={"center"}
+      justify={"center"}
+      backgroundImage="./img/mapleBearBackground.jpg"
       bgSize="cover"
       bgPosition="center"
       position="relative"
     >
+      <Text
+        position="absolute"
+        top="4"
+        left="4"
+        color="white"
+        fontSize="2xl"
+        zIndex="2"
+      >
+        MapleBear Granja Viana
+      </Text>
+      <Flex
+        position="fixed"
+        top="0"
+        left="0"
+        right="0"
+        bottom="0"
+        bg="rgba(0, 0, 0, 0.5)"
+        zIndex="1"
+      ></Flex>
+
       <Flex
         direction="column"
         align="center"
@@ -91,8 +123,14 @@ const ListItens: React.FC = () => {
         rounded="xl"
         border="1px solid #CBD5E0"
         boxShadow="lg"
+				zIndex={3}
       >
-        <Heading as="h1" fontSize={{ base: '2xl', md: '3xl' }} mb={4} color="gray.800">
+        <Heading
+          as="h1"
+          fontSize={{ base: "2xl", md: "3xl" }}
+          mb={4}
+          color="gray.800"
+        >
           Lista de Itens
         </Heading>
         <Button
