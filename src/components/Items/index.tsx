@@ -17,6 +17,8 @@ import axios from "axios";
 import { FaPlus } from "react-icons/fa";
 import ItemList from "./ItemList";
 import ItemForm from "./ItemForm";
+import { ArrowBackIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom";
 
 interface Item {
   id: string;
@@ -34,6 +36,7 @@ const ListItens: React.FC = () => {
     /(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
     "$1"
   );
+  const navigate = useNavigate();
 
   const fetchItems = async () => {
     const response = await axios.get(
@@ -95,14 +98,25 @@ const ListItens: React.FC = () => {
       position="relative"
     >
       <Text
-        position="absolute"
+        position="fixed"
         top="4"
         left="4"
         color="white"
         fontSize="2xl"
-        zIndex="2"
+        zIndex="2" // Ajusta a camada de empilhamento para que o texto esteja sobre o overlay
       >
+        <Button
+          colorScheme="whiteAlpha"
+          onClick={() => navigate('/admin')}
+          zIndex="2"
+          mr="1rem"
+          _hover={{ bg: 'whiteAlpha.800' }}
+          _active={{ bg: 'whiteAlpha.600' }}
+        >
+          <ArrowBackIcon color="white" boxSize={6} />
+        </Button>
         MapleBear Granja Viana
+        {/* Botão de Voltar */}
       </Text>
       <Flex
         position="fixed"
