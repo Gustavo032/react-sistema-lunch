@@ -28,6 +28,7 @@ export default function LoginScreen() {
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [errorMessage] = useState('');
+	const [currentUrl, setCurrentUrl] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showEmailLogin, setShowEmailLogin] = useState(false);
   const toast = useToast();
@@ -37,14 +38,19 @@ export default function LoginScreen() {
   const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
   useEffect(() => {
-    const currentUrl = window.location.href;
+		const url = window.location.href;
+    setCurrentUrl(url);
 
-    // Check if the current URL is "https://react-sistema-lunch.vercel.app/ or https://maplebear.ineedti.com/"
-    if (currentUrl === "https://maplebear.ineedti.com/" || currentUrl === "https://maplebear.ineedti.com/login" || currentUrl === "http://maplebear.ineedti.com" || currentUrl === "http://maplebear.ineedti.com/login") {
+    if (
+      url === 'https://maplebear.ineedti.com/' ||
+      url === 'https://maplebear.ineedti.com/login' ||
+      url === 'http://maplebear.ineedti.com' ||
+      url === 'http://maplebear.ineedti.com/login'
+    ) {
       setShowEmailLogin(true);
       return;
     }
-
+		
     const params = new URLSearchParams(location.search);
     const endRequest = params.get('endRequest');
     if (endRequest === 'true') {
@@ -265,23 +271,29 @@ export default function LoginScreen() {
                 Continuar
               </Button>
               {!isSmallScreen && (
-                <Button
-                  mt={-4}
-                  color={'white'}
-                  bgColor={'blue.500'}
-                  _hover={{
-                    bgColor: 'blue',
-                    opacity: 0.5,
-                  }}
-                  _active={{
-                    bgColor: 'blue.300',
-                  }}
-                  variant={'solid'}
-                  onClick={() => setShowEmailLogin(false)}
-                >
-                  Entrar com Facial
-                </Button>
+                currentUrl === 'https://maplebear.ineedti.com/' ||
+                currentUrl === 'https://maplebear.ineedti.com/login' ||
+                currentUrl === 'http://maplebear.ineedti.com' ||
+                currentUrl === 'http://maplebear.ineedti.com/login' ? (
+                  <Button
+                    mt={-4}
+                    color={'white'}
+                    bgColor={'blue.500'}
+                    _hover={{
+                      bgColor: 'blue',
+                      opacity: 0.5,
+                    }}
+                    _active={{
+                      bgColor: 'blue.300',
+                    }}
+                    variant={'solid'}
+                    onClick={() => setShowEmailLogin(false)}
+                  >
+                    Entrar com Facial
+                  </Button>
+                ) : null
               )}
+
               {errorMessage !== '' && (
                 <Stack
                   direction={{ base: 'column', sm: 'row' }}
