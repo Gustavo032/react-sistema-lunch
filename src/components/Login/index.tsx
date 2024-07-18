@@ -99,7 +99,7 @@ export default function LoginScreen() {
         console.log('WebSocket connection closed.');
       }
     };
-  }, [navigate, location.search]);
+  }, [navigate, location.search, currentUrl]);
 
   async function loginUserFunction() {
     try {
