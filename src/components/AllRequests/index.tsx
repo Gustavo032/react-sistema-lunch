@@ -98,7 +98,8 @@ const AllRequests = () => {
 
   useEffect(() => {
     const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'https://maplebear.codematch.com.br';
-    const socketUrl = `${urlBase.replace(/^https?:/, 'ws:')}/requests/updates`;
+    const wsProtocol = urlBase.startsWith('https:') ? 'wss:' : 'ws:';
+		const socketUrl = `${wsProtocol}//${urlBase.split('//')[1]}/requests/updates`;
 
     let socket: WebSocket;
 
