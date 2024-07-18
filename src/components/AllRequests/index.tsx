@@ -97,7 +97,7 @@ const AllRequests = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'https://maplebear.codematch.com.br';
+    const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'https://api-m.ineedti.com';
     const wsProtocol = urlBase.startsWith('https:') ? 'wss:' : 'ws:';
 		const socketUrl = `${wsProtocol}//${urlBase.split('//')[1]}/requests/updates`;
 

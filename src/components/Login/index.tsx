@@ -39,8 +39,8 @@ export default function LoginScreen() {
   useEffect(() => {
     const currentUrl = window.location.href;
 
-    // Check if the current URL is "https://react-sistema-lunch.vercel.app/"
-    if (currentUrl === "https://react-sistema-lunch.vercel.app/" || currentUrl === "https://react-sistema-lunch.vercel.app/login") {
+    // Check if the current URL is "https://react-sistema-lunch.vercel.app/ or https://maplebear.ineedti.com/"
+    if (currentUrl === "https://maplebear.ineedti.com/" || currentUrl === "https://maplebear.ineedti.com/login" || currentUrl === "http://maplebear.ineedti.com" || currentUrl === "http://maplebear.ineedti.com/login") {
       setShowEmailLogin(true);
       return;
     }
@@ -51,7 +51,7 @@ export default function LoginScreen() {
       setShowModal(true);
     }
 
-    const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'https://maplebear.codematch.com.br';
+    const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'https://api-m.ineedti.com';
 
 // Verifica o protocolo e ajusta para o protocolo WebSocket correspondente
 		const wsProtocol = urlBase.startsWith('https:') ? 'wss:' : 'ws:';
