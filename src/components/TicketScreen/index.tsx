@@ -27,10 +27,7 @@ export function TicketScreen(props: TicketScreenProps) {
   };
 
   const currentUrl = window.location.href;
-  const isHidden = useBreakpointValue({
-    base: true,
-    md: false,
-  }) || (
+  const isSameUrl = (
     currentUrl === 'https://maplebear.ineedti.com/' ||
     currentUrl === 'https://maplebear.ineedti.com/login' ||
     currentUrl === 'http://maplebear.ineedti.com' ||
@@ -97,7 +94,7 @@ export function TicketScreen(props: TicketScreenProps) {
           ))}
         </UnorderedList>
         <Text mt={4} fontWeight="bold" textAlign="left">Total: {Number(ticketData.total).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}</Text>
-        {!isHidden ? (
+        {isSameUrl ? (
 					<Button mt={6} colorScheme="blue" onClick={() => navigate('/')}>
 						Encerrar e Sair
 					</Button>
