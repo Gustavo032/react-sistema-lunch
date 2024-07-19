@@ -29,9 +29,9 @@ export function TicketScreen(props: TicketScreenProps) {
   const currentUrl = window.location.href;
   const isSameUrl = (
     currentUrl === 'https://maplebear.ineedti.com/' ||
-    currentUrl === 'https://maplebear.ineedti.com/login' ||
+    currentUrl === 'https://maplebear.ineedti.com/ticket' ||
     currentUrl === 'http://maplebear.ineedti.com' ||
-    currentUrl === 'http://maplebear.ineedti.com/login'
+    currentUrl === 'http://maplebear.ineedti.com/ticket'
   );
 
   const buttonComponent = useBreakpointValue({
