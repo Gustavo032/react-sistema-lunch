@@ -78,7 +78,7 @@ export default function CreateUserByToken() {
     try {
       await toast.promise(createUser(), {
         loading: { title: 'Criando usuário...', description: 'Por favor, aguarde...' },
-        success: { title: 'Usuário criado com sucesso!', description: 'Looks great' },
+        success: { title: 'Usuário criado com sucesso!', description: 'Estamos lhe redirecionando para tela de Login, aguarde...', onCloseComplete: () => navigate('/') },
         error: { title: 'Erro ao criar usuário', description: 'Something wrong' },
       });
     } catch (error:any) {
