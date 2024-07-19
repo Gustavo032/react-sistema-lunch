@@ -21,7 +21,8 @@ import {
   Input,
   useDisclosure,
   useToast,
-  Spinner
+  Spinner,
+	Select
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowBackIcon } from '@chakra-ui/icons';
@@ -31,8 +32,17 @@ const DashTokens = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [tokens, setTokens] = useState<any[]>([]);
   const [email, setEmail] = useState('');
+  const [matricula, setMatricula] = useState('');
+  const [userClass, setUserClass] = useState('');
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+	const turmas = [
+		'Turma A',
+		'Turma B',
+		'Turma C',
+		'Turma D',
+		'Turma E'
+	]
 
   useEffect(() => {
     const getCookie = (name: string): string | undefined => {
@@ -71,7 +81,11 @@ const DashTokens = () => {
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/users/generateToken`,
-        { email },
+        { 
+					email,
+					user_class: userClass,
+					matricula
+				},
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -177,6 +191,8 @@ const DashTokens = () => {
               <Tr key={token.id}>
                 <Td>{token.token}</Td>
                 <Td>{token.email}</Td>
+                <Td>{token.matricula}</Td>
+                <Td>{token.user_class}</Td>
                 <Td h="100%" p="0" textAlign="center">
                   {token.used ? (
                     <Text bgColor="#E53E3E" fontWeight={"500"} color={"white"} h="100%" p="1rem">Utilizado</Text>
@@ -198,13 +214,34 @@ const DashTokens = () => {
           <ModalCloseButton />
           <ModalBody>
             <Input 
+							required
               placeholder="Digite o e-mail" 
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
             />
+						<Input 
+							required
+              placeholder="Digite a Matricula" 
+              value={matricula} 
+              onChange={(e) => setMatricula(e.target.value)} 
+							mt="1rem"
+            />
+						<Select
+							required
+							placeholder="Selecione a Turma do Usuário"
+							value={userClass}
+							onChange={(e) => setUserClass(e.target.value)}
+							mt="1rem"
+						>
+							{turmas.map((turma) => (
+								<option key={turma} value={turma}>
+									{turma}
+								</option>
+							))}
+						</Select>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={createToken} isLoading={loading}>
+            <Button colorScheme="blue" type="submit" mr={3} onClick={createToken} isLoading={loading}>
               Confirmar
             </Button>
             <Button variant="ghost" onClick={onClose}>Cancelar</Button>

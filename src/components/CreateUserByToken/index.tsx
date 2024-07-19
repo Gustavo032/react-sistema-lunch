@@ -35,11 +35,16 @@ export default function CreateUserByToken() {
     const validateToken = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/users/verify-token/${TokenID}`);
+				console.log(response)
         if (response.data.message === 'Valid token') {
-					setUserData({ ...userData, email: response.data.tokenData.email })
-					setUserData({ ...userData, id: response.data.tokenData.matricula })
-					setUserData({ ...userData, user_class: response.data.tokenData.user_class })
-          setIsValidToken(true);
+					const tokenData = response.data.tokenData;
+					setUserData({
+						...userData,
+						email: tokenData.email,
+						id: tokenData.matricula,
+						user_class: tokenData.user_class
+					});
+					setIsValidToken(true);	
 					
         } else {
           // navigate('/invalid-token'); // Redirecionar para uma página de token inválido
@@ -144,7 +149,7 @@ export default function CreateUserByToken() {
         fontSize="2xl"
         zIndex="2" // Ajusta a camada de empilhamento para que o texto esteja sobre o overlay
       >
-        <Button
+        {/* <Button
           colorScheme="whiteAlpha"
           onClick={() => navigate('/admin')}
           zIndex="2"
@@ -153,7 +158,7 @@ export default function CreateUserByToken() {
           _active={{ bg: 'whiteAlpha.600' }}
         >
           <ArrowBackIcon color="white" boxSize={6} />
-        </Button>
+        </Button> */}
         MapleBear Granja Viana
         {/* Botão de Voltar */}
       </Text>
