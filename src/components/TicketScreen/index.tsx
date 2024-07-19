@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { Box, Center, Text, UnorderedList, ListItem, Button, Flex, useColorModeValue, useBreakpointValue } from "@chakra-ui/react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 interface TicketScreenProps {
@@ -9,7 +9,8 @@ interface TicketScreenProps {
 
 export function TicketScreen(props: TicketScreenProps) {
   const { ticketData } = props;
-  const navigate = useNavigate(); // Obtenha o objeto de histórico
+  const navigate = useNavigate();
+  const location = useLocation();
   const contentRef = useRef<HTMLDivElement | null>(null);
 
   const handlePrint = async () => {
@@ -25,30 +26,29 @@ export function TicketScreen(props: TicketScreenProps) {
     }
   };
 
-  const ResponsiveButton = () => {
-    const navigate = useNavigate();
+  const currentUrl = window.location.href;
+  const isHidden = useBreakpointValue({
+    base: true,
+    md: false,
+  }) || (
+    currentUrl === 'https://maplebear.ineedti.com/' ||
+    currentUrl === 'https://maplebear.ineedti.com/login' ||
+    currentUrl === 'http://maplebear.ineedti.com' ||
+    currentUrl === 'http://maplebear.ineedti.com/login'
+  );
 
-    const buttonComponent = useBreakpointValue({
-      base: (
-        <Button mt={6} colorScheme="blue" onClick={() => navigate('/')}>
-          Encerrar e Sair
-        </Button>
-      ),
-      md: (
-        <Button mt={6} colorScheme="blue" onClick={handlePrint}>
-          Imprima Seu Ticket
-        </Button>
-      ),
-    }, {
-      fallback: String(
-        <Button mt={6} colorScheme="blue" onClick={() => navigate('/')}>
-          Encerrar e Sair
-        </Button>
-      ),
-    });
-
-    return buttonComponent ?? null;
-  };
+  const buttonComponent = useBreakpointValue({
+    base: (
+      <Button mt={6} colorScheme="blue" onClick={() => navigate('/')}>
+        Encerrar e Sair
+      </Button>
+    ),
+    md: (
+      <Button mt={6} colorScheme="blue" onClick={handlePrint}>
+        Imprima Seu Ticket
+      </Button>
+    ),
+  });
 
   return (
     <Center h="100vh" bgSize="cover" bgPosition="center" backgroundImage="./img/mapleBearBackground.jpg">
@@ -97,7 +97,7 @@ export function TicketScreen(props: TicketScreenProps) {
           ))}
         </UnorderedList>
         <Text mt={4} fontWeight="bold" textAlign="left">Total: {Number(ticketData.total).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}</Text>
-        <ResponsiveButton />
+        {!isHidden && buttonComponent}
       </Box>
     </Center>
   );
