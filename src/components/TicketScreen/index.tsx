@@ -97,13 +97,11 @@ export function TicketScreen(props: TicketScreenProps) {
           ))}
         </UnorderedList>
         <Text mt={4} fontWeight="bold" textAlign="left">Total: {Number(ticketData.total).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}</Text>
-        {isHidden ? (
-          <Button mt={6} colorScheme="blue" onClick={() => navigate('/')}>
-            Encerrar e Sair
-          </Button>
-        ) : (
-          buttonComponent
-        )}
+        {!isHidden ? (
+					<Button mt={6} colorScheme="blue" onClick={() => navigate('/')}>
+						Encerrar e Sair
+					</Button>
+				) : buttonComponent}
       </Box>
     </Center>
   );
