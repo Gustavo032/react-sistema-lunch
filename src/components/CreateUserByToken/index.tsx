@@ -15,7 +15,7 @@ export default function CreateUserByToken() {
     name: '',
     email: '',
     password: '',
-    credit: '',
+    credit: 0,
     role: 'MEMBER',
     image: '',
   });
@@ -23,13 +23,24 @@ export default function CreateUserByToken() {
   const [parentsEnabled, setParentsEnabled] = useState(false);
   const [imagePreview, setImagePreview] = useState<any>('');
 	const [loading, setLoading] = useState(false);
+	const turmas = [
+		'Turma A',
+		'Turma B',
+		'Turma C',
+		'Turma D',
+		'Turma E',
+	];
 
   useEffect(() => {
     const validateToken = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/users/verify-token/${TokenID}`);
         if (response.data.message === 'Valid token') {
+					setUserData({ ...userData, email: response.data.tokenData.email })
+					setUserData({ ...userData, id: response.data.tokenData.matricula })
+					setUserData({ ...userData, user_class: response.data.tokenData.user_class })
           setIsValidToken(true);
+					
         } else {
           // navigate('/invalid-token'); // Redirecionar para uma página de token inválido
 					console.log("token invalid");
@@ -200,12 +211,12 @@ export default function CreateUserByToken() {
 								top="-10px"
 								colorScheme="red"
 								aria-label="remove Image"
-								icon={<SmallCloseIcon p="0.2rem" w="100%" h="100%" onClick={() => {setImagePreview(""); setUserData({ ...userData, image: "" })}}/>}
+								icon={<SmallCloseIcon p="0.2rem" w="100%" h="100%" onClick={() => {setImagePreview(''); setUserData({ ...userData, image: null })}}/>}
 							/>
 						</Avatar>
 					</Center>
 					<Center w="100%">
-						<Input p="0.1rem" onChange={handleImageChange} alignContent={"center"} type="file" w="48%" border="none"/>
+						<Input p="0.1rem" required={userData.image === null ? true : false} onChange={handleImageChange} alignContent={"center"} type="file" w="48%" border="none"/>
 					</Center>
       </>
     )}
@@ -223,9 +234,28 @@ export default function CreateUserByToken() {
 					</Flex>
         </FormControl> */}
 
-        <FormControl id="name">
-          <FormLabel color="gray.800">Nome</FormLabel>
+				<FormControl id="id">
+          <FormLabel color="gray.800">Matricula</FormLabel>
           <Input
+						disabled
+            type="text"
+            bg={'gray.100'}
+            placeholder="Digite a Matricula"
+            border={0}
+            color={'gray.900'}
+            _placeholder={{
+              color: 'gray.500',
+            }}
+            value={userData.id}
+            // onChange={(e)=>setUserData({ ...userData, id: e.target.value })}
+            maxLength={120}
+          />
+        </FormControl>
+
+        <FormControl id="name">
+          <FormLabel color="gray.800">Nome*</FormLabel>
+          <Input
+						required
             type="text"
             bg={'gray.100'}
             placeholder="Digite o Nome"
@@ -240,9 +270,28 @@ export default function CreateUserByToken() {
           />
         </FormControl>
 
-        <FormControl id="email">
-          <FormLabel color="gray.800">Email</FormLabel>
+				<FormControl id="cpf">
+          <FormLabel color="gray.800">CPF</FormLabel>
           <Input
+						required
+            type="text"
+            bg={'gray.100'}
+            placeholder="Digite o CPF"
+            border={0}
+            color={'gray.900'}
+            _placeholder={{
+              color: 'gray.500',
+            }}
+            value={userData.cpf}
+            onChange={(e)=>setUserData({ ...userData, cpf: e.target.value })}
+            maxLength={120}
+          />
+        </FormControl>
+
+        <FormControl id="email">
+          <FormLabel color="gray.800">Email*</FormLabel>
+          <Input
+						disabled
             type="text"
             bg={'gray.100'}
             placeholder="Digite o Email"
@@ -252,14 +301,15 @@ export default function CreateUserByToken() {
               color: 'gray.500',
             }}
             value={userData.email}
-            onChange={(e)=>setUserData({ ...userData, email: e.target.value })}
+            // onChange={(e)=>setUserData({ ...userData, email: e.target.value })}
             maxLength={120}
           />
         </FormControl>
 
         <FormControl id="password">
-          <FormLabel color="gray.800">Senha</FormLabel>
+          <FormLabel color="gray.800">Senha*</FormLabel>
           <Input
+						required
             type="password" // Altere o tipo de texto para senha
             bg={'gray.100'}
             placeholder="Digite a Senha"
@@ -274,7 +324,7 @@ export default function CreateUserByToken() {
           />
         </FormControl>
 
-        <FormControl id="credit">
+        {/* <FormControl id="credit">
           <FormLabel color="gray.800">Crédito do Usuário</FormLabel>
           <Input
             type="number"
@@ -291,7 +341,7 @@ export default function CreateUserByToken() {
             onChange={(e)=>setUserData({ ...userData, credit: String(Number(parseFloat(e.target.value.replace(/[^0-9.]/g, '')).toFixed(2))) })}
             maxLength={120}
           />
-        </FormControl>
+        </FormControl> */}
 
         <Checkbox
           isChecked={parentsEnabled}
@@ -375,6 +425,28 @@ export default function CreateUserByToken() {
           />
         </FormControl>
 
+				<FormControl id="user_class">
+					<FormLabel color="gray.800">Turma do Aluno</FormLabel>
+					<Select
+						disabled
+						bg={'gray.100'}
+						placeholder="Selecione a Turma do Aluno"
+						border={0}
+						color={'gray.900'}
+						_placeholder={{
+							color: 'gray.500',
+						}}
+						value={userData.user_class}
+						// onChange={(e) => setUserData({ ...userData, user_class: e.target.value })}
+					>
+						{turmas.map((turma) => (
+							<option key={turma} value={turma}>
+								{turma}
+							</option>
+						))}
+					</Select>
+				</FormControl>
+{/* 				
         <FormControl id="user_class">
           <FormLabel color="gray.800">Turma do Usuário</FormLabel>
           <Input
@@ -390,7 +462,7 @@ export default function CreateUserByToken() {
             onChange={(e)=>setUserData({ ...userData, user_class: e.target.value })}
             maxLength={120}
           />
-        </FormControl>
+        </FormControl> */}
 
         {/* <FormControl id="role">
           <FormLabel color="gray.800">Função</FormLabel>

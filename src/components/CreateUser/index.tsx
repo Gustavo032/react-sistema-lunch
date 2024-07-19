@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar, AvatarBadge, Box, Button, Center, Checkbox, Flex, FormControl, FormLabel, Heading, IconButton, Image, Input, Select, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
+import { Avatar, AvatarBadge, Box, Button, Center, Checkbox, Flex, FormControl, FormLabel, Heading, IconButton, Image, Input, Select, Spinner, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
@@ -10,8 +10,9 @@ export default function CreateUserScreen() {
   const [userData, setUserData] = useState<any>({
     name: '',
     email: '',
+    cpf: '',
     password: '',
-    credit: '',
+    credit: 0,
     role: 'MEMBER',
     image: '' // Adicione um estado para armazenar a imagem em base64
   });
@@ -23,6 +24,14 @@ export default function CreateUserScreen() {
     '$1'
   );
   const [imagePreview, setImagePreview] = useState('');
+	const [loading, setLoading] = useState(false);
+	const turmas = [
+		'Turma A',
+		'Turma B',
+		'Turma C',
+		'Turma D',
+		'Turma E',
+	];
 
   const navigate = useNavigate();
 
@@ -76,6 +85,10 @@ export default function CreateUserScreen() {
   const handleImageChange = async (e:any) => {
     const file = e.target.files[0];
 
+		
+		// Limpar o valor do input para forçar o onChange ser disparado
+		e.target.value = null;
+	
     // Verificar se foi selecionado um arquivo
     if (!file) return;
 
@@ -85,28 +98,38 @@ export default function CreateUserScreen() {
       return;
     }
 
+		setLoading(true); // Ativar o indicador de loading
+
     // Verificar o tamanho do arquivo
-    if (file.size > 200 * 1024) {
-      // Se a imagem exceder 200KB, redimensioná-la
-      const compressedFile = await imageCompression(file, { maxSizeMB: 0.1 });
-      // Exibir a imagem redimensionada
-      const reader:any = new FileReader();
-      reader.onload = () => {
-        setImagePreview(reader.result);
-        // Converter a imagem para base64 e armazená-la no estado userData
-        setUserData({ ...userData, image: reader.result });
-      };
-      reader.readAsDataURL(compressedFile);
-    } else {
-      // Exibir a imagem sem redimensionamento
-      const reader:any = new FileReader();
-      reader.onload = () => {
-        setImagePreview(reader.result);
-        // Converter a imagem para base64 e armazená-la no estado userData
-        setUserData({ ...userData, image: reader.result });
-      };
-      reader.readAsDataURL(file);
-    }
+    
+		try {
+			if (file.size > 200 * 1024) {
+				// Se a imagem exceder 200KB, redimensioná-la
+				const compressedFile = await imageCompression(file, { maxSizeMB: 0.1 });
+				// Exibir a imagem redimensionada
+				const reader:any = new FileReader();
+				reader.onload = () => {
+					setImagePreview(reader.result);
+					// Converter a imagem para base64 e armazená-la no estado userData
+					setUserData({ ...userData, image: reader.result });
+				};
+				reader.readAsDataURL(compressedFile);
+			} else {
+				// Exibir a imagem sem redimensionamento
+				const reader:any = new FileReader();
+				reader.onload = () => {
+					setImagePreview(reader.result);
+					// Converter a imagem para base64 e armazená-la no estado userData
+					setUserData({ ...userData, image: reader.result });
+				};
+				reader.readAsDataURL(file);
+			}
+		} catch (error) {
+			console.error('Erro ao processar a imagem:', error);
+			alert('Ocorreu um erro ao processar a imagem. Por favor, tente novamente.');
+		} finally {
+			setLoading(false); // Desativar o indicador de loading, seja após sucesso ou erro
+		}
   };
 
   return (
@@ -170,9 +193,9 @@ export default function CreateUserScreen() {
       >
         <Flex justifyContent={"space-between"}>
           <Heading color="gray.800" lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
-            Criar Usuário
+            Cadastrar Aluno
           </Heading>
-          <Button as={Link} to="/controle" colorScheme="blue">Listar Usuários</Button>
+          <Button as={Link} to="/controle" colorScheme="blue">Listar Alunos</Button>
         </Flex>
 
         <Text
@@ -180,7 +203,7 @@ export default function CreateUserScreen() {
           color={useColorModeValue('gray.800', 'gray.800')}
         ></Text>
 
-				<Stack direction={['column', 'row']} spacing={6}>
+				{/* <Stack direction={['column', 'row']} spacing={6}>
 					<Center>
 						<Avatar size="xl"  src={imagePreview ? imagePreview : userData.image}>
 							<AvatarBadge
@@ -197,6 +220,33 @@ export default function CreateUserScreen() {
 					<Center w="100%">
 						<Input p="0.1rem" onChange={handleImageChange} alignContent={"center"} type="file" w="48%" border="none"/>
 					</Center>
+				</Stack> */}
+					<Stack direction={['column', 'row']} spacing={6}>
+					{/* Se loading for true, exibe o Spinner */}
+					{loading && <><Text>Aguarde enquanto a imagem é processada </Text><Spinner size="sm" color="blue.500" /></>}
+					
+					{/* Se não estiver carregando, exibe o restante do conteúdo */}
+					{!loading && (
+						<>
+							<Center>
+									<Avatar size="xl"  src={imagePreview}>
+										<AvatarBadge
+											as={IconButton}
+											size="sm"
+											rounded="full"
+											top="-10px"
+											colorScheme="red"
+											aria-label="remove Image"
+											icon={<SmallCloseIcon p="0.2rem" w="100%" h="100%" onClick={() => {setImagePreview(''); setUserData({ ...userData, image: null})}}/>}
+										/>
+									</Avatar>
+								</Center>
+								<Center w="100%">
+									<Input p="0.1rem" required={userData.image === null ? true : false} onChange={handleImageChange} alignContent={"center"} type="file" w="48%" border="none"/>
+								</Center>
+						</>
+					)}
+
 				</Stack>
         {/* <FormControl id="userImage">
           <FormLabel color="gray.800">Imagem do Usuário</FormLabel>
@@ -210,9 +260,27 @@ export default function CreateUserScreen() {
 					</Flex>
         </FormControl> */}
 
-        <FormControl id="name">
-          <FormLabel color="gray.800">Nome</FormLabel>
+				<FormControl id="id">
+          <FormLabel color="gray.800">Matricula</FormLabel>
           <Input
+            type="text"
+            bg={'gray.100'}
+            placeholder="Digite a Matricula"
+            border={0}
+            color={'gray.900'}
+            _placeholder={{
+              color: 'gray.500',
+            }}
+            value={userData.id}
+            onChange={(e)=>setUserData({ ...userData, id: e.target.value })}
+            maxLength={120}
+          />
+        </FormControl>
+
+        <FormControl id="name">
+          <FormLabel color="gray.800">Nome*</FormLabel>
+          <Input
+						required
             type="text"
             bg={'gray.100'}
             placeholder="Digite o Nome"
@@ -227,10 +295,29 @@ export default function CreateUserScreen() {
           />
         </FormControl>
 
-        <FormControl id="email">
-          <FormLabel color="gray.800">Email</FormLabel>
+				<FormControl id="cpf">
+          <FormLabel color="gray.800">CPF</FormLabel>
           <Input
+						required
             type="text"
+            bg={'gray.100'}
+            placeholder="Digite o CPF"
+            border={0}
+            color={'gray.900'}
+            _placeholder={{
+              color: 'gray.500',
+            }}
+            value={userData.cpf}
+            onChange={(e)=>setUserData({ ...userData, cpf: e.target.value })}
+            maxLength={120}
+          />
+        </FormControl>
+
+        <FormControl id="email">
+          <FormLabel color="gray.800">Email*</FormLabel>
+          <Input
+						required
+            type="email"
             bg={'gray.100'}
             placeholder="Digite o Email"
             border={0}
@@ -245,8 +332,9 @@ export default function CreateUserScreen() {
         </FormControl>
 
         <FormControl id="password">
-          <FormLabel color="gray.800">Senha</FormLabel>
+          <FormLabel color="gray.800">Senha*</FormLabel>
           <Input
+						required
             type="password" // Altere o tipo de texto para senha
             bg={'gray.100'}
             placeholder="Digite a Senha"
@@ -261,7 +349,7 @@ export default function CreateUserScreen() {
           />
         </FormControl>
 
-        <FormControl id="credit">
+        {/* <FormControl id="credit">
           <FormLabel color="gray.800">Crédito do Usuário</FormLabel>
           <Input
             type="number"
@@ -278,7 +366,7 @@ export default function CreateUserScreen() {
             onChange={(e)=>setUserData({ ...userData, credit: String(Number(parseFloat(e.target.value.replace(/[^0-9.]/g, '')).toFixed(2))) })}
             maxLength={120}
           />
-        </FormControl>
+        </FormControl> */}
 
         <Checkbox
           isChecked={parentsEnabled}
@@ -362,7 +450,7 @@ export default function CreateUserScreen() {
           />
         </FormControl>
 
-        <FormControl id="user_class">
+        {/* <FormControl id="user_class">
           <FormLabel color="gray.800">Turma do Usuário</FormLabel>
           <Input
             type="text"
@@ -377,11 +465,33 @@ export default function CreateUserScreen() {
             onChange={(e)=>setUserData({ ...userData, user_class: e.target.value })}
             maxLength={120}
           />
-        </FormControl>
+        </FormControl> */}
+				<FormControl id="user_class">
+					<FormLabel color="gray.800">Turma do Aluno</FormLabel>
+					<Select
+						bg={'gray.100'}
+						placeholder="Selecione a Turma do Aluno"
+						border={0}
+						color={'gray.900'}
+						_placeholder={{
+							color: 'gray.500',
+						}}
+						value={userData.user_class}
+						onChange={(e) => setUserData({ ...userData, user_class: e.target.value })}
+					>
+						{turmas.map((turma) => (
+							<option key={turma} value={turma}>
+								{turma}
+							</option>
+						))}
+					</Select>
+				</FormControl>
+
 
         <FormControl id="role">
           <FormLabel color="gray.800">Função</FormLabel>
           <Select
+						required
             placeholder='Select option'
             bg={'gray.100'}
             border={0}
@@ -394,7 +504,7 @@ export default function CreateUserScreen() {
           >
             <option value='ADMIN'>Administrador</option>
             <option value='MIDDLE'>Cantina</option>
-            <option value='MEMBER'>Usuário</option>
+            <option value='MEMBER'>Aluno</option>
           </Select>
         </FormControl>
         
