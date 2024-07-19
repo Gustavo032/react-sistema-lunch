@@ -22,7 +22,8 @@ import {
   useDisclosure,
   useToast,
   Spinner,
-	Select
+	Select,
+	Box
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowBackIcon } from '@chakra-ui/icons';
@@ -170,18 +171,21 @@ const DashTokens = () => {
         position="relative"
         border="#fff solid 0.12rem"
         align="center"
+				
       >
         <Text color="gray.800" lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
           Lista de Tokens
         </Text>
 
         <Button colorScheme="teal" onClick={onOpen}>Adicionar Novo Token</Button>
-
-        <Table variant="striped" colorScheme="white" bgColor="gray.100" border="solid 0.06rem black" mt={6}>
+			<Box alignSelf="start" style={{ overflowX: 'auto' }} w="100%">
+        <Table variant="striped"  colorScheme="white" bgColor="gray.100" border="solid 0.06rem black" mt={6}>
           <Thead>
             <Tr>
               <Th>Token</Th>
               <Th>E-mail</Th>
+              <Th>Matricula</Th>
+              <Th>Turma</Th>
               <Th>Status</Th>
               <Th>Data de Criação</Th>
             </Tr>
@@ -205,6 +209,8 @@ const DashTokens = () => {
             ))}
           </Tbody>
         </Table>
+			</Box>
+
       </Stack>
 
       <Modal isOpen={isOpen} onClose={onClose}>
