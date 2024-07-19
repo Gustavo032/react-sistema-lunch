@@ -40,7 +40,7 @@ export default function LoginScreen() {
   useEffect(() => {
 		const url = window.location.href;
     setCurrentUrl(url);
-
+		
     if (
       url === 'https://maplebear.ineedti.com/' ||
       url === 'https://maplebear.ineedti.com/login' ||
@@ -274,24 +274,25 @@ export default function LoginScreen() {
                 currentUrl === 'https://maplebear.ineedti.com/' ||
                 currentUrl === 'https://maplebear.ineedti.com/login' ||
                 currentUrl === 'http://maplebear.ineedti.com' ||
-                currentUrl === 'http://maplebear.ineedti.com/login' ? (
-                  <Button
-                    mt={-4}
-                    color={'white'}
-                    bgColor={'blue.500'}
-                    _hover={{
-                      bgColor: 'blue',
-                      opacity: 0.5,
-                    }}
-                    _active={{
-                      bgColor: 'blue.300',
-                    }}
-                    variant={'solid'}
-                    onClick={() => setShowEmailLogin(false)}
-                  >
-                    Entrar com Facial
-                  </Button>
-                ) : null
+                currentUrl === 'http://maplebear.ineedti.com/login' ? null :
+                (
+									<Button
+										mt={-4}
+										color={'white'}
+										bgColor={'blue.500'}
+										_hover={{
+											bgColor: 'blue',
+											opacity: 0.5,
+										}}
+										_active={{
+											bgColor: 'blue.300',
+										}}
+										variant={'solid'}
+										onClick={() => setShowEmailLogin(false)}
+									>
+										Entrar com Facial
+									</Button>
+								)
               )}
 
               {errorMessage !== '' && (
