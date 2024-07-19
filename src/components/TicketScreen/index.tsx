@@ -97,7 +97,7 @@ export function TicketScreen(props: TicketScreenProps) {
           ))}
         </UnorderedList>
         <Text mt={4} fontWeight="bold" textAlign="left">Total: {Number(ticketData.total).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}</Text>
-        {!isHidden && buttonComponent}
+        {isHidden && buttonComponent}
       </Box>
     </Center>
   );
