@@ -38,12 +38,14 @@ const DashTokens = () => {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 	const turmas = [
-		'Turma A',
-		'Turma B',
-		'Turma C',
-		'Turma D',
-		'Turma E'
-	]
+		'Year 6',
+		'Year 7',
+		'Year 8',
+		'Year 9',
+		'Year 10',
+		'Year 11',
+		'Year 12',
+	];
 
   useEffect(() => {
     const getCookie = (name: string): string | undefined => {

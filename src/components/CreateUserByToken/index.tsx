@@ -24,11 +24,13 @@ export default function CreateUserByToken() {
   const [imagePreview, setImagePreview] = useState<any>('');
 	const [loading, setLoading] = useState(false);
 	const turmas = [
-		'Turma A',
-		'Turma B',
-		'Turma C',
-		'Turma D',
-		'Turma E',
+		'Year 6',
+		'Year 7',
+		'Year 8',
+		'Year 9',
+		'Year 10',
+		'Year 11',
+		'Year 12',
 	];
 
   useEffect(() => {
