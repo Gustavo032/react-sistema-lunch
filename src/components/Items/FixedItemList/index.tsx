@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Button, Text, SimpleGrid } from "@chakra-ui/react";
-import { FiTrash2 } from "react-icons/fi";
+import { FiEdit } from "react-icons/fi";
 
 interface Item {
   id: string;
@@ -10,22 +10,24 @@ interface Item {
   deleted: boolean;
 }
 
-interface ItemListProps {
+interface FixedItemListProps {
   items: Item[];
-  onDelete: (id: string) => void;
+  onEdit: (item: Item) => void;
 }
 
-const ItemList: React.FC<ItemListProps> = ({ items, onDelete }) => {
+const fixedItems = ["Almoço", "Café da Manhã", "Café da Tarde"];
+
+const FixedItemList: React.FC<FixedItemListProps> = ({ items, onEdit }) => {
   return (
     <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
       {items
-        .filter((item) => !["Almoço", "Café da Manhã", "Café da Tarde"].includes(item.title))
+        .filter((item) => fixedItems.includes(item.title))
         .map((item) => (
-          <Box key={item.id} p={5} shadow="md" borderWidth="1px" borderRadius="md">
+          <Box key={item.id} p={5} shadow="md" borderWidth="1px" borderRadius="md" bg="teal.100">
             <Text fontWeight="bold" mb={2}>{item.title}</Text>
             <Text>Preço: {Number(item.price).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}</Text>
-            <Button leftIcon={<FiTrash2 />} colorScheme="red" mt={4} onClick={() => onDelete(item.id)}>
-              Excluir
+            <Button leftIcon={<FiEdit />} colorScheme="blue" mt={4} onClick={() => onEdit(item)}>
+              Editar
             </Button>
           </Box>
         ))}
@@ -33,4 +35,4 @@ const ItemList: React.FC<ItemListProps> = ({ items, onDelete }) => {
   );
 };
 
-export default ItemList;
+export default FixedItemList;

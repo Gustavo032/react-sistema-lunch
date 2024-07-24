@@ -16,6 +16,7 @@ import {
 import axios from "axios";
 import { FaPlus } from "react-icons/fa";
 import ItemList from "./ItemList";
+import FixedItemList from "./FixedItemList";
 import ItemForm from "./ItemForm";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
@@ -31,6 +32,7 @@ interface Item {
 const ListItens: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [editingItem, setEditingItem] = useState<Item | null>(null);
   const toast = useToast();
   const token = document.cookie.replace(
     /(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
@@ -87,6 +89,35 @@ const ListItens: React.FC = () => {
     onClose();
   };
 
+  const handleEdit = async (id: string, newTitle: string, newPrice: number) => {
+    await axios.delete(
+      `${process.env.REACT_APP_API_BASE_URL}/items/${id}/delete`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    await axios.post(
+      `${process.env.REACT_APP_API_BASE_URL}/items/create`,
+      { title: newTitle, price: newPrice },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    fetchItems();
+    toast({
+      title: "Item atualizado.",
+      description: "O item foi atualizado com sucesso.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
+    setEditingItem(null);
+  };
+
   return (
     <Flex
       minH={"100vh"}
@@ -103,20 +134,19 @@ const ListItens: React.FC = () => {
         left="4"
         color="white"
         fontSize="2xl"
-        zIndex="2" // Ajusta a camada de empilhamento para que o texto esteja sobre o overlay
+        zIndex="2"
       >
         <Button
           colorScheme="whiteAlpha"
-          onClick={() => navigate('/admin')}
+          onClick={() => navigate("/admin")}
           zIndex="2"
           mr="1rem"
-          _hover={{ bg: 'whiteAlpha.800' }}
-          _active={{ bg: 'whiteAlpha.600' }}
+          _hover={{ bg: "whiteAlpha.800" }}
+          _active={{ bg: "whiteAlpha.600" }}
         >
           <ArrowBackIcon color="white" boxSize={6} />
         </Button>
         MapleBear Granja Viana
-        {/* Botão de Voltar */}
       </Text>
       <Flex
         position="fixed"
@@ -137,7 +167,7 @@ const ListItens: React.FC = () => {
         rounded="xl"
         border="1px solid #CBD5E0"
         boxShadow="lg"
-				zIndex={3}
+        zIndex={3}
       >
         <Heading
           as="h1"
@@ -157,6 +187,8 @@ const ListItens: React.FC = () => {
         >
           Adicionar Item
         </Button>
+        <FixedItemList items={items} onEdit={setEditingItem} />
+        <hr style={{ width: "100%", margin: "20px 0", borderColor: "gray" }} />
         <ItemList items={items} onDelete={handleDelete} />
       </Flex>
 
@@ -179,6 +211,34 @@ const ListItens: React.FC = () => {
           </ModalBody>
         </ModalContent>
       </Modal>
+
+      {editingItem && (
+        <Modal isOpen={!!editingItem} onClose={() => setEditingItem(null)} isCentered>
+          <ModalOverlay />
+          <ModalContent
+            bg="white"
+            color="gray.800"
+            borderRadius="xl"
+            p={4}
+            textAlign="center"
+            boxShadow="md"
+          >
+            <ModalCloseButton color="gray.400" />
+            <ModalHeader mt={4} fontSize="xl" fontWeight="bold">
+              Editar Item
+            </ModalHeader>
+            <ModalBody>
+              <ItemForm
+                initialTitle={editingItem.title}
+                initialPrice={editingItem.price}
+                onAdd={(newTitle, newPrice) =>
+                  handleEdit(editingItem.id, newTitle, newPrice)
+                }
+              />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      )}
     </Flex>
   );
 };

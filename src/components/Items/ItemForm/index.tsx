@@ -1,19 +1,25 @@
-import React, { useState } from 'react';
-import { Box, Button, Input, Stack, FormControl, FormLabel } from '@chakra-ui/react';
+import React, { useState } from "react";
+import { Box, Button, Input, Stack, FormControl, FormLabel } from "@chakra-ui/react";
 
 interface ItemFormProps {
   onAdd: (title: string, price: number) => void;
+  initialTitle?: string;
+  initialPrice?: number;
 }
 
-const ItemForm: React.FC<ItemFormProps> = ({ onAdd }) => {
-  const [title, setTitle] = useState('');
-  const [price, setPrice] = useState('');
+const ItemForm: React.FC<ItemFormProps> = ({
+  onAdd,
+  initialTitle = "",
+  initialPrice = 0,
+}) => {
+  const [title, setTitle] = useState(initialTitle);
+  const [price, setPrice] = useState(initialPrice.toString());
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onAdd(title, parseFloat(price));
-    setTitle('');
-    setPrice('');
+    setTitle("");
+    setPrice("");
   };
 
   return (
@@ -26,6 +32,7 @@ const ItemForm: React.FC<ItemFormProps> = ({ onAdd }) => {
               placeholder="Título"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              isReadOnly={!!initialTitle}
             />
           </FormControl>
           <FormControl>
@@ -38,7 +45,7 @@ const ItemForm: React.FC<ItemFormProps> = ({ onAdd }) => {
             />
           </FormControl>
           <Button type="submit" colorScheme="blue">
-            Adicionar Item
+            {initialTitle ? "Atualizar Item" : "Adicionar Item"}
           </Button>
         </Stack>
       </form>
