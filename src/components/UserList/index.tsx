@@ -137,7 +137,7 @@ const UserList = ({ onSelectUser }:any) => {
         '$1'
       );
 
-      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/users/${userId}/delete`, {
+      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/user/delete/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
