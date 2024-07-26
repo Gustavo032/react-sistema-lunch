@@ -17,7 +17,7 @@ export default function CreateUserByToken() {
     password: '',
     credit: 0,
     role: 'MEMBER',
-    image: '',
+    image: null,
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [parentsEnabled, setParentsEnabled] = useState(false);

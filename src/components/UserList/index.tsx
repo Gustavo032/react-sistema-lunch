@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import imageCompression from 'browser-image-compression';
-import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Input, Flex, Icon, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, AlertDialogFooter, useToast, Image, Text, FormLabel, FormControl, Select, Stack, Heading, Center, Avatar, AvatarBadge, IconButton, useColorModeValue, Checkbox } from '@chakra-ui/react';
+import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Input, Flex, Icon, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, AlertDialogFooter, useToast, Image, Text, FormLabel, FormControl, Select, Stack, Heading, Center, Avatar, AvatarBadge, IconButton, useColorModeValue, Checkbox, Spinner } from '@chakra-ui/react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { SmallCloseIcon } from '@chakra-ui/icons';
 
@@ -14,9 +14,12 @@ const UserList = ({ onSelectUser }:any) => {
   const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [selectedUserId, setSelectedUserId] = useState(null);
-  const [selectedUser, setSelectedUser] = useState<any>({});
+  const [selectedUser, setSelectedUser] = useState<any>({
+		image: null
+	});
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
-  const [imagePreview, setImagePreview] = useState<any>('');
+	const [loading, setLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<any>(null);
   const toast = useToast();
   const cancelRef = useRef(null);
   const { onClose } = useDisclosure();
@@ -104,6 +107,9 @@ const UserList = ({ onSelectUser }:any) => {
   const handleImageChange = async (e:any) => {
     const file = e.target.files[0];
 
+		// Limpar o valor do input para forçar o onChange ser disparado
+		e.target.value = null;
+
     if (!file) return;
 
     if (!file.type.includes('image')) {
@@ -111,22 +117,31 @@ const UserList = ({ onSelectUser }:any) => {
       return;
     }
 
-    if (file.size > 200 * 1024) {
-      const compressedFile = await imageCompression(file, { maxSizeMB: 0.1 });
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImagePreview(reader.result);
-        setSelectedUser({ ...selectedUser, image: reader.result });
-      };
-      reader.readAsDataURL(compressedFile);
-    } else {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImagePreview(reader.result);
-        setSelectedUser({ ...selectedUser, image: reader.result });
-      };
-      reader.readAsDataURL(file);
-    }
+		setLoading(true); // Ativar o indicador de loading
+		
+		try {
+			if (file.size > 200 * 1024) {
+				const compressedFile = await imageCompression(file, { maxSizeMB: 0.1 });
+				const reader = new FileReader();
+				reader.onload = () => {
+					setImagePreview(reader.result);
+					setSelectedUser({ ...selectedUser, image: reader.result });
+				};
+				reader.readAsDataURL(compressedFile);
+			} else {
+				const reader = new FileReader();
+				reader.onload = () => {
+					setImagePreview(reader.result);
+					setSelectedUser({ ...selectedUser, image: reader.result });
+				};
+				reader.readAsDataURL(file);
+			}
+		} catch (error) {
+			console.error('Erro ao processar a imagem:', error);
+			alert('Ocorreu um erro ao processar a imagem. Por favor, tente novamente.');
+		} finally {
+			setLoading(false); // Desativar o indicador de loading, seja após sucesso ou erro
+		}
   };
 
   const handleDeleteUser = async (userId:any) => {
@@ -137,7 +152,7 @@ const UserList = ({ onSelectUser }:any) => {
         '$1'
       );
 
-      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/user/delete/${userId}`, {
+      await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/users/${userId}/delete`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -284,64 +299,73 @@ const UserList = ({ onSelectUser }:any) => {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-      <AlertDialog
-        isOpen={isModifyModalOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={handleCloseModifyModal}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">Editar Usuário: <br /> <Text as={"span"} color="gray.500">{selectedUser.id}</Text></AlertDialogHeader>
-            <AlertDialogCloseButton />
-            <AlertDialogBody>
+			<AlertDialog isOpen={isModifyModalOpen} leastDestructiveRef={cancelRef} onClose={handleCloseModifyModal}>
+				<AlertDialogOverlay>
+					<AlertDialogContent>
+						<AlertDialogHeader fontSize="lg" fontWeight="bold">
+							Editar Usuário:
+							<br />
+							<Text as={"span"} color="gray.500">{selectedUser.id}</Text>
+						</AlertDialogHeader>
+						<AlertDialogCloseButton />
+						<AlertDialogBody>
 							<Center w="full" py={6}>
 								<Box w="full" bg={useColorModeValue('white', 'gray.800')} rounded="lg" p={6}>
-								<Stack direction={['column', 'row']} spacing={6}>
-									<Center>
-										<Avatar size="xl"  src={imagePreview ? imagePreview : selectedUser.image}>
-											<AvatarBadge
-												as={IconButton}
-												size="sm"
-												rounded="full"
-												top="-10px"
-												colorScheme="red"
-												onClick={()=> {}}
-												aria-label="remove Image"
-												icon={<SmallCloseIcon p="0.2rem" w="100%" h="100%" onClick={() => {if(imagePreview){setImagePreview(null)} else {selectedUser.image=null}}}/>}
-											/>
-										</Avatar>
-									</Center>
-									<Center w="100%">
-										<Input p="0.1rem" onChange={handleImageChange} alignContent={"center"} type="file" w="59%" border="none"/>
-									</Center>
-								</Stack>
+									{loading && (
+										<>
+											<Text>Aguarde enquanto a imagem é processada</Text>
+											<Spinner size="sm" color="blue.500" />
+										</>
+									)}
+									{!loading && (
+										<Stack direction={['column', 'row']} spacing={6}>
+											<Center>
+												<Avatar size="xl" src={imagePreview ? imagePreview : selectedUser.image}>
+													<AvatarBadge
+														as={IconButton}
+														size="sm"
+														rounded="full"
+														top="-10px"
+														colorScheme="red"
+														aria-label="remove Image"
+														icon={<SmallCloseIcon p="0.2rem" w="100%" h="100%" onClick={() => { setImagePreview(null); setSelectedUser({ ...selectedUser, image: null }) }} />}
+													/>
+												</Avatar>
+											</Center>
+											<Center w="100%">
+												<Input p="0.1rem" required={!selectedUser.image} onChange={handleImageChange} alignContent={"center"} type="file" w="59%" border="none" />
+											</Center>
+										</Stack>
+									)}
+
 									<Stack spacing={4} mt={8}>
 										<FormControl>
 											<FormLabel>Nome</FormLabel>
-											<Input 
-												value={selectedUser.name ? selectedUser.name : '' } 
+											<Input
+												required
+												value={selectedUser.name || ''}
 												onChange={(e) => setSelectedUser({ ...selectedUser, name: e.target.value })}
 											/>
 										</FormControl>
 										<FormControl>
 											<FormLabel>Email</FormLabel>
-											<Input 
-												value={selectedUser.email ? selectedUser.email : '' } 
+											<Input
+												value={selectedUser.email || ''}
 												onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })}
 											/>
 										</FormControl>
 										<FormControl>
 											<FormLabel>Senha</FormLabel>
-											<Input 
-												value={selectedUser.password ? selectedUser.password : '' } 
+											<Input
+												value={selectedUser.password || ''}
 												onChange={(e) => setSelectedUser({ ...selectedUser, password: e.target.value })}
 											/>
 										</FormControl>
 										<FormControl>
 											<FormLabel>Limite de crédito</FormLabel>
-											<Input 
+											<Input
 												type="number"
-												value={selectedUser.credit_limit ? selectedUser.credit_limit : '' } 
+												value={selectedUser.credit_limit || ''}
 												onChange={(e) => setSelectedUser({ ...selectedUser, credit_limit: e.target.value })}
 											/>
 										</FormControl>
@@ -367,11 +391,9 @@ const UserList = ({ onSelectUser }:any) => {
 												placeholder="Digite o Nome do Pai"
 												border={0}
 												color={'gray.900'}
-												_placeholder={{
-													color: 'gray.500',
-												}}
-												value={selectedUser.father_name ? selectedUser.father_name : ''}
-												onChange={(e)=>setSelectedUser({ ...selectedUser, father_name: e.target.value })}
+												_placeholder={{ color: 'gray.500' }}
+												value={selectedUser.father_name || ''}
+												onChange={(e) => setSelectedUser({ ...selectedUser, father_name: e.target.value })}
 												maxLength={120}
 											/>
 										</FormControl>
@@ -384,11 +406,9 @@ const UserList = ({ onSelectUser }:any) => {
 												placeholder="Digite o Email do Pai"
 												border={0}
 												color={'gray.900'}
-												_placeholder={{
-													color: 'gray.500',
-												}}
-												value={selectedUser.father_email ? selectedUser.father_email : ''}
-												onChange={(e)=>setSelectedUser({ ...selectedUser, father_email: e.target.value })}
+												_placeholder={{ color: 'gray.500' }}
+												value={selectedUser.father_email || ''}
+												onChange={(e) => setSelectedUser({ ...selectedUser, father_email: e.target.value })}
 												maxLength={120}
 											/>
 										</FormControl>
@@ -401,11 +421,9 @@ const UserList = ({ onSelectUser }:any) => {
 												placeholder="Digite o Nome da Mãe"
 												border={0}
 												color={'gray.900'}
-												_placeholder={{
-													color: 'gray.500',
-												}}
-												value={selectedUser.mother_name ? selectedUser.mother_name : "" }
-												onChange={(e)=>setSelectedUser({ ...selectedUser, mother_name: e.target.value })}
+												_placeholder={{ color: 'gray.500' }}
+												value={selectedUser.mother_name || ''}
+												onChange={(e) => setSelectedUser({ ...selectedUser, mother_name: e.target.value })}
 												maxLength={120}
 											/>
 										</FormControl>
@@ -418,19 +436,18 @@ const UserList = ({ onSelectUser }:any) => {
 												placeholder="Digite o Email da Mãe"
 												border={0}
 												color={'gray.900'}
-												_placeholder={{
-													color: 'gray.500',
-												}}
-												value={selectedUser.mother_email ? selectedUser.mother_email : ''}
-												onChange={(e)=>setSelectedUser({ ...selectedUser, mother_email: e.target.value })}
+												_placeholder={{ color: 'gray.500' }}
+												value={selectedUser.mother_email || ''}
+												onChange={(e) => setSelectedUser({ ...selectedUser, mother_email: e.target.value })}
 												maxLength={120}
 											/>
 										</FormControl>
+
 										<FormControl>
 											<FormLabel>Função</FormLabel>
 											<Select
-												value={selectedUser.role ? selectedUser.role : '' } 
-												onChange={(e:any) => setSelectedUser({ ...selectedUser, role: e.target.value })}
+												value={selectedUser.role || ''}
+												onChange={(e) => setSelectedUser({ ...selectedUser, role: e.target.value })}
 											>
 												<option value="ADMIN">Administrador</option>
 												<option value="MIDDLE">Cantina</option>
@@ -440,14 +457,27 @@ const UserList = ({ onSelectUser }:any) => {
 									</Stack>
 								</Box>
 							</Center>
-            </AlertDialogBody>
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={handleCloseModifyModal}>Cancelar</Button>
-              <Button colorScheme="blue" ml={3} onClick={() => {handleUpdateUser(selectedUser); setImagePreview(null)} }>Salvar</Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+						</AlertDialogBody>
+						<AlertDialogFooter>
+							<Button ref={cancelRef} onClick={handleCloseModifyModal}>Cancelar</Button>
+							<Button colorScheme="blue" type="submit" ml={3} onClick={()=>{
+									if (!selectedUser.image) {
+										toast({
+											title: "Imagem necessária",
+											description: "Por favor, adicione uma imagem antes de salvar.",
+											status: "warning",
+											duration: 5000,
+											isClosable: true,
+										});
+										return;
+									}
+									handleUpdateUser(selectedUser);
+									setImagePreview(null);
+							}}>Salvar</Button>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialogOverlay>
+			</AlertDialog>
     </Box>
   );
 };

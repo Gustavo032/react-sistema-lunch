@@ -14,7 +14,7 @@ export default function CreateUserScreen() {
     password: '',
     credit: 0,
     role: 'MEMBER',
-    image: '' // Adicione um estado para armazenar a imagem em base64
+    image: null // Adicione um estado para armazenar a imagem em base64
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [parentsEnabled, setParentsEnabled] = useState(false); // Estado para habilitar/desabilitar campos dos pais
