@@ -91,6 +91,7 @@ export function RequestItem(props: RequestItemProps) {
         const ticketData = {
           userName: response.data.userName,
           requestId: response.data.requestId,
+					dateTime: new Date().toLocaleString(),
           items: menuItems.map(item => ({
             title: item.title,
             quantity: quantities[item.id] || 0,
