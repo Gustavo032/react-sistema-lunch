@@ -262,7 +262,7 @@ export default function CreateUserScreen() {
 					</Flex>
         </FormControl> */}
 
-				<FormControl id="id">
+				<FormControl id="matricula">
           <FormLabel color="gray.800">Matricula</FormLabel>
           <Input
             type="text"
@@ -273,8 +273,8 @@ export default function CreateUserScreen() {
             _placeholder={{
               color: 'gray.500',
             }}
-            value={userData.id}
-            onChange={(e)=>setUserData({ ...userData, id: e.target.value })}
+            value={userData.matricula}
+            onChange={(e)=>setUserData({ ...userData, matricula: e.target.value })}
             maxLength={120}
           />
         </FormControl>
@@ -418,6 +418,22 @@ export default function CreateUserScreen() {
           />
         </FormControl>
 
+				<FormControl id="father_number" display={parentsEnabled ? 'block' : 'none'}>
+					<FormLabel color="gray.800">Telefone do Pai</FormLabel>
+					<Input
+						type="text"
+						bg={'gray.100'}
+						placeholder="Digite o Telefone do Pai"
+						border={0}
+						color={'gray.900'}
+						_placeholder={{ color: 'gray.500' }}
+						value={userData.father_number || ''}
+						onChange={(e) => setUserData({ ...userData, father_number: e.target.value })}
+						maxLength={120}
+					/>
+				</FormControl>
+
+
         <FormControl id="mother_name" display={parentsEnabled ? 'block' : 'none'}>
           <FormLabel color="gray.800">Nome da Mãe</FormLabel>
           <Input
@@ -451,6 +467,21 @@ export default function CreateUserScreen() {
             maxLength={120}
           />
         </FormControl>
+				
+				<FormControl id="mother_number" display={parentsEnabled ? 'block' : 'none'}>
+					<FormLabel color="gray.800">Telefone da Mãe</FormLabel>
+					<Input
+						type="text"
+						bg={'gray.100'}
+						placeholder="Digite o Telefone da Mãe"
+						border={0}
+						color={'gray.900'}
+						_placeholder={{ color: 'gray.500' }}
+						value={userData.mother_number || ''}
+						onChange={(e) => setUserData({ ...userData, mother_number: e.target.value })}
+						maxLength={120}
+					/>
+				</FormControl>
 
         {/* <FormControl id="user_class">
           <FormLabel color="gray.800">Turma do Usuário</FormLabel>
