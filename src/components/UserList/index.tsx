@@ -268,6 +268,7 @@ const UserList = ({ onSelectUser }:any) => {
 								<Td>
 									{user.father_name && <div>{user.father_name} (pai)</div>}
 									{user.mother_name && <div>{user.mother_name} (mãe)</div>}
+									 <div>{user.father_number} </div>
 									{!user.father_name && !user.mother_name && <div>não cadastrado</div>}
 								</Td>
 								<Td>
@@ -375,14 +376,14 @@ const UserList = ({ onSelectUser }:any) => {
 												onChange={(e) => setSelectedUser({ ...selectedUser, password: e.target.value })}
 											/>
 										</FormControl>
-										<FormControl>
+										{/* <FormControl>
 											<FormLabel>Limite de crédito</FormLabel>
 											<Input
 												type="number"
 												value={selectedUser.credit_limit || ''}
 												onChange={(e) => setSelectedUser({ ...selectedUser, credit_limit: e.target.value })}
 											/>
-										</FormControl>
+										</FormControl> */}
 										<Checkbox
 											isChecked={parentsEnabled}
 											onChange={() => setParentsEnabled(!parentsEnabled)}

@@ -33,7 +33,7 @@ const DashTokens = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [tokens, setTokens] = useState<any[]>([]);
   const [email, setEmail] = useState('');
-  const [matricula, setMatricula] = useState('');
+  // const [matricula, setMatricula] = useState('');
   const [userClass, setUserClass] = useState('');
   const [loading, setLoading] = useState(false);
   const toast = useToast();
@@ -87,7 +87,7 @@ const DashTokens = () => {
         { 
 					email,
 					user_class: userClass,
-					matricula
+					// matricula
 				},
         {
           headers: {
@@ -186,7 +186,7 @@ const DashTokens = () => {
             <Tr>
               <Th>Token</Th>
               <Th>E-mail</Th>
-              <Th>Matricula</Th>
+              {/* <Th>Matricula</Th> */}
               <Th>Turma</Th>
               <Th>Status</Th>
               <Th>Data de Criação</Th>
@@ -197,7 +197,7 @@ const DashTokens = () => {
               <Tr key={token.id}>
                 <Td>{token.token}</Td>
                 <Td>{token.email}</Td>
-                <Td>{token.matricula}</Td>
+                {/* <Td>{token.matricula}</Td> */}
                 <Td>{token.user_class}</Td>
                 <Td h="100%" p="0" textAlign="center">
                   {token.used ? (
@@ -227,13 +227,13 @@ const DashTokens = () => {
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
             />
-						<Input 
+						{/* <Input 
 							required
               placeholder="Digite a Matricula" 
               value={matricula} 
               onChange={(e) => setMatricula(e.target.value)} 
 							mt="1rem"
-            />
+            /> */}
 						<Select
 							required
 							placeholder="Selecione a Turma do Usuário"
