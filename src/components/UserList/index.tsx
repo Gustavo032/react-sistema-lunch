@@ -348,6 +348,20 @@ const UserList = ({ onSelectUser }:any) => {
 											/>
 										</FormControl>
 										<FormControl>
+											<FormLabel>CPF</FormLabel>
+											<Input
+												value={selectedUser.cpf || ''}
+												onChange={(e) => setSelectedUser({ ...selectedUser, cpf: e.target.value })}
+											/>
+										</FormControl>
+										<FormControl>
+											<FormLabel>Matricula</FormLabel>
+											<Input
+												value={selectedUser.matricula || ''}
+												onChange={(e) => setSelectedUser({ ...selectedUser, matricula: e.target.value })}
+											/>
+										</FormControl>
+										<FormControl>
 											<FormLabel>Email</FormLabel>
 											<Input
 												value={selectedUser.email || ''}
@@ -413,6 +427,21 @@ const UserList = ({ onSelectUser }:any) => {
 											/>
 										</FormControl>
 
+										<FormControl id="father_number" display={parentsEnabled ? 'block' : 'none'}>
+											<FormLabel color="gray.800">Telefone do Pai</FormLabel>
+											<Input
+												type="text"
+												bg={'gray.100'}
+												placeholder="Digite o Telefone do Pai"
+												border={0}
+												color={'gray.900'}
+												_placeholder={{ color: 'gray.500' }}
+												value={selectedUser.father_number || ''}
+												onChange={(e) => setSelectedUser({ ...selectedUser, father_number: e.target.value })}
+												maxLength={120}
+											/>
+										</FormControl>
+
 										<FormControl id="mother_name" display={parentsEnabled ? 'block' : 'none'}>
 											<FormLabel color="gray.800">Nome da Mãe</FormLabel>
 											<Input
@@ -439,6 +468,21 @@ const UserList = ({ onSelectUser }:any) => {
 												_placeholder={{ color: 'gray.500' }}
 												value={selectedUser.mother_email || ''}
 												onChange={(e) => setSelectedUser({ ...selectedUser, mother_email: e.target.value })}
+												maxLength={120}
+											/>
+										</FormControl>
+										
+										<FormControl id="mother_number" display={parentsEnabled ? 'block' : 'none'}>
+											<FormLabel color="gray.800">Telefone da Mãe</FormLabel>
+											<Input
+												type="text"
+												bg={'gray.100'}
+												placeholder="Digite o Telefone da Mãe"
+												border={0}
+												color={'gray.900'}
+												_placeholder={{ color: 'gray.500' }}
+												value={selectedUser.mother_number || ''}
+												onChange={(e) => setSelectedUser({ ...selectedUser, mother_number: e.target.value })}
 												maxLength={120}
 											/>
 										</FormControl>
