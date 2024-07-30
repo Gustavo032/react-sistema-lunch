@@ -168,6 +168,8 @@ const ListItens: React.FC = () => {
         border="1px solid #CBD5E0"
         boxShadow="lg"
         zIndex={3}
+				mt="5rem"
+				mb="5rem"
       >
         <Heading
           as="h1"
@@ -206,7 +208,7 @@ const ListItens: React.FC = () => {
           <ModalHeader mt={4} fontSize="xl" fontWeight="bold">
             Adicionar Novo Item
           </ModalHeader>
-          <ModalBody>
+          <ModalBody >
             <ItemForm onAdd={handleAdd} />
           </ModalBody>
         </ModalContent>

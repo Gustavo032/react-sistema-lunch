@@ -19,10 +19,10 @@ const Control = () => {
   const [startDate, setStartDate] = useState<Date | null>(startOfMonth(new Date()));
   const [endDate, setEndDate] = useState<Date | null>(endOfMonth(new Date()));
   const [totalPriceSum, setTotalPriceSum] = useState(0);
-	const navigate = useNavigate();
+  const navigate = useNavigate();
 
-	/* eslint-disable react-hooks/exhaustive-deps */
-	useEffect(() => {
+  /* eslint-disable react-hooks/exhaustive-deps */
+  useEffect(() => {
     const getCookie = (name: string): string | undefined => {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
@@ -82,7 +82,7 @@ const Control = () => {
     }
   };
 
-	const formatCurrency = (value:any) => {
+  const formatCurrency = (value:any) => {
     return parseFloat(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   };
 
@@ -146,16 +146,16 @@ const Control = () => {
     filterRequests(startDate, endOfDay);
   };
 
-	const handleDelete = async (requestId: string) => {
-		const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
-		
+  const handleDelete = async (requestId: string) => {
+    const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+    
     if (window.confirm("Tem certeza que deseja excluir este pedido?")) {
       try {
         await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/requests/${requestId}/delete`, {
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				});
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setRequests((prevRequests) => prevRequests.filter((request: any) => request.id !== requestId));
         setFilteredRequests((prevRequests) => prevRequests.filter((request: any) => request.id !== requestId));
         calculateTotalPriceSum();
@@ -186,33 +186,10 @@ const Control = () => {
     setFilteredRequests(filtered);
   };
 
-  // const handlePrintTicket = async () => {
-  //   try {
-  //     const requestData = {
-  //       requestId: '2438cd7a-f782-4685-95f2-a6573c92332d',
-  //       user: 'Gustavo Ramos Silva Santos',
-  //       dateTime: '15/04/2024, 14:19:04',
-  //       items: [
-  //           { name: 'Fruta', quantity: 1, price: 3 },
-  //           { name: 'Suco', quantity: 1, price: 5 },
-  //           { name: 'Sorvete', quantity: 1, price: 12 },
-  //           { name: 'Açaí', quantity: 1, price: 12 },
-  //           { name: 'Salgado', quantity: 1, price: 9 },
-  //           { name: 'Lanche do Dia', quantity: 1, price: 15 }
-  //       ],
-  //       total: 56
-  //     };
-
-  //     await axios.post('http://localhost:3003/printTicket', requestData);
-  //     console.log("Ticket impresso com sucesso!");
-  //   } catch (error) {
-  //     console.error("Erro ao imprimir o ticket:", error);
-  //   }
-  // };
-
   return (
     <Box p="4" bgColor="gray.900" minH="100vh">
-			<Flex w="100%" justifyContent={"space-between"} align={"center"}>	
+      <Flex w="100%" justifyContent={"space-between"} align={"center"}>
+			{!userId ? (
 				<Button
 					colorScheme="whiteAlpha"
 					onClick={() => navigate('/admin')}
@@ -222,22 +199,29 @@ const Control = () => {
 					mb="1rem"
 					_hover={{ bg: 'whiteAlpha.800' }}
 					_active={{ bg: 'whiteAlpha.600' }}
-					>
+				>
 					<ArrowBackIcon color="white" boxSize={6} />
 				</Button>
-				<Button as={Link} to="/createUser" colorScheme="green">Criar Usuário</Button>
-			</Flex>
+      ) : (
+				<Box h="3rem"
+				mr="1rem"
+				mb="1rem">
+				</Box>
+			)}
+        <Button as={Link} to="/createUser" colorScheme="green">Criar Usuário</Button>
+      </Flex>
       {!userId ? (
         <UserList onSelectUser={handleSelectUser} />
       ) : (
         <>
-          <Flex mb="4" alignItems="center" justifyContent={"space-between"}>
+          <Flex mb="4" alignItems="center" justifyContent={"space-between"} wrap="wrap">
             <Button border="solid gray 0.16rem" onClick={() => setUserId(null)} mr="2" h="3rem" w="4rem" bgColor="gray.100">&#8592;</Button>
 
-            <Flex justify="center" bgColor="gray.100" w="20%" border="solid gray 0.05rem" p="0.06rem 0" borderRadius="9999999px">
+            <Flex justify="center" bgColor="gray.100" w="20%" border="solid gray 0.05rem" p="0.06rem 0" borderRadius="9999999px" display={{ base: "none", md: "flex" }}>
               <Image src="/Logo_Maple_Bear.png" h="3rem" />
             </Flex>
-            <Flex w="50%" align="center" >
+            
+            <Flex w={{ base: "100%", md: "50%" }} align="center" mt={{ base: 2, md: 0 }}>
               <Flex width="100%" h="100%" alignItems="center" ml="2" border="solid gray 0.16rem" bgColor="gray.200" p="0.2rem" borderRadius={"0.25rem"} justify={"center"}>
                 <Text as={FormLabel} mt="0.5rem" htmlFor="inputDateStart" mr="2">Data Inicial:</Text>
                 <Box as={DatePicker} id="inputDateStart" bgColor="gray.100" width="100%" border="solid 0.12rem black" borderRadius={"0.25rem"} height="2.5rem" textAlign="center" selected={startDate} onChange={handleStartDateChange} dateFormat="dd/MM/yyyy" />
@@ -250,23 +234,20 @@ const Control = () => {
             </Flex>
           </Flex>
           
-          <Box p="4" bg="gray.300" borderRadius="md"  borderColor="gray.900" border="solid gray 0.16rem">
-            <Table variant="simple"  borderColor="gray.900">
-              <Thead  borderColor="gray.900">
+          <Box style={{ overflowX: 'auto' }}p="4" bg="gray.300" borderRadius="md" borderColor="gray.900" border="solid gray 0.16rem">
+            <Table variant="simple" borderColor="gray.900">
+              <Thead borderColor="gray.900">
                 <Tr borderColor="gray.900">
                   <Th>Nº</Th>
                   <Th>Usuário</Th>
                   <Th>Itens</Th>
-                  <Th>Preço Total: 	<Text fontSize="1.20rem" color="blue.500" fontWeight="600">{totalPriceSum.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text></Th>
+                  <Th>Preço Total: <Text fontSize="1.20rem" color="blue.500" fontWeight="600">{totalPriceSum.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text></Th>
                   <Th>Data de Criação</Th>
                 </Tr>
               </Thead>
-              <Tbody  borderColor="gray.900">
+              <Tbody borderColor="gray.900">
                 {filteredRequests.map((request:any, index:number) => (
-                  <Tr _before={{
-                    borderColor: '#000'
-                  }}
-                    key={index}>
+                  <Tr key={index}>
                     <Td>{request.sequence}</Td>
                     <Td>{request.user_name}</Td>
                     <Td>
@@ -278,10 +259,9 @@ const Control = () => {
                     </Td>
                     <Td>{request.total_price}</Td>
                     <Td>{request.created_at}</Td>
-										<Td>
-                    <Button colorScheme="red" onClick={() => handleDelete(request.id)}>Excluir</Button>
-                  </Td>
-
+                    <Td>
+                      <Button colorScheme="red" onClick={() => handleDelete(request.id)}>Excluir</Button>
+                    </Td>
                   </Tr>
                 ))}
               </Tbody>

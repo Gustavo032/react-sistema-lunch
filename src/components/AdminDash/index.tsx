@@ -91,6 +91,9 @@ export default function AdminDashboard() {
           {(userRole === 'ADMIN' || userRole === 'MIDDLE') && (
             <>
               <Button
+								p="2rem"
+								border="white solid 0.12rem"
+								m="0.5rem 0 0.5rem 0"
                 color={'white'}
                 bgColor={'red.500'}
                 _hover={{
@@ -106,6 +109,9 @@ export default function AdminDashboard() {
                 Pedidos em Tempo Real
               </Button>
               <Button
+								p="2rem"
+								border="white solid 0.12rem"
+								m="0.5rem 0 0.5rem 0"
                 color={'white'}
                 bgColor={'red.500'}
                 _hover={{
@@ -125,6 +131,9 @@ export default function AdminDashboard() {
           {userRole === 'ADMIN' && (
             <>
               <Button
+								p="2rem"
+								border="white solid 0.12rem"
+								m="0.5rem 0 0.5rem 0"
                 color={'white'}
                 bgColor={'red.500'}
                 _hover={{
@@ -140,6 +149,9 @@ export default function AdminDashboard() {
                 Criar Usuário
               </Button>
               <Button
+								p="2rem"
+								border="white solid 0.12rem"
+								m="0.5rem 0 0.5rem 0"
                 color={'white'}
                 bgColor={'red.500'}
                 _hover={{
@@ -155,6 +167,9 @@ export default function AdminDashboard() {
                 Cadastrar Item
               </Button>
               <Button
+								p="2rem"
+								border="white solid 0.12rem"
+								m="0.5rem 0 0.5rem 0"
                 color={'white'}
                 bgColor={'red.500'}
                 _hover={{
@@ -170,6 +185,9 @@ export default function AdminDashboard() {
                 Controle Geral
               </Button>
               <Button
+								p="2rem"
+								border="white solid 0.12rem"
+								m="0.5rem 0 0.5rem 0"
                 color={'white'}
                 bgColor={'red.500'}
                 _hover={{

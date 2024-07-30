@@ -71,12 +71,13 @@ export default function PresentationScreen() {
         align="center"
       >
         <Heading color="gray.800" lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
-          Bem-vindo ao MapleBear
+          Welcome to MapleBear
         </Heading>
         <Text fontSize={{ base: 'sm', sm: 'md' }} color={'gray.800'} textAlign="center">
-          A melhor plataforma de pedidos. Clique em "OK" para continuar para a tela de login.
+          Clique em "OK" para continuar para a tela de login.
         </Text>
         <Button
+					w="100%"
           color={'white'}
           bgColor={'red.500'}
           _hover={{

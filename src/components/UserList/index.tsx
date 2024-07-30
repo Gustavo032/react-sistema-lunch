@@ -200,51 +200,51 @@ const UserList = ({ onSelectUser }:any) => {
 
   return (
     <Box p="4" bg="gray.100" borderRadius="md" border="solid gray 0.16rem">
-      <Flex mb="4" w="100%" justifyContent={"space-between"}>
-        <Flex w="30%" justify={"center"}>
-          <Input placeholder="Filtrar por ID" value={filterId} _placeholder={{ color: "gray.700" }} border="solid black 0.06rem" _focus={{ backgroundColor: "#fff" }} bgColor={"gray.200"} onChange={handleFilterId} mr="2" />
-          <Input placeholder="Filtrar por nome" value={filterName} _placeholder={{ color: "gray.700" }} border="solid black 0.06rem" _focus={{ backgroundColor: "#fff" }} bgColor={"gray.200"} onChange={handleFilterName} />
-        </Flex>
+      <Flex mb="4" w="100%" justifyContent={"space-between"} alignItems="center">
+				<Flex w={{ base: "100%", md: "30%" }} justify={{ base: "center", md: "flex-start" }} display={{ base: "none", md: "flex" }}>
+					<Input placeholder="Filtrar por ID" value={filterId} _placeholder={{ color: "gray.700" }} border="solid black 0.06rem" _focus={{ backgroundColor: "#fff" }} bgColor={"gray.200"} onChange={handleFilterId} mr="2" />
+					<Input placeholder="Filtrar por nome" value={filterName} _placeholder={{ color: "gray.700" }} border="solid black 0.06rem" _focus={{ backgroundColor: "#fff" }} bgColor={"gray.200"} onChange={handleFilterName} />
+				</Flex>
 
-        <Flex justify="center" bgColor="gray.100" w="20%" borderRadius="9999999px">
-          <Image src="/Logo_Maple_Bear.png" h="3rem" />
-        </Flex>
+				<Flex justify="center" bgColor="gray.100" w={{ base: "0", md: "20%" }} borderRadius="9999999px" display={{ base: "none", md: "flex" }}>
+					<Image src="/Logo_Maple_Bear.png" h="3rem" />
+				</Flex>
 
-        <Flex w="30%" justify={"center"}>
-          <Flex width="100%" h="100%" align={"center"} ml="2" bgColor="gray.300" p="0 1rem" border="solid gray 0.05rem" borderRadius={"0.25rem"} justify={"center"}>
-            <Text as={FormLabel} mt="0.5rem" htmlFor="inputMes" mr="1rem">Mês:</Text>
-            <Input
-              id="inputMes"
-              type="number"
-              min="1"
-              max="12"
-              bgColor="#fff"
-              placeholder="Mês"
-              border="solid 0.12rem black"
-              value={selectedMonth}
-              onChange={(e) => {
-                setSelectedMonth(e.target.value);
-                fetchUsers();
-              }}
-            />
-          </Flex>
+				<Flex w={{ base: "100%", md: "30%" }} justify="center">
+					<Flex width="100%" h="100%" align={"center"} ml="2" bgColor="gray.300" p="0 1rem" border="solid gray 0.05rem" borderRadius={"0.25rem"} justify={"center"}>
+						<Text as={FormLabel} mt="0.5rem" htmlFor="inputMes" mr="1rem">Mês:</Text>
+						<Input
+							id="inputMes"
+							type="number"
+							min="1"
+							max="12"
+							bgColor="#fff"
+							placeholder="Mês"
+							border="solid 0.12rem black"
+							value={selectedMonth}
+							onChange={(e) => {
+								setSelectedMonth(e.target.value);
+								fetchUsers();
+							}}
+						/>
+					</Flex>
 
-          <Flex width="100%" h="100%" alignItems="center" ml="2" bgColor="gray.300" p="0 1rem" border="solid gray 0.05rem" borderRadius={"0.25rem"} justify={"center"}>
-            <Text as={FormLabel} mt="0.5rem" htmlFor="inputAno" mr="1rem">Ano:</Text>
-            <Input
-              id="inputAno"
-              type="number"
-              placeholder="Ano"
-              bgColor="#fff"
-              border="solid 0.12rem black"
-              value={selectedYear}
-              onChange={(e) => {
-                setSelectedYear(e.target.value);
-                fetchUsers();
-              }}
-            />
-          </Flex>
-        </Flex>
+					<Flex width="100%" h="100%" alignItems="center" ml="2" bgColor="gray.300" p="0 1rem" border="solid gray 0.05rem" borderRadius={"0.25rem"} justify={"center"}>
+						<Text as={FormLabel} mt="0.5rem" htmlFor="inputAno" mr="1rem">Ano:</Text>
+						<Input
+							id="inputAno"
+							type="number"
+							placeholder="Ano"
+							bgColor="#fff"
+							border="solid 0.12rem black"
+							value={selectedYear}
+							onChange={(e) => {
+								setSelectedYear(e.target.value);
+								fetchUsers();
+							}}
+						/>
+					</Flex>
+				</Flex>
       </Flex>
 			<Box style={{ overflowX: 'auto' }}>
 				<Table variant="simple">
