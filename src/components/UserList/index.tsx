@@ -25,7 +25,9 @@ const UserList = ({ onSelectUser }:any) => {
   const { onClose } = useDisclosure();
 
   useEffect(() => {
-    fetchUsers();
+		if (selectedMonth.length >= 1 && selectedYear.length >= 4) {
+    	fetchUsers();
+		}
   }, [selectedMonth, selectedYear]);
 
   const fetchUsers = async () => {
@@ -223,8 +225,11 @@ const UserList = ({ onSelectUser }:any) => {
 							border="solid 0.12rem black"
 							value={selectedMonth}
 							onChange={(e) => {
+								console.log(e.target.value + " selected month")
 								setSelectedMonth(e.target.value);
-								fetchUsers();
+								// if (e.target.value.length > 0 && selectedYear.length >= 4) {
+								// 	fetchUsers();
+								// }
 							}}
 						/>
 					</Flex>
@@ -240,7 +245,6 @@ const UserList = ({ onSelectUser }:any) => {
 							value={selectedYear}
 							onChange={(e) => {
 								setSelectedYear(e.target.value);
-								fetchUsers();
 							}}
 						/>
 					</Flex>
