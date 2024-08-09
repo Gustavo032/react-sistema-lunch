@@ -47,7 +47,7 @@ export default function CreateUserScreen() {
     };
 
     const userRole = getCookie('userRole');
-    if (userRole !== 'ADMIN') {
+    if (userRole !== 'ADMIN' && userRole !== 'PROF') {
       navigate('/');
     }
   }, [navigate]);
@@ -537,6 +537,7 @@ export default function CreateUserScreen() {
           >
             <option value='ADMIN'>Administrador</option>
             <option value='MIDDLE'>Cantina</option>
+            <option value='PROF'>Professor</option>
             <option value='MEMBER'>Aluno</option>
           </Select>
         </FormControl>

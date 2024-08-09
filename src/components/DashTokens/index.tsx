@@ -57,7 +57,7 @@ const DashTokens = () => {
     };
 
     const userRole = getCookie('userRole');
-    if (userRole !== 'ADMIN') {
+    if (userRole !== 'ADMIN' && userRole !== 'PROF') {
       navigate('/');
     }
 

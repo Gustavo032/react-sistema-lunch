@@ -17,7 +17,7 @@ export default function AdminDashboard() {
 
     const role = getCookie('userRole');
     setUserRole(role);
-    if (role !== 'ADMIN' && role !== 'MIDDLE') {
+    if (role !== 'ADMIN' && role !== 'MIDDLE' && role !== 'PROF') {
       navigate('/');
     }
   }, [navigate]);
@@ -108,28 +108,28 @@ export default function AdminDashboard() {
               >
                 Pedidos em Tempo Real
               </Button>
-              <Button
-								p="2rem"
-								border="white solid 0.12rem"
-								m="0.5rem 0 0.5rem 0"
-                color={'white'}
-                bgColor={'red.500'}
-                _hover={{
-                  bgColor: 'red',
-                  opacity: 0.5,
-                }}
-                _active={{
-                  bgColor: 'red.300',
-                }}
-                variant={'solid'}
-                onClick={() => navigate('/dashboard')}
-              >
-                Solicitar uma Refeição
-              </Button>
             </>
           )}
-          {userRole === 'ADMIN' && (
-            <>
+					<Button
+						p="2rem"
+						border="white solid 0.12rem"
+						m="0.5rem 0 0.5rem 0"
+						color={'white'}
+						bgColor={'red.500'}
+						_hover={{
+							bgColor: 'red',
+							opacity: 0.5,
+						}}
+						_active={{
+							bgColor: 'red.300',
+						}}
+						variant={'solid'}
+						onClick={() => navigate('/dashboard')}
+					>
+						Solicitar uma Refeição
+					</Button>
+					{(userRole === 'ADMIN' || userRole === 'PROF') && (
+						<>
               <Button
 								p="2rem"
 								border="white solid 0.12rem"
@@ -148,6 +148,28 @@ export default function AdminDashboard() {
               >
                 Criar Usuário
               </Button>
+							<Button
+								p="2rem"
+								border="white solid 0.12rem"
+								m="0.5rem 0 0.5rem 0"
+                color={'white'}
+                bgColor={'red.500'}
+                _hover={{
+                  bgColor: 'red',
+                  opacity: 0.5,
+                }}
+                _active={{
+                  bgColor: 'red.300',
+                }}
+                variant={'solid'}
+                onClick={() => navigate('/dashTokens')}
+              >
+                Gerenciar Tokens
+              </Button>
+						</>
+					)}
+          {userRole === 'ADMIN' && (
+            <>
               <Button
 								p="2rem"
 								border="white solid 0.12rem"
@@ -183,24 +205,6 @@ export default function AdminDashboard() {
                 onClick={() => navigate('/controle')}
               >
                 Controle Geral
-              </Button>
-              <Button
-								p="2rem"
-								border="white solid 0.12rem"
-								m="0.5rem 0 0.5rem 0"
-                color={'white'}
-                bgColor={'red.500'}
-                _hover={{
-                  bgColor: 'red',
-                  opacity: 0.5,
-                }}
-                _active={{
-                  bgColor: 'red.300',
-                }}
-                variant={'solid'}
-                onClick={() => navigate('/dashTokens')}
-              >
-                Gerenciar Tokens
               </Button>
             </>
           )}

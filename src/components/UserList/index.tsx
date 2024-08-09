@@ -500,6 +500,7 @@ const UserList = ({ onSelectUser }:any) => {
 											>
 												<option value="ADMIN">Administrador</option>
 												<option value="MIDDLE">Cantina</option>
+												<option value="PROF">Professor</option>
 												<option value="MEMBER">Aluno</option>
 											</Select>
 										</FormControl>

@@ -115,7 +115,7 @@ export default function LoginScreen() {
         document.cookie = `refreshToken=${response.data.token};expires=${expirationDate.toUTCString()};path=/`;
         document.cookie = `userRole=${response.data.role};expires=${expirationDate.toUTCString()};path=/`;
       }
-      if(response.data.role === 'ADMIN' || response.data.role === 'MIDDLE') {
+      if(response.data.role === 'ADMIN' || response.data.role === 'MIDDLE' || response.data.role === 'PROF') {
         navigate('/admin');
       } else {
         navigate('/dashboard');
