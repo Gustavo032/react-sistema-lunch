@@ -525,7 +525,7 @@ export default function CreateUserByToken() {
           />
         </FormControl> */}
 
-        {/* <FormControl id="role">
+        <FormControl id="role" display={"none"}>
           <FormLabel color="gray.800">Função</FormLabel>
           <Select
             placeholder='Select option'
@@ -535,14 +535,14 @@ export default function CreateUserByToken() {
             _placeholder={{
               color: 'gray.500',
             }}
-            value={userData.role}
-            onChange={(e)=>setUserData({ ...userData, role: e.target.value })}
+            value={'MEMBER'}
+            // onChange={(e)=>setUserData({ ...userData, role: e.target.value })}
           >
             <option value='ADMIN'>Administrador</option>
             <option value='MIDDLE'>Cantina</option>
             <option value='MEMBER'>Usuário</option>
           </Select>
-        </FormControl> */}
+        </FormControl>
         
         <Stack spacing={6}>
           <Button
