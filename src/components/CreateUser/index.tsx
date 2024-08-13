@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar, AvatarBadge, Box, Button, Center, Checkbox, Flex, FormControl, FormLabel, Heading, IconButton, Image, Input, Select, Spinner, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
+import { Avatar, AvatarBadge, Box, Button, Center, Checkbox, Flex, FormControl, FormLabel, Heading, IconButton, Image, Input, InputGroup, InputRightElement, Select, Spinner, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
-import { ArrowBackIcon, SmallCloseIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon, SmallCloseIcon, ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { Link } from 'react-router-dom';
 
 export default function CreateUserScreen() {
@@ -16,6 +16,7 @@ export default function CreateUserScreen() {
     role: 'MEMBER',
     image: null // Adicione um estado para armazenar a imagem em base64
   });
+	const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [parentsEnabled, setParentsEnabled] = useState(false); // Estado para habilitar/desabilitar campos dos pais
   const toast = useToast();
@@ -280,7 +281,7 @@ export default function CreateUserScreen() {
         </FormControl>
 
         <FormControl id="name">
-          <FormLabel color="gray.800">Nome*</FormLabel>
+          <FormLabel color="gray.800">Nome Completo*</FormLabel>
           <Input
 						required
             type="text"
@@ -298,7 +299,7 @@ export default function CreateUserScreen() {
         </FormControl>
 
 				<FormControl id="cpf">
-          <FormLabel color="gray.800">CPF</FormLabel>
+          <FormLabel color="gray.800">CPF*</FormLabel>
           <Input
 						required
             type="text"
@@ -335,20 +336,30 @@ export default function CreateUserScreen() {
 
         <FormControl id="password">
           <FormLabel color="gray.800">Senha*</FormLabel>
-          <Input
-						required
-            type="password" // Altere o tipo de texto para senha
-            bg={'gray.100'}
-            placeholder="Digite a Senha"
-            border={0}
-            color={'gray.900'}
-            _placeholder={{
-              color: 'gray.500',
-            }}
-            value={userData.password}
-            onChange={(e)=>setUserData({ ...userData, password: e.target.value })}
-            maxLength={120}
-          />
+					<InputGroup>
+						<Input
+							required
+							type={showPassword ? 'text' : 'password'} // Altere o tipo de texto para senha
+							bg={'gray.100'}
+							placeholder="Digite a Senha"
+							border={0}
+							color={'gray.900'}
+							_placeholder={{
+								color: 'gray.500',
+							}}
+							value={userData.password}
+							onChange={(e)=>setUserData({ ...userData, password: e.target.value })}
+							maxLength={120}
+						/>
+						<InputRightElement>
+							<IconButton
+								variant="link"
+								aria-label={showPassword ? 'Ocultar Senha' : 'Mostrar Senha'}
+								icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
+								onClick={() => setShowPassword(!showPassword)}
+							/>
+						</InputRightElement>
+					</InputGroup>
         </FormControl>
 
         {/* <FormControl id="credit">
@@ -385,7 +396,7 @@ export default function CreateUserScreen() {
         </Checkbox>
 
         <FormControl id="father_name" display={parentsEnabled ? 'block' : 'none'}>
-          <FormLabel color="gray.800">Nome do Pai</FormLabel>
+          <FormLabel color="gray.800">Nome Completo do Pai</FormLabel>
           <Input
             type="text"
             bg={'gray.100'}
@@ -435,7 +446,7 @@ export default function CreateUserScreen() {
 
 
         <FormControl id="mother_name" display={parentsEnabled ? 'block' : 'none'}>
-          <FormLabel color="gray.800">Nome da Mãe</FormLabel>
+          <FormLabel color="gray.800">Nome Completo da Mãe</FormLabel>
           <Input
             type="text"
             bg={'gray.100'}

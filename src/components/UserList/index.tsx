@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import imageCompression from 'browser-image-compression';
-import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Input, Flex, Icon, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, AlertDialogFooter, useToast, Image, Text, FormLabel, FormControl, Select, Stack, Heading, Center, Avatar, AvatarBadge, IconButton, useColorModeValue, Checkbox, Spinner } from '@chakra-ui/react';
+import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Input, Flex, Icon, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, AlertDialogFooter, useToast, Image, Text, FormLabel, FormControl, Select, Stack, Heading, Center, Avatar, AvatarBadge, IconButton, useColorModeValue, Checkbox, Spinner, InputGroup, InputRightElement } from '@chakra-ui/react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-import { SmallCloseIcon } from '@chakra-ui/icons';
+import { SmallCloseIcon, ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
 const UserList = ({ onSelectUser }:any) => {
   const [users, setUsers] = useState([]);
@@ -17,6 +17,7 @@ const UserList = ({ onSelectUser }:any) => {
   const [selectedUser, setSelectedUser] = useState<any>({
 		image: null
 	});
+	const [showPassword, setShowPassword] = useState(false);
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<any>(null);
@@ -375,10 +376,34 @@ const UserList = ({ onSelectUser }:any) => {
 										</FormControl>
 										<FormControl>
 											<FormLabel>Senha</FormLabel>
-											<Input
+											{/* <Input
 												value={selectedUser.password || ''}
 												onChange={(e) => setSelectedUser({ ...selectedUser, password: e.target.value })}
-											/>
+											/> */}
+											<InputGroup>
+												<Input
+													required
+													type={showPassword ? 'text' : 'password'} // Altere o tipo de texto para senha
+													bg={'gray.100'}
+													placeholder="Digite a Senha"
+													border={0}
+													color={'gray.900'}
+													_placeholder={{
+														color: 'gray.500',
+													}}
+													value={selectedUser.password || ''}
+													onChange={(e) => setSelectedUser({ ...selectedUser, password: e.target.value })}
+													maxLength={120}
+												/>
+												<InputRightElement>
+													<IconButton
+														variant="link"
+														aria-label={showPassword ? 'Ocultar Senha' : 'Mostrar Senha'}
+														icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
+														onClick={() => setShowPassword(!showPassword)}
+													/>
+												</InputRightElement>
+											</InputGroup>
 										</FormControl>
 										{/* <FormControl>
 											<FormLabel>Limite de crédito</FormLabel>
@@ -403,7 +428,7 @@ const UserList = ({ onSelectUser }:any) => {
 										</Checkbox>
 
 										<FormControl id="father_name" display={parentsEnabled ? 'block' : 'none'}>
-											<FormLabel color="gray.800">Nome do Pai</FormLabel>
+											<FormLabel color="gray.800">Nome Completo do Pai</FormLabel>
 											<Input
 												type="text"
 												bg={'gray.100'}
@@ -448,7 +473,7 @@ const UserList = ({ onSelectUser }:any) => {
 										</FormControl>
 
 										<FormControl id="mother_name" display={parentsEnabled ? 'block' : 'none'}>
-											<FormLabel color="gray.800">Nome da Mãe</FormLabel>
+											<FormLabel color="gray.800">Nome Completo da Mãe</FormLabel>
 											<Input
 												type="text"
 												bg={'gray.100'}

@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Avatar, AvatarBadge, Box, Button, Center, Checkbox, Flex, FormControl, FormLabel, Heading, IconButton, Input, Select, Spinner, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
+import { Avatar, AvatarBadge, Box, Button, Center, Checkbox, Flex, FormControl, FormLabel, Heading, IconButton, Input, InputGroup, InputRightElement, Select, Spinner, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import imageCompression from 'browser-image-compression';
-import { ArrowBackIcon, SmallCloseIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon, SmallCloseIcon, ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { Link } from 'react-router-dom';
 
 export default function CreateUserByToken() {
   const { TokenID } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
+	const [showPassword, setShowPassword] = useState(false);
   const [isValidToken, setIsValidToken] = useState(false);
   const [userData, setUserData] = useState<any>({
     name: '',
@@ -57,6 +58,7 @@ export default function CreateUserByToken() {
         // navigate('/invalid-token'); // Redirecionar para uma página de token inválido
       }
     };
+		
 
     validateToken();
   }, [TokenID, navigate]);
@@ -256,7 +258,7 @@ export default function CreateUserByToken() {
 				<FormControl id="matricula">
           <FormLabel color="gray.800">Matricula</FormLabel>
           <Input
-						disabled
+						// disabled
             type="text"
             bg={'gray.100'}
             placeholder="Digite a Matricula"
@@ -266,18 +268,18 @@ export default function CreateUserByToken() {
               color: 'gray.500',
             }}
             value={userData.matricula}
-            // onChange={(e)=>setUserData({ ...userData, id: e.target.value })}
+            onChange={(e)=>setUserData({ ...userData, id: e.target.value })}
             maxLength={120}
           />
         </FormControl>
 
         <FormControl id="name">
-          <FormLabel color="gray.800">Nome*</FormLabel>
+          <FormLabel color="gray.800">Nome Completo*</FormLabel>
           <Input
 						required
             type="text"
             bg={'gray.100'}
-            placeholder="Digite o Nome"
+            placeholder="Digite o Seu Nome Completo"
             border={0}
             color={'gray.900'}
             _placeholder={{
@@ -290,7 +292,7 @@ export default function CreateUserByToken() {
         </FormControl>
 
 				<FormControl id="cpf">
-          <FormLabel color="gray.800">CPF</FormLabel>
+          <FormLabel color="gray.800">CPF*</FormLabel>
           <Input
 						required
             type="text"
@@ -327,20 +329,30 @@ export default function CreateUserByToken() {
 
         <FormControl id="password">
           <FormLabel color="gray.800">Senha*</FormLabel>
-          <Input
-						required
-            type="password" // Altere o tipo de texto para senha
-            bg={'gray.100'}
-            placeholder="Digite a Senha"
-            border={0}
-            color={'gray.900'}
-            _placeholder={{
-              color: 'gray.500',
-            }}
-            value={userData.password}
-            onChange={(e)=>setUserData({ ...userData, password: e.target.value })}
-            maxLength={120}
-          />
+					<InputGroup>
+						<Input
+							required
+							type={showPassword ? 'text' : 'password'} // Altere o tipo de texto para senha
+							bg={'gray.100'}
+							placeholder="Digite a Senha"
+							border={0}
+							color={'gray.900'}
+							_placeholder={{
+								color: 'gray.500',
+							}}
+							value={userData.password}
+							onChange={(e)=>setUserData({ ...userData, password: e.target.value })}
+							maxLength={120}
+						/>
+						<InputRightElement>
+							<IconButton
+								variant="link"
+								aria-label={showPassword ? 'Ocultar Senha' : 'Mostrar Senha'}
+								icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
+								onClick={() => setShowPassword(!showPassword)}
+							/>
+						</InputRightElement>
+					</InputGroup>
         </FormControl>
 
         {/* <FormControl id="credit">
@@ -377,7 +389,7 @@ export default function CreateUserByToken() {
         </Checkbox>
 
         <FormControl id="father_name" display={parentsEnabled ? 'block' : 'none'}>
-          <FormLabel color="gray.800">Nome do Pai</FormLabel>
+          <FormLabel color="gray.800">Nome Completo do Pai</FormLabel>
           <Input
             type="text"
             bg={'gray.100'}
@@ -426,7 +438,7 @@ export default function CreateUserByToken() {
 				</FormControl>
 
         <FormControl id="mother_name" display={parentsEnabled ? 'block' : 'none'}>
-          <FormLabel color="gray.800">Nome da Mãe</FormLabel>
+          <FormLabel color="gray.800">Nome Completo da Mãe</FormLabel>
           <Input
             type="text"
             bg={'gray.100'}
