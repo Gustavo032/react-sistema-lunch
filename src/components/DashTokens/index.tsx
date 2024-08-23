@@ -224,7 +224,7 @@ const DashTokens = () => {
             <Input 
 							required
               placeholder="Digite o e-mail" 
-              value={email} 
+              value={email}
               onChange={(e) => setEmail(e.target.value)} 
             />
 						{/* <Input 
