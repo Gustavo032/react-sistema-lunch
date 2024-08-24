@@ -55,21 +55,24 @@ const AllRequests = () => {
   };
 
   const handleStatusChange = (id: string, status: string) => {
-    const updateRequests = (requestsList: Request[]) =>
-      requestsList.map((request) =>
-        request.id === id ? { ...request, status } : request
-      );
-
-    setRequests((prevRequests) => {
-      const updatedRequests = updateRequests(prevRequests);
-      setFilteredRequests(updatedRequests.filter((request) =>
-        request.user_name.toLowerCase().includes(searchTerm)
-      ));
-      return updatedRequests;
-    });
-
-    setStatusCookie(id, status);
-  };
+		const updateRequests = (requestsList: Request[]) =>
+			requestsList.map((request) =>
+				request.id === id ? { ...request, status } : request
+			);
+	
+		setRequests((prevRequests) => {
+			const updatedRequests = updateRequests(prevRequests);
+			console.log('Pedidos atualizados após mudança de status:', updatedRequests); // Verifique os pedidos atualizados
+			setFilteredRequests(updatedRequests.filter((request) =>
+				request.user_name.toLowerCase().includes(searchTerm)
+			));
+			return updatedRequests;
+		});
+	
+		setStatusCookie(id, status);
+	};
+	
+	
 
   const handleDeleteRequest = async (id: string) => {
     const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
@@ -96,64 +99,85 @@ const AllRequests = () => {
     }
   }, [navigate]);
 
-  useEffect(() => {
-    const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'https://api-m.ineedti.com';
-    const wsProtocol = urlBase.startsWith('https:') ? 'wss:' : 'ws:';
+	useEffect(() => {
+		const urlBase = process.env.REACT_APP_API_BASE_URL ?? 'https://api-m.ineedti.com';
+		const wsProtocol = urlBase.startsWith('https:') ? 'wss:' : 'ws:';
 		const socketUrl = `${wsProtocol}//${urlBase.split('//')[1]}/requests/updates`;
-
-    let socket: WebSocket;
-
-    const connect = () => {
-      socket = new WebSocket(socketUrl);
-
-      socket.onopen = () => {
-        console.log('Conectado ao servidor WebSocket');
-      };
-
-      socket.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          if (data && (data.event === 'initialRequests' || data.event === 'newRequest')) {
-            const updatedRequests: Request[] = data.requests || [data.request];
-            const formattedRequests = updatedRequests.map((request) => ({
-              ...request,
-              status: getStatusCookie(request.id),
-              created_at: format(new Date(request.created_at), 'dd/MM/yyyy HH:mm:ss')
-            }));
-
-            if (data.event === 'initialRequests') {
-              setRequests(formattedRequests);
-              setFilteredRequests(formattedRequests);
-            } else if (data.event === 'newRequest') {
-              setRequests((prevRequests) => {
-                const newRequests = formattedRequests.filter(
-                  (newRequest) => !prevRequests.some((request) => request.id === newRequest.id)
-                );
-                return [...newRequests, ...prevRequests];
-              });
-              setFilteredRequests((prevRequests) => {
-                const newRequests = formattedRequests.filter(
-                  (newRequest) => !prevRequests.some((request) => request.id === newRequest.id)
-                );
-                return [...newRequests, ...prevRequests];
-              });
-            }
-          } else {
-            console.error('Unknown event type or data format:', data);
-          }
-        } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
-        }
-      };
-
-      socket.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        socket.close();
-      };
-    };
-
-    connect();
-  }, []);
+	
+		let socket: WebSocket;
+	
+		const connect = () => {
+			socket = new WebSocket(socketUrl);
+	
+			socket.onopen = () => {
+				console.log('Conectado ao servidor WebSocket');
+			};
+	
+			socket.onmessage = (event) => {
+				try {
+					const data = JSON.parse(event.data);
+	
+					if (data && (data.event === 'initialRequests' || data.event === 'newRequest')) {
+						const formatRequestItems = (requestItems: any[]) => {
+							return requestItems.map((item) => ({
+								itemId: item.id,
+								itemTitle: item.title
+							}));
+						};
+	
+						if (data.event === 'initialRequests') {
+							const formattedRequests = data.requests.map((request: any) => ({
+								...request,
+								requestItems: formatRequestItems(request.items), // Assumindo que `items` deve ser formatado como `requestItems`
+								status: getStatusCookie(request.id),
+								created_at: format(new Date(request.created_at), 'dd/MM/yyyy HH:mm:ss')
+							}));
+							setRequests(formattedRequests);
+							setFilteredRequests(formattedRequests);
+						} else if (data.event === 'newRequest') {
+							const newRequest = {
+								...data.request,
+								requestItems: formatRequestItems(data.request.requestItems), // Formatar `requestItems` para `newRequest`
+								status: getStatusCookie(data.request.id),
+								created_at: format(new Date(data.request.created_at), 'dd/MM/yyyy HH:mm:ss')
+							};
+	
+							setRequests((prevRequests) => {
+								const newRequests = prevRequests.filter(
+									(request) => request.id !== newRequest.id
+								);
+								return [newRequest, ...newRequests];
+							});
+	
+							setFilteredRequests((prevRequests) => {
+								const newRequests = prevRequests.filter(
+									(request) => request.id !== newRequest.id
+								);
+								return [newRequest, ...newRequests];
+							});
+						}
+					} else {
+						console.error('Unknown event type or data format:', data);
+					}
+				} catch (error) {
+					console.error('Error parsing WebSocket message:', error);
+				}
+			};
+	
+			socket.onerror = (error) => {
+				console.error('WebSocket error:', error);
+				socket.close();
+			};
+		};
+	
+		connect();
+	
+		return () => {
+			if (socket) {
+				socket.close();
+			}
+		};
+	}, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -169,14 +193,16 @@ const AllRequests = () => {
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = event.target.value.toLowerCase();
-    setSearchTerm(searchTerm);
-
-    const filtered = requests.filter((request) =>
-      request.user_name.toLowerCase().includes(searchTerm)
-    );
-    setFilteredRequests(filtered);
-  };
+		const searchTerm = event.target.value.toLowerCase();
+		setSearchTerm(searchTerm);
+	
+		const filtered = requests.filter((request) =>
+			request.user_name.toLowerCase().includes(searchTerm)
+		);
+		console.log('Pedidos filtrados após mudança de busca:', filtered); // Verifique os pedidos filtrados
+		setFilteredRequests(filtered);
+	};
+	
 
   const handleImageClick = (image: string) => {
     setSelectedImage(image);
@@ -224,8 +250,8 @@ const AllRequests = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {filteredRequests && filteredRequests.map((request) => (
-                <Tr key={request.id} bgColor={getStatusColor(request.status)}>
+						{filteredRequests && filteredRequests.map((request) => (
+  							<Tr key={request.id} bgColor={getStatusColor(request.status)}>
                   <Td>{request.sequence}</Td>
                   <Td>
                     <Flex align="center">
