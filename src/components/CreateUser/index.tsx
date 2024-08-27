@@ -510,49 +510,46 @@ export default function CreateUserScreen() {
             maxLength={120}
           />
         </FormControl> */}
-				<FormControl id="user_class">
-					<FormLabel color="gray.800">Turma do Aluno</FormLabel>
+				{userData.role === 'MEMBER' && (
+					<FormControl id="user_class">
+						<FormLabel color="gray.800">Turma do Aluno</FormLabel>
+						<Select
+							bg={'gray.100'}
+							placeholder="Selecione a Turma do Aluno"
+							border={0}
+							color={'gray.900'}
+							_placeholder={{ color: 'gray.500' }}
+							value={userData.user_class}
+							onChange={(e) => setUserData({ ...userData, user_class: e.target.value })}
+						>
+							{turmas.map((turma) => (
+								<option key={turma} value={turma}>
+									{turma}
+								</option>
+							))}
+						</Select>
+					</FormControl>
+				)}
+
+				<FormControl id="role">
+					<FormLabel color="gray.800">Função</FormLabel>
 					<Select
+						required
+						placeholder="Selecione a Função"
 						bg={'gray.100'}
-						placeholder="Selecione a Turma do Aluno"
 						border={0}
 						color={'gray.900'}
-						_placeholder={{
-							color: 'gray.500',
-						}}
-						value={userData.user_class}
-						onChange={(e) => setUserData({ ...userData, user_class: e.target.value })}
+						_placeholder={{ color: 'gray.500' }}
+						value={userData.role}
+						onChange={(e) => setUserData({ ...userData, role: e.target.value })}
 					>
-						{turmas.map((turma) => (
-							<option key={turma} value={turma}>
-								{turma}
-							</option>
-						))}
+						<option value="ADMIN">Administrador</option>
+						<option value="MIDDLE">Cantina</option>
+						<option value="PROF">Professor</option>
+						<option value="MEMBER">Aluno</option>
 					</Select>
 				</FormControl>
 
-
-        <FormControl id="role">
-          <FormLabel color="gray.800">Função</FormLabel>
-          <Select
-						required
-            placeholder='Select option'
-            bg={'gray.100'}
-            border={0}
-            color={'gray.900'}
-            _placeholder={{
-              color: 'gray.500',
-            }}
-            value={userData.role}
-            onChange={(e)=>setUserData({ ...userData, role: e.target.value })}
-          >
-            <option value='ADMIN'>Administrador</option>
-            <option value='MIDDLE'>Cantina</option>
-            <option value='PROF'>Professor</option>
-            <option value='MEMBER'>Aluno</option>
-          </Select>
-        </FormControl>
-        
         <Stack spacing={6}>
           <Button
             type="submit"
