@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { Box, Center, Text, UnorderedList, ListItem, Button, Flex, useColorModeValue, useBreakpointValue } from "@chakra-ui/react";
+import React, { useRef, useState } from "react";
+import { Box, Center, Text, UnorderedList, ListItem, Button, Flex, useColorModeValue, useBreakpointValue, Spinner } from "@chakra-ui/react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
@@ -9,11 +9,13 @@ interface TicketScreenProps {
 
 export function TicketScreen(props: TicketScreenProps) {
   const { ticketData } = props;
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const contentRef = useRef<HTMLDivElement | null>(null);
 
   const handlePrint = async () => {
+    setIsLoading(true);
     try {
       await axios.post(`${process.env.REACT_APP_API_BASE_URL}/printTicket`, ticketData);
       console.log("Ticket enviado para impressão com sucesso!");
@@ -23,6 +25,8 @@ export function TicketScreen(props: TicketScreenProps) {
       }, 1000);
     } catch (error) {
       console.error("Erro ao enviar o ticket para impressão:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -36,13 +40,19 @@ export function TicketScreen(props: TicketScreenProps) {
 
   const buttonComponent = useBreakpointValue({
     base: (
-      <Button mt={6} colorScheme="blue" onClick={() => navigate('/')}>
+      <Button mt={6} colorScheme="blue" onClick={() => navigate('/')} isDisabled={isLoading}>
         Encerrar e Sair
       </Button>
     ),
     md: (
-      <Button mt={6} colorScheme="blue" onClick={handlePrint}>
-        Imprima Seu Ticket
+      <Button
+        mt={6}
+        colorScheme="blue"
+        onClick={handlePrint}
+        isLoading={isLoading}
+        isDisabled={isLoading}
+      >
+        {isLoading ? <Spinner size="sm" /> : "Imprima Seu Ticket"}
       </Button>
     ),
   });
@@ -95,7 +105,7 @@ export function TicketScreen(props: TicketScreenProps) {
         </UnorderedList>
         <Text mt={4} fontWeight="bold" textAlign="left">Total: {Number(ticketData.total).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}</Text>
         {isSameUrl ? (
-					<Button mt={6} colorScheme="blue" onClick={() => navigate('/')}>
+					<Button mt={6} colorScheme="blue" onClick={() => navigate('/')} isDisabled={isLoading}>
 						Encerrar e Sair
 					</Button>
 				) : buttonComponent}
