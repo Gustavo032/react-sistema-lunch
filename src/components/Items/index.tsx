@@ -161,7 +161,7 @@ const ListItens: React.FC = () => {
       <Flex
         direction="column"
         align="center"
-        maxW="xl"
+        maxW="3xl"
         p={4}
         bg="rgba(255, 255, 255, 0.8)"
         rounded="xl"

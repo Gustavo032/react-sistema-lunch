@@ -15,11 +15,11 @@ interface FixedItemListProps {
   onEdit: (item: Item) => void;
 }
 
-const fixedItems = ["Almoço", "Café da Manhã", "Café da Tarde"];
+const fixedItems = ["Almoço", "Almoço Prof", "Café da Manhã", "Café da Tarde"];
 
 const FixedItemList: React.FC<FixedItemListProps> = ({ items, onEdit }) => {
   return (
-    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+    <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
       {items
         .filter((item) => fixedItems.includes(item.title))
         .map((item) => (
