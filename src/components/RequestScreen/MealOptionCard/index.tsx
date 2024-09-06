@@ -23,7 +23,7 @@ export function MealOptionCard(props: any) {
     const minutes = now.getMinutes();
 
     setIsBreakfastTime(hours >= 6 && (hours < 9 || (hours === 9 && minutes <= 30)));
-    setIsLunchTime(hours >= 6 && (hours < 10 || (hours === 10 && minutes <= 30)));
+    setIsLunchTime(hours >= 6 && (hours < 19 || (hours === 19 && minutes <= 30)));
     setIsAfternoonTeaTime(hours >= 6 && hours < 19);
   };
 

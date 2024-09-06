@@ -63,7 +63,7 @@ export function RequestItem(props: RequestItemProps) {
   useEffect(() => {
     const initialQuantities: { [key: string]: number } = {};
     menuItems.forEach(item => {
-      initialQuantities[item.id] = (item.title === "Café da Tarde" || item.title === "Almoço" || item.title === "Café da Manhã") ? 1 : 0;
+      initialQuantities[item.id] = (item.title === "Café da Tarde" || item.title === "Almoço" || item.title === "Almoço Prof" || item.title === "Café da Manhã") ? 1 : 0;
     });
     setQuantities(initialQuantities);
   }, [menuItems]);
@@ -117,7 +117,7 @@ export function RequestItem(props: RequestItemProps) {
     const fetchMenuItems = async () => {
       try {
         let response;
-        if (itemTitle === "Almoço" || itemTitle === "Café da Tarde" || itemTitle === "Café da Manhã") {
+        if (itemTitle === "Almoço" || itemTitle === "Almoço Prof" || itemTitle === "Café da Tarde" || itemTitle === "Café da Manhã") {
           response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/items/all`, {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -132,7 +132,7 @@ export function RequestItem(props: RequestItemProps) {
             },
           });
           const filteredItems = response.data.items.item.filter((item: MenuItemProps) =>
-            item.title !== "Almoço" && item.title !== "Café da Tarde" && item.title !== "Café da Manhã"
+            item.title !== "Almoço" && item.title !== "Almoço Prof" && item.title !== "Café da Tarde" && item.title !== "Café da Manhã"
           );
           setMenuItems(filteredItems);
         }
@@ -187,6 +187,13 @@ export function RequestItem(props: RequestItemProps) {
             h="20rem" bgSize="cover" bgPos="center" borderRadius="lg" mb="4" position="relative">
           </Box>
         )}
+
+				{itemTitle === "Almoço Prof" && (
+          <Box marginTop="1rem" maxW="426px" w="100%" bgImage={`${props.bgImage}`}
+            h="20rem" bgSize="cover" bgPos="center" borderRadius="lg" mb="4" position="relative">
+          </Box>
+        )}
+
         {
           itemTitle === "Café da Tarde" && (
             <Box marginTop="1rem" maxW="426px" w="100%" bgImage={`${props.bgImage}`}
