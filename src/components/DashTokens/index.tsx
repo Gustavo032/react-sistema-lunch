@@ -45,6 +45,7 @@ const DashTokens = () => {
 		'Year 10',
 		'Year 11',
 		'Year 12',
+		'Teacher'
 	];
 
   useEffect(() => {

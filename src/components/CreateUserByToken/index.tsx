@@ -32,6 +32,7 @@ export default function CreateUserByToken() {
 		'Year 10',
 		'Year 11',
 		'Year 12',
+		'Teacher'
 	];
 
   useEffect(() => {
@@ -41,14 +42,22 @@ export default function CreateUserByToken() {
 				console.log(response)
         if (response.data.message === 'Valid token') {
 					const tokenData = response.data.tokenData;
-					setUserData({
-						...userData,
-						email: tokenData.email,
-						id: tokenData.matricula,
-						user_class: tokenData.user_class
-					});
+					if(tokenData.user_class === 'Teacher'){
+						setUserData({
+							...userData,
+							email: tokenData.email,
+							id: tokenData.matricula,
+							role: tokenData.user_class
+						});
+					} else {
+						setUserData({
+							...userData,
+							email: tokenData.email,
+							id: tokenData.matricula,
+							user_class: tokenData.user_class
+						});
+					}
 					setIsValidToken(true);	
-					
         } else {
           // navigate('/invalid-token'); // Redirecionar para uma página de token inválido
 					console.log("token invalid");
