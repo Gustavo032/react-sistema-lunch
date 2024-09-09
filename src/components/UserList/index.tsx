@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { endOfMonth, format, startOfMonth } from 'date-fns';
 import imageCompression from 'browser-image-compression';
 import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Input, Flex, Icon, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogCloseButton, AlertDialogBody, AlertDialogFooter, useToast, Image, Text, FormLabel, FormControl, Select, Stack, Heading, Center, Avatar, AvatarBadge, IconButton, useColorModeValue, Checkbox, Spinner, InputGroup, InputRightElement } from '@chakra-ui/react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { SmallCloseIcon, ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import ReactDatePicker from 'react-datepicker';
 
 const UserList = ({ onSelectUser }:any) => {
   const [users, setUsers] = useState([]);
@@ -11,8 +13,10 @@ const UserList = ({ onSelectUser }:any) => {
   const [filterId, setFilterId] = useState('');
   const [userTotalPrices, setUserTotalPrices] = useState<any>({});
   const [parentsEnabled, setParentsEnabled] = useState(false); // Estado para habilitar/desabilitar campos dos pais
-  const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+  // const [selectedMonth, setSelectedMonth] = useState((new Date().getMonth() + 1).toString());
+  // const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+	const [startDate, setStartDate] = useState<Date | null>(startOfMonth(new Date()));
+  const [endDate, setEndDate] = useState<Date | null>(endOfMonth(new Date()));
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedUser, setSelectedUser] = useState<any>({
 		image: null
@@ -26,10 +30,10 @@ const UserList = ({ onSelectUser }:any) => {
   const { onClose } = useDisclosure();
 
   useEffect(() => {
-		if (selectedMonth.length >= 1 && selectedYear.length >= 4) {
+		// if (selectedMonth.length >= 1 && selectedYear.length >= 4) {
     	fetchUsers();
-		}
-  }, [selectedMonth, selectedYear]);
+		// }
+  }, [startDate, endDate]);
 
   const fetchUsers = async () => {
     try {
@@ -39,6 +43,12 @@ const UserList = ({ onSelectUser }:any) => {
       );
 
       const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/users/all`, {
+				params: {
+          // page: currentPage,
+          // userId: userId,
+          startDate: startDate ? format(startDate, 'MM/dd/yyyy') : null,
+          endDate: endDate ? format(endDate, 'MM/dd/yyyy') : null,
+        },
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -56,7 +66,7 @@ const UserList = ({ onSelectUser }:any) => {
 		
 
       const userTotalPricePromises = fetchedUsers.map((user:any) => {
-        return axios.get(`${process.env.REACT_APP_API_BASE_URL}/total-price-sum/${user.id}/${String(selectedMonth)}/${String(selectedYear)}`, {
+        return axios.get(`${process.env.REACT_APP_API_BASE_URL}/total-price-sum/${user.id}/${String(startDate)}/${String(endDate)}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -77,6 +87,18 @@ const UserList = ({ onSelectUser }:any) => {
 
   const handleSelectUser = (userId:any) => {
     onSelectUser(userId);
+  };
+
+	const handleStartDateChange = (date:any) => {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    setStartDate(startOfDay);
+  };
+
+  const handleEndDateChange = (date:any) => {
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    setEndDate(endOfDay);
   };
 
   const handleModifyUser = (user:any) => {
@@ -213,43 +235,19 @@ const UserList = ({ onSelectUser }:any) => {
 					<Image src="/Logo_Maple_Bear.png" h="3rem" />
 				</Flex>
 
-				<Flex w={{ base: "100%", md: "30%" }} justify="center">
-					<Flex width="100%" h="100%" align={"center"} ml="2" bgColor="gray.300" p="0 1rem" border="solid gray 0.05rem" borderRadius={"0.25rem"} justify={"center"}>
-						<Text as={FormLabel} mt="0.5rem" htmlFor="inputMes" mr="1rem">Mês:</Text>
-						<Input
-							id="inputMes"
-							type="number"
-							min="1"
-							max="12"
-							bgColor="#fff"
-							placeholder="Mês"
-							border="solid 0.12rem black"
-							value={selectedMonth}
-							onChange={(e) => {
-								console.log(e.target.value + " selected month")
-								setSelectedMonth(e.target.value);
-								// if (e.target.value.length > 0 && selectedYear.length >= 4) {
-								// 	fetchUsers();
-								// }
-							}}
-						/>
+				{/* <Flex w={{ base: "100%", md: "30%" }} justify="center"> */}
+					<Flex w={{ base: "100%", md: "50%" }} align="center" mt={{ base: 2, md: 0 }}>
+						<Flex width="100%" h="100%" alignItems="center" ml="2" border="solid gray 0.16rem" bgColor="gray.200" p="0.2rem" borderRadius={"0.25rem"} justify={"center"}>
+							<Text as={FormLabel} mt="0.5rem" htmlFor="inputDateStart" mr="2">Data Inicial:</Text>
+							<Box as={ReactDatePicker} id="inputDateStart" bgColor="gray.100" width="100%" border="solid 0.12rem black" borderRadius={"0.25rem"} height="2.5rem" textAlign="center" selected={startDate} onChange={handleStartDateChange} dateFormat="dd/MM/yyyy" />
+						</Flex>
+						
+						<Flex width="100%" h="100%" alignItems="center" ml="2" border="solid gray 0.16rem" bgColor="gray.200" p="0.2rem" borderRadius={"0.25rem"} justify={"center"}>
+							<Text as={FormLabel} mt="0.5rem" htmlFor="inputDateEnd" ml="2" mr="2">Data Final:</Text>
+							<Box as={ReactDatePicker} id="inputDateEnd" bgColor="gray.100" width="100%" border="solid 0.12rem black" borderRadius={"0.25rem"} height="2.5rem" textAlign="center" selected={endDate} onChange={handleEndDateChange} dateFormat="dd/MM/yyyy" />
+						</Flex>
 					</Flex>
-
-					<Flex width="100%" h="100%" alignItems="center" ml="2" bgColor="gray.300" p="0 1rem" border="solid gray 0.05rem" borderRadius={"0.25rem"} justify={"center"}>
-						<Text as={FormLabel} mt="0.5rem" htmlFor="inputAno" mr="1rem">Ano:</Text>
-						<Input
-							id="inputAno"
-							type="number"
-							placeholder="Ano"
-							bgColor="#fff"
-							border="solid 0.12rem black"
-							value={selectedYear}
-							onChange={(e) => {
-								setSelectedYear(e.target.value);
-							}}
-						/>
-					</Flex>
-				</Flex>
+				{/* </Flex> */}
       </Flex>
 			<Box style={{ overflowX: 'auto' }}>
 				<Table variant="simple">
