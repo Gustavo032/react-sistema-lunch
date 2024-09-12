@@ -352,6 +352,7 @@ export default function CreateUserByToken() {
 							value={userData.password}
 							onChange={(e)=>setUserData({ ...userData, password: e.target.value })}
 							maxLength={120}
+							minLength={6}
 						/>
 						<InputRightElement>
 							<IconButton

@@ -339,6 +339,7 @@ export default function CreateUserScreen() {
 					<InputGroup>
 						<Input
 							required
+							minLength={6}
 							type={showPassword ? 'text' : 'password'} // Altere o tipo de texto para senha
 							bg={'gray.100'}
 							placeholder="Digite a Senha"
