@@ -48,14 +48,15 @@ export default function CreateUserByToken() {
 							email: tokenData.email,
 							id: tokenData.matricula,
 							user_class: tokenData.user_class,
-							role: tokenData.user_class
+							role: "PROF"
 						});
 					} else {
 						setUserData({
 							...userData,
 							email: tokenData.email,
 							id: tokenData.matricula,
-							user_class: tokenData.user_class
+							user_class: tokenData.user_class,
+							role: "MEMBER"
 						});
 					}
 					setIsValidToken(true);	
@@ -551,6 +552,7 @@ export default function CreateUserByToken() {
             // onChange={(e)=>setUserData({ ...userData, role: e.target.value })}
           >
             <option value='ADMIN'>Administrador</option>
+            <option value='PROF'>Professor</option>
             <option value='MIDDLE'>Cantina</option>
             <option value='MEMBER'>Usuário</option>
           </Select>
