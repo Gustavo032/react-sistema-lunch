@@ -385,6 +385,7 @@ export default function CreateUserByToken() {
         </FormControl> */}
 
         <Checkbox
+					display={userData.user_class === "Teacher" ? "none" : "auto"}
           isChecked={parentsEnabled}
           onChange={() => setParentsEnabled(!parentsEnabled)}
           colorScheme="blue"
@@ -496,7 +497,7 @@ export default function CreateUserByToken() {
 					/>
 				</FormControl>
 
-				<FormControl id="user_class">
+				<FormControl id="user_class" display={userData.user_class === "Teacher" ? "none" : "auto"}>
 					<FormLabel color="gray.800">Turma do Aluno</FormLabel>
 					<Select
 						disabled
@@ -545,7 +546,7 @@ export default function CreateUserByToken() {
             _placeholder={{
               color: 'gray.500',
             }}
-            value={'MEMBER'}
+            value={userData.user_class === "Teacher" ? "PROF" : 'MEMBER'}
             // onChange={(e)=>setUserData({ ...userData, role: e.target.value })}
           >
             <option value='ADMIN'>Administrador</option>
