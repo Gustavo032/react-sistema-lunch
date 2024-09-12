@@ -17,7 +17,7 @@ export default function CreateUserByToken() {
     email: '',
     password: '',
     credit: 0,
-    role: 'MEMBER',
+    // role: 'MEMBER',
     image: null,
   });
   const [errorMessage, setErrorMessage] = useState('');
@@ -47,6 +47,7 @@ export default function CreateUserByToken() {
 							...userData,
 							email: tokenData.email,
 							id: tokenData.matricula,
+							user_class: tokenData.user_class,
 							role: tokenData.user_class
 						});
 					} else {
