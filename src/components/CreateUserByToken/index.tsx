@@ -45,7 +45,7 @@ export default function CreateUserByToken() {
 					if(tokenData.user_class === 'Teacher'){
 						setUserData({
 							...userData,
-							email: tokenData.email,
+							// email: tokenData.email,
 							id: tokenData.matricula,
 							user_class: tokenData.user_class,
 							role: "PROF"
@@ -53,7 +53,7 @@ export default function CreateUserByToken() {
 					} else {
 						setUserData({
 							...userData,
-							email: tokenData.email,
+							// email: tokenData.email,
 							id: tokenData.matricula,
 							user_class: tokenData.user_class,
 							role: "MEMBER"
@@ -323,7 +323,7 @@ export default function CreateUserByToken() {
         <FormControl id="email">
           <FormLabel color="gray.800">Email*</FormLabel>
           <Input
-						disabled
+						// disabled
             type="text"
             bg={'gray.100'}
             placeholder="Digite o Email"
@@ -333,7 +333,7 @@ export default function CreateUserByToken() {
               color: 'gray.500',
             }}
             value={userData.email}
-            // onChange={(e)=>setUserData({ ...userData, email: e.target.value })}
+            onChange={(e)=>setUserData({ ...userData, email: e.target.value })}
             maxLength={120}
           />
         </FormControl>
