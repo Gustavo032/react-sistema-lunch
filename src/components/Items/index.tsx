@@ -42,7 +42,7 @@ const ListItens: React.FC = () => {
 
   const fetchItems = async () => {
     const response = await axios.get(
-      `${process.env.REACT_APP_API_BASE_URL}/items/all`,
+      `${process.env.REACT_APP_API_BASE_URL}/items/allItems`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
