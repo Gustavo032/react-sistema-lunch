@@ -146,7 +146,7 @@ export default function AdminDashboard() {
 					>
 						Solicitar uma Refeição
 					</Button>
-					{(userRole === 'ADMIN' || userRole === 'PROF') && (
+					{(userRole === 'ADMIN' || userRole === 'PROF' || userRole === "MIDDLE") && (
 						<>
               <Button
 								p="2rem"

@@ -48,7 +48,7 @@ export default function CreateUserScreen() {
     };
 
     const userRole = getCookie('userRole');
-    if (userRole !== 'ADMIN' && userRole !== 'PROF') {
+    if (userRole !== 'ADMIN' && userRole !== 'PROF' && userRole !== 'MIDDLE') {
       navigate('/');
     }
   }, [navigate]);
