@@ -22,6 +22,7 @@ import ListItens from "./components/Items";
 import CreateUserByToken from "./components/CreateUserByToken";
 import DashTokens from "./components/DashTokens";
 import ItemList from "./components/Items";
+import Tutorial from "./components/Tutorial";
 
 export const App = () => {
   const [ticketData, setTicketData] = useState<any>(null);
@@ -38,6 +39,7 @@ export const App = () => {
         <Route path="/mealOptionPage/:option" element={<MealOptionPage ticketData={ticketData} setTicketData={setTicketData} />} />
         <Route path="/ticket" element={<TicketScreen ticketData={ticketData} />} />
         <Route path="/controle" element={<Control />} />
+        <Route path="/tutorial" element={<Tutorial />} />
         <Route path="/allRequests" element={<AllRequests />} />
         {/* <Route path="/userList" element={<UserList />} /> */}
         <Route path="/createUser" element={<CreateUserScreen />} />
