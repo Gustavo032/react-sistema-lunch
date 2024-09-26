@@ -53,7 +53,7 @@ export function MealOptionPage(props: MealOptionPageProps) {
       {option === 'option2' && (
         <>
           {/* Adiciona a verificação do userRole */}
-          {userRole === 'PROF' ? (
+          {userRole !== 'MEMBER' ? (
             <Center zIndex="2" margin={"auto"}>
               <RequestItem price="30,00" bgImage="/img/lunchImage.png" itemTitle="Almoço Prof" ticketData={props.ticketData} setTicketData={props.setTicketData}/>  
             </Center>
