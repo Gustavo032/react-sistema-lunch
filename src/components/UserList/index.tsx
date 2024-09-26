@@ -6,6 +6,7 @@ import { Button, Table, Thead, Tbody, Tr, Th, Td, Box, Input, Flex, Icon, useDis
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { SmallCloseIcon, ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import ReactDatePicker from 'react-datepicker';
+import * as XLSX from 'xlsx';
 
 const UserList = ({ onSelectUser }:any) => {
   const [users, setUsers] = useState([]);
@@ -21,6 +22,7 @@ const UserList = ({ onSelectUser }:any) => {
   const [selectedUser, setSelectedUser] = useState<any>({
 		image: null
 	});
+	const [isLoading, setIsLoading] = useState(false); // Estado para controlar o loading
 	const [showPassword, setShowPassword] = useState(false);
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
@@ -221,6 +223,98 @@ const UserList = ({ onSelectUser }:any) => {
     }
   };
 
+	// Função para buscar todos os usuários
+  // useEffect(() => {
+
+	// 	const token = document.cookie.replace(
+	// 		/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/,
+	// 		'$1'
+	// 	);
+
+	// 	const response = async axios.get(`${process.env.REACT_APP_API_BASE_URL}/users/all`, {
+	// 		params: {
+	// 			// page: currentPage,
+	// 			// userId: userId,
+	// 			startDate: startDate ? format(startDate, 'MM/dd/yyyy') : null,
+	// 			endDate: endDate ? format(endDate, 'MM/dd/yyyy') : null,
+	// 		},
+	// 		headers: {
+	// 			Authorization: `Bearer ${token}`,
+	// 		},
+	// 	})
+
+	// }, [])
+
+  //   axios.get('/api/users')
+  //     .then((response) => setUsers(response.data))
+  //     .catch((error) => console.error(error));
+  // }, []);
+
+  // Função para buscar todos os pedidos de um usuário específico
+  const fetchOrdersByUser = async (userId:any) => {
+    try {
+      const token = document.cookie.replace(/(?:(?:^|.*;\s*)refreshToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/requests/history`, {
+        params: {
+          page: 1,
+          userId: userId,
+          startDate: startDate ? format(startDate, 'MM/dd/yyyy') : null,
+          endDate: endDate ? format(endDate, 'MM/dd/yyyy') : null,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data.requests;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
+  // Função para exportar os pedidos de todos os usuários em um único arquivo Excel
+  const exportAllOrdersToExcel = async () => {
+    setIsLoading(true); // Mostrar spinner
+    const allOrders:any = [];
+
+    const formatCurrency = (value:any) => {
+      return parseFloat(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    };
+
+    for (const user of users) {
+      const orders = await fetchOrdersByUser((user as any).id);
+
+      orders.forEach((order:any) => {
+        allOrders.push({
+          OrderId: order.id,
+          UserId: (user as any).id,
+          UserRole: (user as any).role,
+          UserName: (user as any).name,
+          OrderItems: order.requestItems.map((item:any) => `${item.itemTitle} - ${formatCurrency(item.itemPrice)} `).join("\n"),
+          OrderTotal: formatCurrency(order.total_price),
+          OrderDate: format(new Date(order.created_at), 'dd/MM/yyyy HH:mm:ss')
+        });
+      });
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(allOrders);
+    for (let rowIndex = 0; rowIndex < allOrders.length; rowIndex++) {
+      const cellAddress = `C${rowIndex + 2}`;
+      if (worksheet[cellAddress]) {
+        worksheet[cellAddress].s = {
+          alignment: {
+            wrapText: true
+          }
+        };
+      }
+    }
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Pedidos');
+
+    XLSX.writeFile(workbook, 'todos_pedidos.xlsx');
+    setIsLoading(false); // Esconder spinner após download
+  };
   const totalFatura = Object.values(userTotalPrices).reduce((sum:any, price:any) => sum + price, 0);
 
   return (
@@ -231,9 +325,14 @@ const UserList = ({ onSelectUser }:any) => {
 					<Input placeholder="Filtrar por nome" value={filterName} _placeholder={{ color: "gray.700" }} border="solid black 0.06rem" _focus={{ backgroundColor: "#fff" }} bgColor={"gray.200"} onChange={handleFilterName} />
 				</Flex>
 
-				<Flex justify="center" bgColor="gray.100" w={{ base: "0", md: "20%" }} borderRadius="9999999px" display={{ base: "none", md: "flex" }}>
-					<Image src="/Logo_Maple_Bear.png" h="3rem" />
-				</Flex>
+				<Box>
+						{isLoading ? <Spinner size="lg" /> : 
+						<Button colorScheme="green" mb={4} onClick={exportAllOrdersToExcel}>
+							Exportar Todos os Pedidos
+						</Button>
+						}
+				</Box>
+
 
 				{/* <Flex w={{ base: "100%", md: "30%" }} justify="center"> */}
 					<Flex w={{ base: "100%", md: "50%" }} align="center" mt={{ base: 2, md: 0 }}>

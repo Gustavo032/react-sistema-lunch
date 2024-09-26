@@ -208,6 +208,9 @@ const Control = () => {
 				mb="1rem">
 				</Box>
 			)}
+				<Flex justify="center" bgColor="gray.200" w={{ base: "0", md: "20%" }} borderRadius="9999999px" display={{ base: "none", md: "flex" }}>
+					<Image src="/Logo_Maple_Bear.png" h="3rem" />
+				</Flex>
         <Button as={Link} to="/createUser" colorScheme="green">Criar Usuário</Button>
       </Flex>
       {!userId ? (
